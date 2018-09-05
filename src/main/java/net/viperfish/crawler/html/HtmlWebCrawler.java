@@ -12,15 +12,17 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,6 +34,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
 
 import net.viperfish.crawler.core.Anchor;
+import net.viperfish.crawler.core.CrawlChecker;
 import net.viperfish.crawler.core.DatabaseObject;
 import net.viperfish.crawler.core.Header;
 import net.viperfish.crawler.core.HttpWebCrawler;
@@ -41,13 +44,14 @@ import net.viperfish.crawler.core.SiteDatabase;
 import net.viperfish.crawler.core.TagData;
 import net.viperfish.crawler.core.TagDataType;
 import net.viperfish.crawler.core.TextContent;
+import net.viperfish.crawler.crawlChecker.NullCrawlChecker;
 import net.viperfish.crawler.exceptions.ParsingException;
 import net.viperfish.framework.compression.Compressor;
 import net.viperfish.framework.compression.Compressors;
 
 public class HtmlWebCrawler implements HttpWebCrawler {
 
-	private static int THREAD_COUNT = 64;
+	private static int THREAD_COUNT = 32;
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
 
 	static {
@@ -66,7 +70,7 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 	private SiteDatabase db;
 	private DatabaseObject<Long, Anchor> anchorDB;
 	private Compressor compressor;
-	private AtomicInteger busyThreads;
+	private CrawlChecker crawlChecker;
 
 	public HtmlWebCrawler(SiteDatabase db, DatabaseObject<Long, Anchor> anchorDB) {
 		processors = new HashMap<>();
@@ -89,14 +93,38 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 			throw new RuntimeException(e);
 		}
 		executor = Executors.newFixedThreadPool(THREAD_COUNT);
-		busyThreads = new AtomicInteger(0);
+		crawlChecker = new NullCrawlChecker();
 	}
 
 	@Override
 	public Map<Long, URL> crawl(URL url) {
-		ConcurrentMap<URL, String> crawled = new ConcurrentHashMap<>();
 		ConcurrentMap<Long, URL> result = new ConcurrentHashMap<>();
-		crawlRecursive(url, crawled, result);
+		ConcurrentLinkedQueue<URL> sites2Crawl = new ConcurrentLinkedQueue<>();
+		sites2Crawl.offer(url);
+		AtomicInteger activeThreads = new AtomicInteger(0);
+		do {
+			URL u = sites2Crawl.poll();
+			if (u == null) {
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					return result;
+				}
+				continue;
+			}
+			activeThreads.incrementAndGet();
+			executor.execute(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						crawlIterative(u, result, sites2Crawl);
+					} finally {
+						activeThreads.decrementAndGet();
+					}
+				}
+			});
+		} while (activeThreads.get() > 0);
 		return result;
 	}
 
@@ -112,18 +140,19 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		return processors.get(tagName);
 	}
 
-	private void crawlRecursive(URL url, ConcurrentMap<URL, String> crawledSites, ConcurrentMap<Long, URL> result) {
-		System.out.println("Crawling:" + url);
+	private void crawlIterative(URL url, ConcurrentMap<Long, URL> result, Queue<URL> sites2Crawl) {
 		try {
-			if (didCrawl(crawledSites, url)) {
+			if (!crawlChecker.shouldCrawl(url)) {
 				return;
 			}
-			if (!crawled(crawledSites, url, "")) {
-				return;
-			}
-
 			Site site = new Site();
 			if (!fetchSite(url, site)) {
+				return;
+			}
+			if (!crawlChecker.shouldCrawl(url, site)) {
+				return;
+			}
+			if (!crawlChecker.lock(url, site)) {
 				return;
 			}
 
@@ -144,41 +173,22 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 			long siteID = site.getSiteID();
 			site = null;
 
-			// recursively crawl pages
+			// add pages to crawl
 			if (processedTags.containsKey(TagDataType.HTML_LINK)) {
 				List<TagData> linkTags = processedTags.get(TagDataType.HTML_LINK);
-				Phaser lowerLevelTracker = new Phaser(1);
+				List<Anchor> anchors = new LinkedList<>();
 				for (TagData td : linkTags) {
-
-					Anchor anchor = saveAnchor(td, siteID);
-
+					Anchor anchor = toAnchor(td, siteID);
+					anchors.add(anchor);
 					// check if limited to host
 					if (limit2Host) {
 						if (!anchor.getTargetURL().getHost().equals(url.getHost())) {
 							continue;
 						}
 					}
-					if (busyThreads.get() <= THREAD_COUNT) {
-						busyThreads.incrementAndGet();
-						lowerLevelTracker.register();
-						executor.execute(new Runnable() {
-
-							@Override
-							public void run() {
-								try {
-									crawlRecursive(anchor.getTargetURL(), crawledSites, result);
-								} finally {
-									busyThreads.decrementAndGet();
-									lowerLevelTracker.arriveAndDeregister();
-								}
-							}
-						});
-					} else {
-						crawlRecursive(anchor.getTargetURL(), crawledSites, result);
-					}
+					sites2Crawl.offer(anchor.getTargetURL());
 				}
-				// wait for the threads to complete if there are any
-				lowerLevelTracker.arriveAndAwaitAdvance();
+				anchorDB.save(anchors);
 			}
 		} catch (ParsingException e) {
 			System.out.println("Error Parsing:" + url);
@@ -233,14 +243,6 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		} finally {
 			urlc.disconnect();
 		}
-	}
-
-	private boolean didCrawl(ConcurrentMap<URL, String> crawled, URL url) {
-		return crawled.containsKey(url);
-	}
-
-	private boolean crawled(ConcurrentMap<URL, String> crawled, URL url, String hash) {
-		return crawled.putIfAbsent(url, hash) == null;
 	}
 
 	private boolean fetchSite(URL url, Site site) throws IOException {
@@ -341,7 +343,7 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		}
 	}
 
-	private Anchor saveAnchor(TagData anchorData, long siteID) throws IOException {
+	private Anchor toAnchor(TagData anchorData, long siteID) throws IOException {
 		URL linkedPage = anchorData.get("url", URL.class);
 		String anchorName = anchorData.get("anchor", String.class);
 
@@ -349,7 +351,6 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		result.setAnchorText(anchorName);
 		result.setTargetURL(linkedPage);
 		result.setSiteID(siteID);
-		anchorDB.save(result);
 		return result;
 	}
 
@@ -372,6 +373,16 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 			executor.shutdownNow();
 			return;
 		}
+	}
+
+	@Override
+	public void setCrawlChecker(CrawlChecker checker) {
+		this.crawlChecker = checker;
+	}
+
+	@Override
+	public CrawlChecker getCrawlChecker() {
+		return crawlChecker;
 	}
 
 }

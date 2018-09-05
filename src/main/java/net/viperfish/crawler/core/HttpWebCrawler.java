@@ -11,4 +11,8 @@ public interface HttpWebCrawler {
 	public boolean isLimitedToHost();
 
 	public void shutdown();
+
+	public void setCrawlChecker(CrawlChecker checker);
+
+	public CrawlChecker getCrawlChecker();
 }

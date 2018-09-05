@@ -1,6 +1,9 @@
 package net.viperfish.crawler.dao;
 
 import java.io.IOException;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.List;
 
 import net.viperfish.crawler.core.Header;
 import net.viperfish.crawler.core.Site;
@@ -50,6 +53,20 @@ public class SiteDatabaseImpl extends ORMLiteDatabase<Long, Site> implements Sit
 	private void setTextContentID(Iterable<TextContent> textContents, Site s) {
 		for (TextContent t : textContents) {
 			t.setSiteID(s.getSiteID());
+		}
+	}
+
+	@Override
+	public Site find(URL url) throws IOException {
+		try {
+			List<Site> result = this.dao().queryForEq("url", url);
+			if (!result.isEmpty()) {
+				return result.get(0);
+			} else {
+				return null;
+			}
+		} catch (SQLException e) {
+			throw new IOException(e);
 		}
 	}
 
