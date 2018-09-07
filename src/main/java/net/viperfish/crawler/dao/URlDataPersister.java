@@ -1,13 +1,12 @@
 package net.viperfish.crawler.dao;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.SQLException;
-
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.field.types.BaseDataType;
 import com.j256.ormlite.support.DatabaseResults;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.SQLException;
 
 public class URlDataPersister extends BaseDataType {
 
@@ -27,7 +26,8 @@ public class URlDataPersister extends BaseDataType {
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
+	public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos)
+		throws SQLException {
 		return results.getString(columnPos);
 	}
 
@@ -38,7 +38,8 @@ public class URlDataPersister extends BaseDataType {
 	}
 
 	@Override
-	public Object resultToJava(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
+	public Object resultToJava(FieldType fieldType, DatabaseResults results, int columnPos)
+		throws SQLException {
 		String result = results.getString(columnPos);
 		try {
 			return new URL(result);
@@ -49,7 +50,8 @@ public class URlDataPersister extends BaseDataType {
 	}
 
 	@Override
-	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) throws SQLException {
+	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos)
+		throws SQLException {
 		try {
 			return new URL(sqlArg.toString());
 		} catch (MalformedURLException e) {

@@ -7,19 +7,18 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.jsoup.nodes.Element;
-
 import net.viperfish.crawler.base.TagProcessor;
 import net.viperfish.crawler.core.Site;
 import net.viperfish.crawler.core.TagData;
 import net.viperfish.crawler.core.TagDataType;
 import net.viperfish.crawler.exceptions.ParsingException;
+import org.jsoup.nodes.Element;
 
 public final class ALinkTagProcessor implements TagProcessor {
 
 	@Override
-	public Map<TagDataType, List<TagData>> processTag(Element tag, Site site) throws ParsingException {
+	public Map<TagDataType, List<TagData>> processTag(Element tag, Site site)
+		throws ParsingException {
 		Map<TagDataType, List<TagData>> result = new HashMap<>();
 		result.put(TagDataType.HTML_LINK, new LinkedList<>());
 
@@ -54,7 +53,8 @@ public final class ALinkTagProcessor implements TagProcessor {
 	}
 
 	private URL getNearestPath(URL base) throws MalformedURLException {
-		URL url = new URL(base.toExternalForm().substring(0, base.toExternalForm().lastIndexOf("/") + 1));
+		URL url = new URL(
+			base.toExternalForm().substring(0, base.toExternalForm().lastIndexOf("/") + 1));
 		return url;
 	}
 

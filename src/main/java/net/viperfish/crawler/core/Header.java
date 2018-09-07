@@ -66,24 +66,32 @@ public class Header {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Header other = (Header) obj;
 		if (content == null) {
-			if (other.content != null)
+			if (other.content != null) {
 				return false;
-		} else if (!content.equals(other.content))
+			}
+		} else if (!content.equals(other.content)) {
 			return false;
-		if (headerID != other.headerID)
+		}
+		if (headerID != other.headerID) {
 			return false;
-		if (siteID != other.siteID)
+		}
+		if (siteID != other.siteID) {
 			return false;
-		if (size != other.size)
+		}
+		if (size != other.size) {
 			return false;
+		}
 		return true;
 	}
 

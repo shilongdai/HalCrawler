@@ -1,10 +1,8 @@
 package net.viperfish.crawler.core;
 
-import java.net.URL;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-
+import java.net.URL;
 import net.viperfish.crawler.dao.URlDataPersister;
 
 @DatabaseTable(tableName = "Anchor")
@@ -69,27 +67,36 @@ public class Anchor {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Anchor other = (Anchor) obj;
-		if (anchorID != other.anchorID)
+		if (anchorID != other.anchorID) {
 			return false;
+		}
 		if (anchorText == null) {
-			if (other.anchorText != null)
+			if (other.anchorText != null) {
 				return false;
-		} else if (!anchorText.equals(other.anchorText))
+			}
+		} else if (!anchorText.equals(other.anchorText)) {
 			return false;
-		if (siteID != other.siteID)
+		}
+		if (siteID != other.siteID) {
 			return false;
+		}
 		if (targetURL == null) {
-			if (other.targetURL != null)
+			if (other.targetURL != null) {
 				return false;
-		} else if (!targetURL.equals(other.targetURL))
+			}
+		} else if (!targetURL.equals(other.targetURL)) {
 			return false;
+		}
 		return true;
 	}
 

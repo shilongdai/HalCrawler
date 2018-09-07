@@ -31,15 +31,19 @@ public class EmphasizedTextContent extends TextContent {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (!super.equals(obj))
+		}
+		if (!super.equals(obj)) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		EmphasizedTextContent other = (EmphasizedTextContent) obj;
-		if (method != other.method)
+		if (method != other.method) {
 			return false;
+		}
 		return true;
 	}
 

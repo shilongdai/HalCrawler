@@ -1,12 +1,15 @@
 package net.viperfish.crawler.dao;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
+import net.viperfish.crawler.core.DatabaseObject;
 import org.apache.commons.dbcp2.ConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp2.PoolableConnection;
@@ -15,17 +18,15 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.jdbc.DataSourceConnectionSource;
-
-import net.viperfish.crawler.core.DatabaseObject;
-
 public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 
 	private static DataSourceConnectionSource conn;
 	private Dao<T, ID> dao;
 	private Class<T> classType;
+
+	public ORMLiteDatabase(Class<T> type) {
+		this.classType = type;
+	}
 
 	public static void connect(String url, String username, String password) throws SQLException {
 		ConnectionFactory connFactory = new DriverManagerConnectionFactory(url, username, password);
@@ -44,10 +45,6 @@ public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 
 	public static void closeConn() {
 		conn.closeQuietly();
-	}
-
-	public ORMLiteDatabase(Class<T> type) {
-		this.classType = type;
 	}
 
 	public ORMLiteDatabase<ID, T> connect() throws SQLException {

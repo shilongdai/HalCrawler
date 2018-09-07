@@ -1,17 +1,14 @@
 package net.viperfish.crawler.core;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.jsoup.nodes.Document;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import net.viperfish.crawler.dao.URlDataPersister;
+import org.jsoup.nodes.Document;
 
 @DatabaseTable(tableName = "Site")
 public final class Site {
@@ -44,12 +41,25 @@ public final class Site {
 		return title;
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public URL getUrl() {
 		return url;
 	}
 
+	public void setUrl(URL url) {
+		this.url = url;
+		this.title = url.toString();
+	}
+
 	public byte[] getCompressedHtml() {
 		return compressedHtml.clone();
+	}
+
+	public void setCompressedHtml(byte[] compressedHtml) {
+		this.compressedHtml = compressedHtml;
 	}
 
 	public long getSiteID() {
@@ -58,19 +68,6 @@ public final class Site {
 
 	public void setSiteID(long siteID) {
 		this.siteID = siteID;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public void setUrl(URL url) {
-		this.url = url;
-		this.title = url.toString();
-	}
-
-	public void setCompressedHtml(byte[] compressedHtml) {
-		this.compressedHtml = compressedHtml;
 	}
 
 	public String getChecksum() {
@@ -130,47 +127,64 @@ public final class Site {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Site other = (Site) obj;
 		if (checksum == null) {
-			if (other.checksum != null)
+			if (other.checksum != null) {
 				return false;
-		} else if (!checksum.equals(other.checksum))
+			}
+		} else if (!checksum.equals(other.checksum)) {
 			return false;
-		if (!Arrays.equals(compressedHtml, other.compressedHtml))
+		}
+		if (!Arrays.equals(compressedHtml, other.compressedHtml)) {
 			return false;
+		}
 		if (emphasizedTexts == null) {
-			if (other.emphasizedTexts != null)
+			if (other.emphasizedTexts != null) {
 				return false;
-		} else if (!emphasizedTexts.equals(other.emphasizedTexts))
+			}
+		} else if (!emphasizedTexts.equals(other.emphasizedTexts)) {
 			return false;
+		}
 		if (headers == null) {
-			if (other.headers != null)
+			if (other.headers != null) {
 				return false;
-		} else if (!headers.equals(other.headers))
+			}
+		} else if (!headers.equals(other.headers)) {
 			return false;
-		if (siteID != other.siteID)
+		}
+		if (siteID != other.siteID) {
 			return false;
+		}
 		if (texts == null) {
-			if (other.texts != null)
+			if (other.texts != null) {
 				return false;
-		} else if (!texts.equals(other.texts))
+			}
+		} else if (!texts.equals(other.texts)) {
 			return false;
+		}
 		if (title == null) {
-			if (other.title != null)
+			if (other.title != null) {
 				return false;
-		} else if (!title.equals(other.title))
+			}
+		} else if (!title.equals(other.title)) {
 			return false;
+		}
 		if (url == null) {
-			if (other.url != null)
+			if (other.url != null) {
 				return false;
-		} else if (!url.equals(other.url))
+			}
+		} else if (!url.equals(other.url)) {
 			return false;
+		}
 		return true;
 	}
 

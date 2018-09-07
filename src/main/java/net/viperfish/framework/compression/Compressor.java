@@ -5,16 +5,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * A compressor utility that compresses bytes with a compression algorithm
- * 
- * @author sdai
  *
+ * @author sdai
  */
 public abstract class Compressor {
 
@@ -30,32 +28,26 @@ public abstract class Compressor {
 
 	/**
 	 * create a compression output stream used to compress data
-	 * 
-	 * @param out
-	 *            the byte array to store compressed data
+	 *
+	 * @param out the byte array to store compressed data
 	 * @return the usable compression output stream
-	 * @throws IOException
-	 * @throws CompressorException
 	 */
 	protected abstract OutputStream createOutputStream(ByteArrayOutputStream out)
-			throws IOException, CompressorException;
+		throws IOException, CompressorException;
 
 	/**
 	 * create a compression input stream used to depress date
-	 * 
-	 * @param in
-	 *            the byte array to read from
+	 *
+	 * @param in the byte array to read from
 	 * @return the usable compression input stream
-	 * @throws IOException
-	 * @throws CompressorException
 	 */
-	protected abstract InputStream createInputStream(ByteArrayInputStream in) throws IOException, CompressorException;
+	protected abstract InputStream createInputStream(ByteArrayInputStream in)
+		throws IOException, CompressorException;
 
 	/**
 	 * compress data with a compression algorithm
-	 * 
-	 * @param data
-	 *            the bytes to compress
+	 *
+	 * @param data the bytes to compress
 	 * @return the compressed bytes
 	 */
 	public byte[] compress(byte[] data) {
@@ -73,9 +65,8 @@ public abstract class Compressor {
 
 	/**
 	 * uncompress data with a compression algorithm
-	 * 
-	 * @param data
-	 *            the compressed bytes
+	 *
+	 * @param data the compressed bytes
 	 * @return the uncompressed bytes
 	 */
 	public byte[] deflate(byte[] data) {

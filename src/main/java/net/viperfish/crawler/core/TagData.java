@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class TagData {
+
 	private TagDataType dataType;
 	private Map<String, Object> properties;
 
@@ -43,20 +44,26 @@ public final class TagData {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		TagData other = (TagData) obj;
-		if (dataType != other.dataType)
+		if (dataType != other.dataType) {
 			return false;
+		}
 		if (properties == null) {
-			if (other.properties != null)
+			if (other.properties != null) {
 				return false;
-		} else if (!properties.equals(other.properties))
+			}
+		} else if (!properties.equals(other.properties)) {
 			return false;
+		}
 		return true;
 	}
 

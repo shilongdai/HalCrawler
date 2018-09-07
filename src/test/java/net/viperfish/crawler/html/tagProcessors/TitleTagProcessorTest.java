@@ -2,15 +2,13 @@ package net.viperfish.crawler.html.tagProcessors;
 
 import java.util.List;
 import java.util.Map;
-
-import org.jsoup.nodes.Element;
-import org.junit.Assert;
-import org.junit.Test;
-
 import net.viperfish.crawler.core.Site;
 import net.viperfish.crawler.core.TagData;
 import net.viperfish.crawler.core.TagDataType;
 import net.viperfish.crawler.exceptions.ParsingException;
+import org.jsoup.nodes.Element;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class TitleTagProcessorTest {
 
@@ -24,7 +22,8 @@ public class TitleTagProcessorTest {
 
 		Assert.assertEquals(true, result.containsKey(TagDataType.HTML_TITLE));
 		Assert.assertEquals(1, result.get(TagDataType.HTML_TITLE).size());
-		Assert.assertEquals("Test Title", result.get(TagDataType.HTML_TITLE).get(0).get("title", String.class));
+		Assert.assertEquals("Test Title",
+			result.get(TagDataType.HTML_TITLE).get(0).get("title", String.class));
 	}
 
 }

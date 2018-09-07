@@ -3,7 +3,6 @@ package net.viperfish.crawler.dao;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-
 import net.viperfish.crawler.core.EmphasizedTextContent;
 import net.viperfish.crawler.core.Header;
 import net.viperfish.crawler.core.Site;
@@ -16,8 +15,9 @@ public class SiteDatabaseImpl extends ORMLiteDatabase<Long, Site> implements Sit
 	private ORMLiteDatabase<Long, TextContent> textContentDB;
 	private ORMLiteDatabase<Long, EmphasizedTextContent> emphasizedTextDB;
 
-	public SiteDatabaseImpl(ORMLiteDatabase<Long, Header> hDb, ORMLiteDatabase<Long, TextContent> tDB,
-			ORMLiteDatabase<Long, EmphasizedTextContent> emphasizedDB) {
+	public SiteDatabaseImpl(ORMLiteDatabase<Long, Header> hDb,
+		ORMLiteDatabase<Long, TextContent> tDB,
+		ORMLiteDatabase<Long, EmphasizedTextContent> emphasizedDB) {
 		super(Site.class);
 		this.headerDB = hDb;
 		this.textContentDB = tDB;
