@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import net.viperfish.crawler.base.BaseHttpWebCrawler;
 import net.viperfish.crawler.dao.AnchorDatabase;
 import net.viperfish.crawler.dao.EmphasizedTextDatabase;
 import net.viperfish.crawler.dao.HeaderDatabase;
@@ -45,7 +46,7 @@ public class TestCrawler {
 
 	@Test
 	public void testBasicCrawler() throws IOException {
-		HtmlWebCrawler crawler = new HtmlWebCrawler(siteDB, aDB);
+		BaseHttpWebCrawler crawler = new BaseHttpWebCrawler(siteDB, aDB);
 		crawler.submit(new URL("https://example.com/"));
 		crawler.shutdown();
 		Assert.assertEquals(new Long(1), crawler.getResults().poll());

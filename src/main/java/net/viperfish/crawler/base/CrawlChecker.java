@@ -1,6 +1,8 @@
-package net.viperfish.crawler.core;
+package net.viperfish.crawler.base;
 
 import java.net.URL;
+
+import net.viperfish.crawler.core.Site;
 
 public interface CrawlChecker {
 	public boolean shouldCrawl(URL url, Site site);

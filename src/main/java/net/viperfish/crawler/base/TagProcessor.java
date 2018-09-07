@@ -1,4 +1,4 @@
-package net.viperfish.crawler.html;
+package net.viperfish.crawler.base;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package net.viperfish.crawler.html;
+package net.viperfish.crawler.base;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,7 +33,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
 
 import net.viperfish.crawler.core.Anchor;
-import net.viperfish.crawler.core.CrawlChecker;
 import net.viperfish.crawler.core.DatabaseObject;
 import net.viperfish.crawler.core.EmphasizedTextContent;
 import net.viperfish.crawler.core.EmphasizedType;
@@ -52,7 +51,7 @@ import net.viperfish.framework.compression.Compressors;
 
 // TODO: refractor the whole thing into more modular structure. Add documentation
 
-public class HtmlWebCrawler implements HttpWebCrawler {
+public class BaseHttpWebCrawler implements HttpWebCrawler {
 
 	private static int THREAD_COUNT = 32;
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
@@ -84,7 +83,7 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 	private BlockingQueue<Long> results;
 	private AtomicInteger activeThreads;
 
-	public HtmlWebCrawler(SiteDatabase db, DatabaseObject<Long, Anchor> anchorDB) {
+	public BaseHttpWebCrawler(SiteDatabase db, DatabaseObject<Long, Anchor> anchorDB) {
 		processors = new HashMap<>();
 		this.db = db;
 		this.anchorDB = anchorDB;
@@ -154,17 +153,14 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		}
 	}
 
-	@Override
 	public void setCrawlChecker(CrawlChecker checker) {
 		this.crawlChecker = checker;
 	}
 
-	@Override
 	public CrawlChecker getCrawlChecker() {
 		return crawlChecker;
 	}
 
-	@Override
 	public BlockingQueue<Long> getResults() {
 		return results;
 	}

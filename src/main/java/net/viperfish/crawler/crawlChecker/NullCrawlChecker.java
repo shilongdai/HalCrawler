@@ -2,7 +2,7 @@ package net.viperfish.crawler.crawlChecker;
 
 import java.net.URL;
 
-import net.viperfish.crawler.core.CrawlChecker;
+import net.viperfish.crawler.base.CrawlChecker;
 import net.viperfish.crawler.core.Site;
 
 public final class NullCrawlChecker implements CrawlChecker {

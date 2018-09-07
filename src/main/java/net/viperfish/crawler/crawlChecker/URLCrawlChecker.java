@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import net.viperfish.crawler.core.CrawlChecker;
+import net.viperfish.crawler.base.CrawlChecker;
 import net.viperfish.crawler.core.Site;
 import net.viperfish.crawler.core.SiteDatabase;
 

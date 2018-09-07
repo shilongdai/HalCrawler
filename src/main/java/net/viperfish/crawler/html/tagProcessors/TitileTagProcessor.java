@@ -7,11 +7,11 @@ import java.util.Map;
 
 import org.jsoup.nodes.Element;
 
+import net.viperfish.crawler.base.TagProcessor;
 import net.viperfish.crawler.core.Site;
 import net.viperfish.crawler.core.TagData;
 import net.viperfish.crawler.core.TagDataType;
 import net.viperfish.crawler.exceptions.ParsingException;
-import net.viperfish.crawler.html.TagProcessor;
 
 public final class TitileTagProcessor implements TagProcessor {
 
