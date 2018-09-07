@@ -3,6 +3,7 @@ package net.viperfish.crawler.html;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -16,13 +17,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,6 +35,8 @@ import org.jsoup.safety.Whitelist;
 import net.viperfish.crawler.core.Anchor;
 import net.viperfish.crawler.core.CrawlChecker;
 import net.viperfish.crawler.core.DatabaseObject;
+import net.viperfish.crawler.core.EmphasizedTextContent;
+import net.viperfish.crawler.core.EmphasizedType;
 import net.viperfish.crawler.core.Header;
 import net.viperfish.crawler.core.HttpWebCrawler;
 import net.viperfish.crawler.core.IOUtil;
@@ -49,10 +50,13 @@ import net.viperfish.crawler.exceptions.ParsingException;
 import net.viperfish.framework.compression.Compressor;
 import net.viperfish.framework.compression.Compressors;
 
+// TODO: refractor the whole thing into more modular structure. Add documentation
+
 public class HtmlWebCrawler implements HttpWebCrawler {
 
 	private static int THREAD_COUNT = 32;
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
+	private static URL NULL;
 
 	static {
 		Set<Integer> buffer = new HashSet<>();
@@ -61,6 +65,11 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		buffer.add(202);
 		buffer.add(203);
 		ACCEPTED_STATUS_CODE = Collections.unmodifiableSet(buffer);
+		try {
+			NULL = new URL("https://none.org");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private Map<String, TagProcessor> processors;
@@ -71,6 +80,9 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 	private DatabaseObject<Long, Anchor> anchorDB;
 	private Compressor compressor;
 	private CrawlChecker crawlChecker;
+	private BlockingQueue<URL> toCrawl;
+	private BlockingQueue<Long> results;
+	private AtomicInteger activeThreads;
 
 	public HtmlWebCrawler(SiteDatabase db, DatabaseObject<Long, Anchor> anchorDB) {
 		processors = new HashMap<>();
@@ -94,38 +106,16 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		}
 		executor = Executors.newFixedThreadPool(THREAD_COUNT);
 		crawlChecker = new NullCrawlChecker();
+		toCrawl = new LinkedBlockingQueue<>();
+		results = new LinkedBlockingQueue<>();
+		activeThreads = new AtomicInteger(0);
+
+		startCrawlers();
 	}
 
 	@Override
-	public Map<Long, URL> crawl(URL url) {
-		ConcurrentMap<Long, URL> result = new ConcurrentHashMap<>();
-		ConcurrentLinkedQueue<URL> sites2Crawl = new ConcurrentLinkedQueue<>();
-		sites2Crawl.offer(url);
-		AtomicInteger activeThreads = new AtomicInteger(0);
-		do {
-			URL u = sites2Crawl.poll();
-			if (u == null) {
-				try {
-					Thread.sleep(20);
-				} catch (InterruptedException e) {
-					return result;
-				}
-				continue;
-			}
-			activeThreads.incrementAndGet();
-			executor.execute(new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						crawlIterative(u, result, sites2Crawl);
-					} finally {
-						activeThreads.decrementAndGet();
-					}
-				}
-			});
-		} while (activeThreads.get() > 0);
-		return result;
+	public void submit(URL url) {
+		toCrawl.offer(url);
 	}
 
 	public void registerProcessor(String tagName, TagProcessor processor) {
@@ -140,7 +130,51 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		return processors.get(tagName);
 	}
 
-	private void crawlIterative(URL url, ConcurrentMap<Long, URL> result, Queue<URL> sites2Crawl) {
+	@Override
+	public void limitToHost(boolean limit) {
+		this.limit2Host = limit;
+	}
+
+	@Override
+	public boolean isLimitedToHost() {
+		return limit2Host;
+	}
+
+	@Override
+	public void shutdown() {
+		for (int i = 0; i < THREAD_COUNT; ++i) {
+			toCrawl.offer(NULL);
+		}
+		executor.shutdown();
+		try {
+			executor.awaitTermination(10, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			executor.shutdownNow();
+			return;
+		}
+	}
+
+	@Override
+	public void setCrawlChecker(CrawlChecker checker) {
+		this.crawlChecker = checker;
+	}
+
+	@Override
+	public CrawlChecker getCrawlChecker() {
+		return crawlChecker;
+	}
+
+	@Override
+	public BlockingQueue<Long> getResults() {
+		return results;
+	}
+
+	@Override
+	public boolean isIdle() {
+		return activeThreads.get() == 0;
+	}
+
+	private void crawlIterative(URL url) {
 		try {
 			if (!crawlChecker.shouldCrawl(url)) {
 				return;
@@ -156,8 +190,6 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 				return;
 			}
 
-			System.out.println("Processing:" + url);
-
 			// get and process all of the tags
 			Map<TagDataType, List<TagData>> processedTags = recursiveInterpretTags(
 					site.getDoc().getElementsByTag("html").first(), site);
@@ -166,11 +198,12 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 			processTitle(processedTags, site);
 			processHeaders(processedTags, site);
 			processTexts(processedTags, site);
+			processEmphasizedText(processedTags, site);
 
 			// save site and gc
 			db.save(site);
-			result.putIfAbsent(site.getSiteID(), url);
 			long siteID = site.getSiteID();
+			results.offer(siteID);
 			site = null;
 
 			// add pages to crawl
@@ -186,7 +219,7 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 							continue;
 						}
 					}
-					sites2Crawl.offer(anchor.getTargetURL());
+					toCrawl.offer(anchor.getTargetURL());
 				}
 				anchorDB.save(anchors);
 			}
@@ -336,6 +369,19 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		}
 	}
 
+	private void processEmphasizedText(Map<TagDataType, List<TagData>> processedTags, Site site) {
+		// parse headers
+		if (processedTags.containsKey(TagDataType.HTML_TEXT_CONTENT)) {
+			List<TagData> headers = processedTags.get(TagDataType.HTML_TEXT_CONTENT);
+			for (TagData td : headers) {
+				EmphasizedTextContent text = new EmphasizedTextContent();
+				text.setContent(td.get("content", String.class));
+				text.setMethod(td.get("method", EmphasizedType.class));
+				site.getTexts().add(text);
+			}
+		}
+	}
+
 	private void processTitle(Map<TagDataType, List<TagData>> processedTags, Site site) {
 		// parse title
 		if (processedTags.containsKey(TagDataType.HTML_TITLE)) {
@@ -354,35 +400,36 @@ public class HtmlWebCrawler implements HttpWebCrawler {
 		return result;
 	}
 
-	@Override
-	public void limitToHost(boolean limit) {
-		this.limit2Host = limit;
-	}
+	private void startCrawlers() {
+		for (int i = 0; i < THREAD_COUNT; ++i) {
+			executor.execute(new Runnable() {
 
-	@Override
-	public boolean isLimitedToHost() {
-		return limit2Host;
-	}
+				@Override
+				public void run() {
+					while (!Thread.interrupted()) {
+						URL next;
+						try {
+							next = toCrawl.take();
+						} catch (InterruptedException e1) {
+							return;
+						}
 
-	@Override
-	public void shutdown() {
-		executor.shutdown();
-		try {
-			executor.awaitTermination(10, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			executor.shutdownNow();
-			return;
+						if (next == NULL) {
+							return;
+						}
+
+						try {
+							activeThreads.incrementAndGet();
+							crawlIterative(next);
+						} catch (Throwable e) {
+							e.printStackTrace();
+						} finally {
+							activeThreads.decrementAndGet();
+						}
+					}
+				}
+			});
 		}
-	}
-
-	@Override
-	public void setCrawlChecker(CrawlChecker checker) {
-		this.crawlChecker = checker;
-	}
-
-	@Override
-	public CrawlChecker getCrawlChecker() {
-		return crawlChecker;
 	}
 
 }

@@ -31,11 +31,13 @@ public final class Site {
 
 	private List<Header> headers;
 	private List<TextContent> texts;
+	private List<EmphasizedTextContent> emphasizedTexts;
 
 	public Site() {
 		siteID = -1;
 		headers = new LinkedList<>();
 		texts = new LinkedList<>();
+		emphasizedTexts = new LinkedList<>();
 	}
 
 	public String getTitle() {
@@ -95,6 +97,14 @@ public final class Site {
 		this.texts = texts;
 	}
 
+	public List<EmphasizedTextContent> getEmphasizedTexts() {
+		return emphasizedTexts;
+	}
+
+	public void setEmphasizedTexts(List<EmphasizedTextContent> emphasizedTexts) {
+		this.emphasizedTexts = emphasizedTexts;
+	}
+
 	public Document getDoc() {
 		return doc;
 	}
@@ -109,6 +119,7 @@ public final class Site {
 		int result = 1;
 		result = prime * result + ((checksum == null) ? 0 : checksum.hashCode());
 		result = prime * result + Arrays.hashCode(compressedHtml);
+		result = prime * result + ((emphasizedTexts == null) ? 0 : emphasizedTexts.hashCode());
 		result = prime * result + ((headers == null) ? 0 : headers.hashCode());
 		result = prime * result + (int) (siteID ^ (siteID >>> 32));
 		result = prime * result + ((texts == null) ? 0 : texts.hashCode());
@@ -132,6 +143,11 @@ public final class Site {
 		} else if (!checksum.equals(other.checksum))
 			return false;
 		if (!Arrays.equals(compressedHtml, other.compressedHtml))
+			return false;
+		if (emphasizedTexts == null) {
+			if (other.emphasizedTexts != null)
+				return false;
+		} else if (!emphasizedTexts.equals(other.emphasizedTexts))
 			return false;
 		if (headers == null) {
 			if (other.headers != null)

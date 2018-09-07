@@ -16,7 +16,7 @@ public class PTagProcessorTest {
 
 	@Test
 	public void testProcessor() throws ParsingException {
-		PTagTextProcessor processor = new PTagTextProcessor();
+		TextOwnTagsProcessor processor = new TextOwnTagsProcessor();
 		Element element = new Element("p");
 		element.text("Paragraph Here");
 		Site site = new Site();

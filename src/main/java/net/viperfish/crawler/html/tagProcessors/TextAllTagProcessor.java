@@ -13,7 +13,7 @@ import net.viperfish.crawler.core.TagDataType;
 import net.viperfish.crawler.exceptions.ParsingException;
 import net.viperfish.crawler.html.TagProcessor;
 
-public class PTagTextProcessor implements TagProcessor {
+public class TextAllTagProcessor implements TagProcessor {
 
 	@Override
 	public Map<TagDataType, List<TagData>> processTag(Element tag, Site site) throws ParsingException {
@@ -25,7 +25,6 @@ public class PTagTextProcessor implements TagProcessor {
 		tags.add(td);
 		result.put(TagDataType.HTML_TEXT_CONTENT, tags);
 		return result;
-
 	}
 
 }

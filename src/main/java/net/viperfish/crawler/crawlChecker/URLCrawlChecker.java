@@ -2,10 +2,8 @@ package net.viperfish.crawler.crawlChecker;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import net.viperfish.crawler.core.CrawlChecker;
 import net.viperfish.crawler.core.Site;
@@ -14,16 +12,16 @@ import net.viperfish.crawler.core.SiteDatabase;
 public class URLCrawlChecker implements CrawlChecker {
 
 	private SiteDatabase siteDB;
-	private Cache<URL, String> cache;
+	private ConcurrentMap<URL, String> cache;
 
 	public URLCrawlChecker(SiteDatabase db) {
 		this.siteDB = db;
-		cache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+		cache = new ConcurrentHashMap<>();
 	}
 
 	@Override
 	public boolean shouldCrawl(URL url, Site site) {
-		if (cache.asMap().containsKey(url)) {
+		if (cache.containsKey(url)) {
 			return false;
 		}
 		try {
@@ -31,7 +29,8 @@ public class URLCrawlChecker implements CrawlChecker {
 			if (s == null) {
 				return true;
 			}
-			return cache.asMap().putIfAbsent(url, "") == null;
+			cache.putIfAbsent(url, "");
+			return false;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -43,7 +42,7 @@ public class URLCrawlChecker implements CrawlChecker {
 		if (!shouldCrawl(url)) {
 			return false;
 		}
-		return cache.asMap().putIfAbsent(url, "") == null;
+		return cache.putIfAbsent(url, "") == null;
 	}
 
 	@Override

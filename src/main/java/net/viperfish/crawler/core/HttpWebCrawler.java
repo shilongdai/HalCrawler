@@ -1,10 +1,10 @@
 package net.viperfish.crawler.core;
 
 import java.net.URL;
-import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
 public interface HttpWebCrawler {
-	public Map<Long, URL> crawl(URL url);
+	public void submit(URL url);
 
 	public void limitToHost(boolean limit);
 
@@ -15,4 +15,8 @@ public interface HttpWebCrawler {
 	public void setCrawlChecker(CrawlChecker checker);
 
 	public CrawlChecker getCrawlChecker();
+
+	public BlockingQueue<Long> getResults();
+
+	public boolean isIdle();
 }

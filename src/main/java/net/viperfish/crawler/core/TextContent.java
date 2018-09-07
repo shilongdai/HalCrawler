@@ -4,7 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "TextContent")
-public final class TextContent {
+public class TextContent {
 
 	@DatabaseField
 	private long siteID;
