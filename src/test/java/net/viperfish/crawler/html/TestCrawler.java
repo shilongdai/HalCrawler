@@ -10,6 +10,7 @@ import net.viperfish.crawler.dao.HeaderDatabase;
 import net.viperfish.crawler.dao.ORMLiteDatabase;
 import net.viperfish.crawler.dao.SiteDatabaseImpl;
 import net.viperfish.crawler.dao.TextContentDatabase;
+import net.viperfish.crawler.engines.ConcurrentHttpFetcher;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -50,7 +51,8 @@ public class TestCrawler {
 
 	@Test
 	public void testBasicCrawler() throws IOException {
-		BaseHttpWebCrawler crawler = new BaseHttpWebCrawler(siteDB, aDB);
+		BaseHttpWebCrawler crawler = new BaseHttpWebCrawler(siteDB, aDB,
+			new ConcurrentHttpFetcher(10));
 		crawler.submit(new URL("https://example.com/"));
 		crawler.shutdown();
 		Assert.assertEquals(new Long(1), crawler.getResults().poll());

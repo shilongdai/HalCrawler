@@ -7,12 +7,12 @@ public class FetchedContent {
 
 	private URL url;
 	private int status;
-	private String rowHTML;
+	private String rawHTML;
 
-	public FetchedContent(URL url, int status, String rowHTML) {
+	public FetchedContent(URL url, int status, String rawHTML) {
 		this.url = url;
 		this.status = status;
-		this.rowHTML = rowHTML;
+		this.rawHTML = rawHTML;
 	}
 
 	public URL getUrl() {
@@ -31,12 +31,12 @@ public class FetchedContent {
 		this.status = status;
 	}
 
-	public String getRowHTML() {
-		return rowHTML;
+	public String getRawHTML() {
+		return rawHTML;
 	}
 
-	public void setRowHTML(String rowHTML) {
-		this.rowHTML = rowHTML;
+	public void setRawHTML(String rawHTML) {
+		this.rawHTML = rawHTML;
 	}
 
 	@Override
@@ -50,11 +50,11 @@ public class FetchedContent {
 		FetchedContent that = (FetchedContent) o;
 		return getStatus() == that.getStatus() &&
 			Objects.equals(getUrl(), that.getUrl()) &&
-			Objects.equals(getRowHTML(), that.getRowHTML());
+			Objects.equals(getRawHTML(), that.getRawHTML());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getUrl(), getStatus(), getRowHTML());
+		return Objects.hash(getUrl(), getStatus(), getRawHTML());
 	}
 }

@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import net.viperfish.crawler.dao.URlDataPersister;
-import org.jsoup.nodes.Document;
 
 @DatabaseTable(tableName = "Site")
 public final class Site {
@@ -23,8 +22,6 @@ public final class Site {
 	private String checksum;
 	@DatabaseField(dataType = DataType.BYTE_ARRAY)
 	private byte[] compressedHtml;
-
-	private Document doc;
 
 	private List<Header> headers;
 	private List<TextContent> texts;
@@ -100,14 +97,6 @@ public final class Site {
 
 	public void setEmphasizedTexts(List<EmphasizedTextContent> emphasizedTexts) {
 		this.emphasizedTexts = emphasizedTexts;
-	}
-
-	public Document getDoc() {
-		return doc;
-	}
-
-	public void setDoc(Document doc) {
-		this.doc = doc;
 	}
 
 	@Override

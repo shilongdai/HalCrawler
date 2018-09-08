@@ -2,10 +2,7 @@ package net.viperfish.crawler.base;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -30,7 +27,6 @@ import net.viperfish.crawler.core.EmphasizedTextContent;
 import net.viperfish.crawler.core.EmphasizedType;
 import net.viperfish.crawler.core.Header;
 import net.viperfish.crawler.core.HttpWebCrawler;
-import net.viperfish.crawler.core.IOUtil;
 import net.viperfish.crawler.core.Site;
 import net.viperfish.crawler.core.SiteDatabase;
 import net.viperfish.crawler.core.TagData;
@@ -53,7 +49,6 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
 	private static int THREAD_COUNT = 32;
-	private static URL NULL;
 
 	static {
 		Set<Integer> buffer = new HashSet<>();
@@ -62,11 +57,6 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 		buffer.add(202);
 		buffer.add(203);
 		ACCEPTED_STATUS_CODE = Collections.unmodifiableSet(buffer);
-		try {
-			NULL = new URL("https://none.org");
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private Map<String, TagProcessor> processors;
@@ -77,12 +67,14 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 	private DatabaseObject<Long, Anchor> anchorDB;
 	private Compressor compressor;
 	private CrawlChecker crawlChecker;
-	private BlockingQueue<URL> toCrawl;
 	private BlockingQueue<Long> results;
 	private AtomicInteger activeThreads;
+	private HttpFetcher fetcher;
 
-	public BaseHttpWebCrawler(SiteDatabase db, DatabaseObject<Long, Anchor> anchorDB) {
+	public BaseHttpWebCrawler(SiteDatabase db, DatabaseObject<Long, Anchor> anchorDB,
+		HttpFetcher fetcher) {
 		processors = new HashMap<>();
+		this.fetcher = fetcher;
 		this.db = db;
 		this.anchorDB = anchorDB;
 		limit2Host = false;
@@ -103,7 +95,6 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 		}
 		executor = Executors.newFixedThreadPool(THREAD_COUNT);
 		crawlChecker = new NullCrawlChecker();
-		toCrawl = new LinkedBlockingQueue<>();
 		results = new LinkedBlockingQueue<>();
 		activeThreads = new AtomicInteger(0);
 
@@ -112,7 +103,7 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 
 	@Override
 	public void submit(URL url) {
-		toCrawl.offer(url);
+		fetcher.submit(url);
 	}
 
 	public void registerProcessor(String tagName, TagProcessor processor) {
@@ -139,9 +130,7 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 
 	@Override
 	public void shutdown() {
-		for (int i = 0; i < THREAD_COUNT; ++i) {
-			toCrawl.offer(NULL);
-		}
+		fetcher.shutdown();
 		executor.shutdown();
 		try {
 			executor.awaitTermination(10, TimeUnit.SECONDS);
@@ -168,25 +157,28 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 		return activeThreads.get() == 0;
 	}
 
-	private void crawlIterative(URL url) {
+	private void crawlIterative() {
 		try {
-			if (!crawlChecker.shouldCrawl(url)) {
+			// parse the content of site
+			FetchedContent content = fetcher.next();
+			if (!ACCEPTED_STATUS_CODE.contains(content.getStatus())) {
 				return;
 			}
-			Site site = new Site();
-			if (!fetchSite(url, site)) {
+			Site site = toSite(content);
+			// make sure not repeated
+			if (!crawlChecker.shouldCrawl(content.getUrl(), site)) {
 				return;
 			}
-			if (!crawlChecker.shouldCrawl(url, site)) {
+			if (!crawlChecker.lock(content.getUrl(), site)) {
 				return;
 			}
-			if (!crawlChecker.lock(url, site)) {
-				return;
-			}
+			String cleanHTML = Jsoup.clean(content.getRawHTML(), content.getUrl().toExternalForm(),
+				Whitelist.relaxed().addTags("title").addTags("head"));
+			Document doc = Jsoup.parse(cleanHTML);
 
 			// get and process all of the tags
 			Map<TagDataType, List<TagData>> processedTags = recursiveInterpretTags(
-				site.getDoc().getElementsByTag("html").first(), site);
+				doc.getElementsByTag("html").first(), site);
 
 			// process stuff on the page
 			processTitle(processedTags, site);
@@ -209,18 +201,22 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 					anchors.add(anchor);
 					// check if limited to host
 					if (limit2Host) {
-						if (!anchor.getTargetURL().getHost().equals(url.getHost())) {
+						if (!anchor.getTargetURL().getHost().equals(content.getUrl().getHost())) {
 							continue;
 						}
 					}
-					toCrawl.offer(anchor.getTargetURL());
+
+					// make sure not repeating
+					if (crawlChecker.shouldCrawl(anchor.getTargetURL())) {
+						fetcher.submit(anchor.getTargetURL());
+					}
 				}
 				anchorDB.save(anchors);
 			}
 		} catch (ParsingException e) {
-			System.out.println("Error Parsing:" + url);
+			System.out.println("Parsing Error:" + e.getMessage());
 		} catch (FileNotFoundException e) {
-			System.out.println("HTTP FILE NOT FOUND:" + url);
+			System.out.println("Page Not Found:" + e.getMessage());
 		} catch (IOException e) {
 			if (e.getCause() instanceof SQLException) {
 				System.out.println("Database Error:" + e.getMessage());
@@ -229,6 +225,18 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 			}
 			e.printStackTrace();
 		}
+	}
+
+	private Site toSite(FetchedContent content) {
+		byte[] compressed = this.compressor
+			.compress(content.getRawHTML().getBytes(StandardCharsets.UTF_8));
+		String checksum = hashSite(content.getRawHTML());
+
+		Site result = new Site();
+		result.setChecksum(checksum);
+		result.setCompressedHtml(compressed);
+		result.setUrl(content.getUrl());
+		return result;
 	}
 
 	private Map<TagDataType, List<TagData>> recursiveInterpretTags(Element e, Site s)
@@ -256,78 +264,6 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 			}
 		}
 		return result;
-	}
-
-	private boolean isHtml(URL url) throws IOException {
-		HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
-		try {
-			urlc.setRequestMethod("HEAD");
-			urlc.connect();
-			String mime = urlc.getContentType();
-			return mime.contains("text/html") || mime.contains("text/htm") || mime
-				.contains("text/plain");
-		} catch (Throwable e) {
-			return false;
-		} finally {
-			urlc.disconnect();
-		}
-	}
-
-	private boolean fetchSite(URL url, Site site) throws IOException {
-		URLConnection conn = url.openConnection();
-		HttpURLConnection urlc = null;
-		if (url.openConnection() instanceof HttpURLConnection) {
-			// establish connection
-			urlc = (HttpURLConnection) conn;
-		} else {
-			return false;
-		}
-		try {
-			// make sure html
-			if (!isHtml(url)) {
-				System.out.println("not html");
-				return false;
-			}
-
-			urlc.setAllowUserInteraction(false);
-			urlc.setDoInput(true);
-			urlc.setDoOutput(false);
-			urlc.setUseCaches(true);
-
-			// fetch content
-			urlc.setRequestMethod("GET");
-			urlc.connect();
-			if (ACCEPTED_STATUS_CODE.contains(urlc.getResponseCode())) {
-				String contentEncoding = urlc.getContentEncoding();
-				if (contentEncoding == null) {
-					contentEncoding = "UTF-8";
-				}
-				String pageHtml = new String(IOUtil.read(urlc.getInputStream()), contentEncoding);
-
-				// process page
-				String pageChecksum = hashSite(pageHtml);
-				String cleanedHTML = Jsoup.clean(pageHtml, url.toExternalForm(),
-					Whitelist.relaxed().addTags("title").addTags("head"));
-				Document doc = Jsoup.parse(cleanedHTML, url.toExternalForm());
-				// compresses the html
-				byte[] compressedHtm = compressor
-					.compress(pageHtml.getBytes(StandardCharsets.UTF_16));
-
-				// save result to site
-				site.setUrl(url);
-				site.setChecksum(pageChecksum);
-				site.setCompressedHtml(compressedHtm);
-				site.setDoc(doc);
-				return true;
-			} else {
-				System.out.println("Not Successful:" + urlc.getResponseCode());
-				return false;
-			}
-		} finally {
-			if (urlc != null) {
-				urlc.disconnect();
-			}
-		}
 	}
 
 	private String hashSite(String html) {
@@ -403,21 +339,10 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 
 				@Override
 				public void run() {
-					while (!Thread.interrupted()) {
-						URL next;
-						try {
-							next = toCrawl.take();
-						} catch (InterruptedException e1) {
-							return;
-						}
-
-						if (next == NULL) {
-							return;
-						}
-
+					while (!Thread.interrupted() && !fetcher.isShutdown()) {
 						try {
 							activeThreads.incrementAndGet();
-							crawlIterative(next);
+							crawlIterative();
 						} catch (Throwable e) {
 							e.printStackTrace();
 						} finally {
