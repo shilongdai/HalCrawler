@@ -89,10 +89,7 @@ public class Header {
 		if (siteID != other.siteID) {
 			return false;
 		}
-		if (size != other.size) {
-			return false;
-		}
-		return true;
+		return size == other.size;
 	}
 
 }

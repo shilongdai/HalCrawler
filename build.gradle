@@ -9,7 +9,7 @@
 // Apply the java-library plugin to add support for Java Library
 apply plugin: 'java-library'
 apply plugin: 'java'
-apply plugin: "eclipse"
+apply plugin: 'distribution'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 version = "0.1.0"
@@ -35,12 +35,5 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-eclipse {
-    project.natures 'org.eclipse.buildship.core.gradleprojectnature'
-    classpath {
-        downloadJavadoc = true
-        downloadSources = true
-    }
-}
 
 

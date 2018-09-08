@@ -73,10 +73,7 @@ public class TextContent {
 		if (siteID != other.siteID) {
 			return false;
 		}
-		if (textID != other.textID) {
-			return false;
-		}
-		return true;
+		return textID == other.textID;
 	}
 
 }

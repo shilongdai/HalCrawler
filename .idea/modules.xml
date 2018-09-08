@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/searchEngineCrawler.iml" filepath="$PROJECT_DIR$/.idea/modules/searchEngineCrawler.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/searchEngineCrawler_main.iml" filepath="$PROJECT_DIR$/.idea/modules/searchEngineCrawler_main.iml" group="searchEngineCrawler" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/searchEngineCrawler_test.iml" filepath="$PROJECT_DIR$/.idea/modules/searchEngineCrawler_test.iml" group="searchEngineCrawler" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/halCrawler.iml" filepath="$PROJECT_DIR$/.idea/modules/halCrawler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/halCrawler_main.iml" filepath="$PROJECT_DIR$/.idea/modules/halCrawler_main.iml" group="halCrawler" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/halCrawler_test.iml" filepath="$PROJECT_DIR$/.idea/modules/halCrawler_test.iml" group="halCrawler" />
     </modules>
   </component>
 </project>

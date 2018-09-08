@@ -21,7 +21,7 @@ public class URlDataPersister extends BaseDataType {
 	}
 
 	@Override
-	public Object parseDefaultString(FieldType fieldType, String defaultStr) throws SQLException {
+	public Object parseDefaultString(FieldType fieldType, String defaultStr) {
 		return null;
 	}
 
@@ -32,7 +32,7 @@ public class URlDataPersister extends BaseDataType {
 	}
 
 	@Override
-	public Object javaToSqlArg(FieldType fieldType, Object javaObject) throws SQLException {
+	public Object javaToSqlArg(FieldType fieldType, Object javaObject) {
 		URL obj = (URL) javaObject;
 		return obj.toExternalForm();
 	}
@@ -50,8 +50,7 @@ public class URlDataPersister extends BaseDataType {
 	}
 
 	@Override
-	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos)
-		throws SQLException {
+	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) {
 		try {
 			return new URL(sqlArg.toString());
 		} catch (MalformedURLException e) {

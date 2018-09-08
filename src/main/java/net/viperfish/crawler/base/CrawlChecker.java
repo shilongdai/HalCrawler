@@ -5,9 +5,9 @@ import net.viperfish.crawler.core.Site;
 
 public interface CrawlChecker {
 
-	public boolean shouldCrawl(URL url, Site site);
+	boolean shouldCrawl(URL url, Site site);
 
-	public boolean shouldCrawl(URL url);
+	boolean shouldCrawl(URL url);
 
-	public boolean lock(URL url, Site s);
+	boolean lock(URL url, Site s);
 }

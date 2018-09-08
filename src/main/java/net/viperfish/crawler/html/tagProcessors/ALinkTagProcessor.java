@@ -19,6 +19,7 @@ public final class ALinkTagProcessor implements TagProcessor {
 	@Override
 	public Map<TagDataType, List<TagData>> processTag(Element tag, Site site)
 		throws ParsingException {
+
 		Map<TagDataType, List<TagData>> result = new HashMap<>();
 		result.put(TagDataType.HTML_LINK, new LinkedList<>());
 
@@ -40,6 +41,11 @@ public final class ALinkTagProcessor implements TagProcessor {
 			throw new ParsingException(e);
 		}
 		return result;
+	}
+
+	@Override
+	public boolean shouldProcess(Element e) {
+		return e.text() != null && !e.text().isEmpty();
 	}
 
 	private boolean isRelative(String url) throws URISyntaxException {

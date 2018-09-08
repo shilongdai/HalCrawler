@@ -9,7 +9,7 @@ public enum SupportedDatabase {
 
 	private DatabaseType dbType;
 
-	private SupportedDatabase(DatabaseType dt) {
+	SupportedDatabase(DatabaseType dt) {
 		this.dbType = dt;
 	}
 

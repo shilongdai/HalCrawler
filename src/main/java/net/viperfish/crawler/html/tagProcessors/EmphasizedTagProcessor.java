@@ -9,15 +9,14 @@ import net.viperfish.crawler.core.EmphasizedType;
 import net.viperfish.crawler.core.Site;
 import net.viperfish.crawler.core.TagData;
 import net.viperfish.crawler.core.TagDataType;
-import net.viperfish.crawler.exceptions.ParsingException;
 import org.jsoup.nodes.Element;
 
 public class EmphasizedTagProcessor implements TagProcessor {
 
 	@Override
-	public Map<TagDataType, List<TagData>> processTag(Element tag, Site site)
-		throws ParsingException {
+	public Map<TagDataType, List<TagData>> processTag(Element tag, Site site) {
 		Map<TagDataType, List<TagData>> result = new HashMap<>();
+
 		List<TagData> tags = new LinkedList<>();
 		TagData tgData = new TagData();
 		switch (tag.tagName()) {
@@ -43,5 +42,11 @@ public class EmphasizedTagProcessor implements TagProcessor {
 		result.put(TagDataType.HTML_EMPHASIZED_TEXT, tags);
 		return result;
 	}
+
+	@Override
+	public boolean shouldProcess(Element e) {
+		return e.text() != null && !e.text().isEmpty();
+	}
+
 
 }

@@ -239,7 +239,9 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 		}
 		TagProcessor processor = processors.get(e.tagName());
 		if (processor != null) {
-			result = processor.processTag(e, s);
+			if (processor.shouldProcess(e)) {
+				result = processor.processTag(e, s);
+			}
 		}
 		for (Element child : e.children()) {
 			Map<TagDataType, List<TagData>> childResult = recursiveInterpretTags(child, s);
@@ -262,11 +264,8 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 			urlc.setRequestMethod("HEAD");
 			urlc.connect();
 			String mime = urlc.getContentType();
-			if (mime.contains("text/html") || mime.contains("text/htm") || mime
-				.contains("text/plain")) {
-				return true;
-			}
-			return false;
+			return mime.contains("text/html") || mime.contains("text/htm") || mime
+				.contains("text/plain");
 		} catch (Throwable e) {
 			return false;
 		} finally {

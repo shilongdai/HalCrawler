@@ -41,10 +41,7 @@ public class EmphasizedTextContent extends TextContent {
 			return false;
 		}
 		EmphasizedTextContent other = (EmphasizedTextContent) obj;
-		if (method != other.method) {
-			return false;
-		}
-		return true;
+		return method == other.method;
 	}
 
 }

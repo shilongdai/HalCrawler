@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+
 public class TestCrawler {
 
 	private static SiteDatabaseImpl siteDB;

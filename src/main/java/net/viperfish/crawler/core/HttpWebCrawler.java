@@ -4,13 +4,13 @@ import java.net.URL;
 
 public interface HttpWebCrawler {
 
-	public void submit(URL url);
+	void submit(URL url);
 
-	public void limitToHost(boolean limit);
+	void limitToHost(boolean limit);
 
-	public boolean isLimitedToHost();
+	boolean isLimitedToHost();
 
-	public void shutdown();
+	void shutdown();
 
-	public boolean isIdle();
+	boolean isIdle();
 }

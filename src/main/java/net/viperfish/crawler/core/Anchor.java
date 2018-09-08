@@ -91,13 +91,10 @@ public class Anchor {
 			return false;
 		}
 		if (targetURL == null) {
-			if (other.targetURL != null) {
-				return false;
-			}
-		} else if (!targetURL.equals(other.targetURL)) {
-			return false;
+			return other.targetURL == null;
+		} else {
+			return targetURL.equals(other.targetURL);
 		}
-		return true;
 	}
 
 }

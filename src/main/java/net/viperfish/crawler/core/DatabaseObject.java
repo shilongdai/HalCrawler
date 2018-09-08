@@ -5,15 +5,15 @@ import java.util.Collection;
 
 public interface DatabaseObject<ID, T> {
 
-	public void save(T s) throws IOException;
+	void save(T s) throws IOException;
 
-	public void save(Collection<T> collection) throws IOException;
+	void save(Collection<T> collection) throws IOException;
 
-	public void removeSite(ID id) throws IOException;
+	void removeSite(ID id) throws IOException;
 
-	public T find(ID id) throws IOException;
+	T find(ID id) throws IOException;
 
-	public Collection<T> find(Collection<ID> ids) throws IOException;
+	Collection<T> find(Collection<ID> ids) throws IOException;
 
-	public void close() throws IOException;
+	void close() throws IOException;
 }
