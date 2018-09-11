@@ -84,7 +84,7 @@ public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 		List<T> result = new LinkedList<>();
 		for (ID i : ids) {
 			T obj = find(i);
-			if(obj != null) {
+			if (obj != null) {
 				result.add(find(i));
 			}
 		}

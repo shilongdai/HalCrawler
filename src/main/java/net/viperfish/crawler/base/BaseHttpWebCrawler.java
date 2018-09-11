@@ -46,10 +46,11 @@ import org.jsoup.safety.Whitelist;
 // TODO: refractor the whole thing into more modular structure. Add documentation
 
 /**
- * A base implementation of {@link HttpWebCrawler} that simply crawls the URL supplied by the {@link HttpWebCrawler#submit(URL)} method.
- * By default, this implementation will fill in the URL and Compressed HTML attributes of a site.
- * To make this crawler follow the links on a page, scan text content etc,
- * a custom {@link TagProcessor} need to be supplied through the {@link BaseHttpWebCrawler#registerProcessor(String, TagProcessor)} method.
+ * A base implementation of {@link HttpWebCrawler} that simply crawls the URL supplied by the {@link
+ * HttpWebCrawler#submit(URL)} method. By default, this implementation will fill in the URL and
+ * Compressed HTML attributes of a site. To make this crawler follow the links on a page, scan text
+ * content etc, a custom {@link TagProcessor} need to be supplied through the {@link
+ * BaseHttpWebCrawler#registerProcessor(String, TagProcessor)} method.
  */
 public class BaseHttpWebCrawler implements HttpWebCrawler {
 

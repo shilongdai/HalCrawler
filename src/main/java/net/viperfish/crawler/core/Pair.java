@@ -4,6 +4,7 @@ import java.util.Objects;
 
 /**
  * A generic class for storing two values of any type.
+ *
  * @param <T1> the type of the first value.
  * @param <T2> the type of the second value.
  */
@@ -21,8 +22,6 @@ public class Pair<T1, T2> {
 
 	/**
 	 * creates a new {@link Pair} with the specified values.
-	 * @param first
-	 * @param second
 	 */
 	public Pair(T1 first, T2 second) {
 		this.first = first;

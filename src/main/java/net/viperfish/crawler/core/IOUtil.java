@@ -17,6 +17,7 @@ public final class IOUtil {
 
 	/**
 	 * read all the bytes from an {@link InputStream}.
+	 *
 	 * @param input the {@link InputStream} to read from.
 	 * @return the bytes read from the stream.
 	 * @throws IOException if an IO error occurred while reading.

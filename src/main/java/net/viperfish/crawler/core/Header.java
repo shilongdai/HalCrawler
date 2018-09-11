@@ -4,7 +4,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
- * A POJO class for representing a header in the html text. It is associated with the "Header" table in the database. This class is not originally designed for thread safety.
+ * A POJO class for representing a header in the html text. It is associated with the "Header" table
+ * in the database. This class is not originally designed for thread safety.
  */
 @DatabaseTable(tableName = "Header")
 public class Header {

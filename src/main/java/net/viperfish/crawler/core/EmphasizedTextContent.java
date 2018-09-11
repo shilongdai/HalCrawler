@@ -4,7 +4,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
- * A POJO class for representing emphasized styled text on a html page. It is associated with the "EmphasizedText" table in the database. This class is not designed for thread safety.
+ * A POJO class for representing emphasized styled text on a html page. It is associated with the
+ * "EmphasizedText" table in the database. This class is not designed for thread safety.
  */
 @DatabaseTable(tableName = "EmphasizedText")
 public class EmphasizedTextContent extends TextContent {
@@ -13,7 +14,8 @@ public class EmphasizedTextContent extends TextContent {
 	private EmphasizedType method;
 
 	/**
-	 * creates a new type with the default {@link TextContent} attributes and <code>null</code> emphasized method.
+	 * creates a new type with the default {@link TextContent} attributes and <code>null</code>
+	 * emphasized method.
 	 */
 	public EmphasizedTextContent() {
 		super();
