@@ -64,4 +64,11 @@ public final class TagData {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "TagData{" +
+			"dataType=" + dataType +
+			", properties=" + properties +
+			'}';
+	}
 }

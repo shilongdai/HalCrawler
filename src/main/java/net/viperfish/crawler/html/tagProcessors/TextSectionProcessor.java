@@ -10,7 +10,7 @@ import net.viperfish.crawler.core.TagData;
 import net.viperfish.crawler.core.TagDataType;
 import org.jsoup.nodes.Element;
 
-public class TextOwnTagsProcessor implements TagProcessor {
+public class TextSectionProcessor implements TagProcessor {
 
 	@Override
 	public Map<TagDataType, List<TagData>> processTag(Element tag, Site site) {
@@ -18,15 +18,33 @@ public class TextOwnTagsProcessor implements TagProcessor {
 		List<TagData> tags = new LinkedList<>();
 
 		TagData td = new TagData(TagDataType.HTML_TEXT_CONTENT);
-		td.set("text", tag.ownText());
+		if (tag.isBlock() && !tag.tagName().equalsIgnoreCase("div")) {
+			td.set("text", tag.text());
+		} else {
+			td.set("text", tag.ownText());
+		}
 		tags.add(td);
 		result.put(TagDataType.HTML_TEXT_CONTENT, tags);
 		return result;
-
 	}
 
 	@Override
 	public boolean shouldProcess(Element e) {
-		return e.text() != null && !e.text().isEmpty();
+		if (e.parent() == null) {
+			return true;
+		}
+		if (e.parent().tagName().equalsIgnoreCase("body")) {
+			return true;
+		}
+		if (e.parent().tagName().equalsIgnoreCase("div")) {
+			return true;
+		}
+		for (Element i : e.parents()) {
+			if (i.isBlock()) {
+				return false;
+			}
+		}
+		return true;
+
 	}
 }

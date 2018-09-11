@@ -52,7 +52,7 @@ public class TestCrawler {
 	@Test
 	public void testBasicCrawler() throws IOException {
 		BaseHttpWebCrawler crawler = new BaseHttpWebCrawler(siteDB, aDB,
-			new ConcurrentHttpFetcher(10));
+			new ConcurrentHttpFetcher(1));
 		crawler.submit(new URL("https://example.com/"));
 		crawler.shutdown();
 		Assert.assertEquals(new Long(1), crawler.getResults().poll());
