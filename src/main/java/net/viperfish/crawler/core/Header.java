@@ -3,6 +3,9 @@ package net.viperfish.crawler.core;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+/**
+ * A POJO class for representing a header in the html text. It is associated with the "Header" table in the database. This class is not originally designed for thread safety.
+ */
 @DatabaseTable(tableName = "Header")
 public class Header {
 
@@ -15,11 +18,16 @@ public class Header {
 	@DatabaseField
 	private String content;
 
+	/**
+	 * creates a new Header with a siteID of default IDs of -1 and a size of 0.
+	 */
 	public Header() {
 		siteID = -1;
 		size = 0;
 		headerID = -1;
 	}
+
+	// Getters and Setters.
 
 	public long getSiteID() {
 		return siteID;

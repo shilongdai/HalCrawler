@@ -2,9 +2,14 @@ package net.viperfish.crawler.core;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
 import java.net.URL;
+
 import net.viperfish.crawler.dao.URlDataPersister;
 
+/**
+ * An anchor on a page, usually an a tag. This class is a POJO java object and is associated with the Database Table "Anchor". It is not designed for thread safety.
+ */
 @DatabaseTable(tableName = "Anchor")
 public class Anchor {
 
@@ -17,10 +22,15 @@ public class Anchor {
 	@DatabaseField(persisterClass = URlDataPersister.class)
 	private URL targetURL;
 
+	/**
+	 * creates a new anchor with an id of -1 and the associated site as -1.
+	 */
 	public Anchor() {
 		anchorID = -1;
 		siteID = -1;
 	}
+
+	// Getters and Setters
 
 	public long getAnchorID() {
 		return anchorID;

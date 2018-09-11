@@ -3,19 +3,31 @@ package net.viperfish.crawler.core;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The categorized data/information contained in a HTML tag. All tag information are categorized into the types defined in the {@link TagDataType} enumeration. This class is not thread safe.
+ */
 public final class TagData {
 
 	private TagDataType dataType;
 	private Map<String, Object> properties;
 
+	/**
+	 * creates a new TagData with no data.
+	 */
 	public TagData() {
 		properties = new HashMap<>();
 	}
 
+	/**
+	 * creates a new TagData with specified {@link TagDataType}.
+	 * @param dataType the type of the TagData.
+	 */
 	public TagData(TagDataType dataType) {
 		this();
 		this.dataType = dataType;
 	}
+
+	// getters and setters.
 
 	public TagDataType getDataType() {
 		return dataType;

@@ -9,6 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import net.viperfish.crawler.dao.URlDataPersister;
 
+/**
+ * A POJO class for representing and storing a crawled html webpage. It is associated with the table "Site" and contains {@link Header}s, {@link TextContent}s, and {@link EmphasizedTextContent}s. It is not designed for thread safety.
+ */
 @DatabaseTable(tableName = "Site")
 public final class Site {
 
@@ -27,12 +30,17 @@ public final class Site {
 	private List<TextContent> texts;
 	private List<EmphasizedTextContent> emphasizedTexts;
 
+	/**
+	 * creates a new Site with no contents.
+	 */
 	public Site() {
 		siteID = -1;
 		headers = new LinkedList<>();
 		texts = new LinkedList<>();
 		emphasizedTexts = new LinkedList<>();
 	}
+
+	// Getters and Setters.
 
 	public String getTitle() {
 		return title;

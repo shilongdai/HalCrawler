@@ -62,7 +62,7 @@ public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 	}
 
 	@Override
-	public void removeSite(ID id) throws IOException {
+	public void remove(ID id) throws IOException {
 		try {
 			dao.deleteById(id);
 		} catch (SQLException e) {
@@ -83,7 +83,10 @@ public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 	public Collection<T> find(Collection<ID> ids) throws IOException {
 		List<T> result = new LinkedList<>();
 		for (ID i : ids) {
-			result.add(find(i));
+			T obj = find(i);
+			if(obj != null) {
+				result.add(find(i));
+			}
 		}
 		return result;
 	}

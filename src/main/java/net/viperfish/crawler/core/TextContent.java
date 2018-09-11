@@ -3,6 +3,9 @@ package net.viperfish.crawler.core;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+/**
+ * A POJO representation of a chunk of text in an html page. It is associated with the table "TextContent." This class is not thread safe.
+ */
 @DatabaseTable(tableName = "TextContent")
 public class TextContent {
 
@@ -13,9 +16,15 @@ public class TextContent {
 	@DatabaseField
 	private String content;
 
+	/**
+	 * creates a new TextContent with no data.
+	 */
 	public TextContent() {
 		siteID = -1;
 	}
+
+
+	// Getters and Setters.
 
 	public long getSiteID() {
 		return siteID;
