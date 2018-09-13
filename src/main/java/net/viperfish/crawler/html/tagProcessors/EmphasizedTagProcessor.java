@@ -45,7 +45,7 @@ public class EmphasizedTagProcessor implements TagProcessor {
 
 	@Override
 	public boolean shouldProcess(Element e) {
-		return e.text() != null && !e.text().isEmpty();
+		return e.ownText() != null && !e.ownText().isEmpty();
 	}
 
 

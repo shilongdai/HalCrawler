@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import net.viperfish.crawler.core.Anchor;
 import net.viperfish.crawler.core.Crawler;
+import net.viperfish.crawler.core.Datasink;
 import net.viperfish.crawler.crawlChecker.NullCrawlChecker;
 import net.viperfish.crawler.exceptions.ParsingException;
 import net.viperfish.framework.compression.Compressor;
@@ -70,7 +70,7 @@ public class BaseHttpWebCrawler extends Crawler<FetchedContent, Site> {
 	 * @param db the storage output for the crawled sites
 	 * @param fetcher the {@link HttpFetcher} for fetching contents
 	 */
-	public BaseHttpWebCrawler(SiteDatabase db,
+	public BaseHttpWebCrawler(Datasink<Site> db,
 		HttpFetcher fetcher) {
 		super(fetcher, db, THREAD_COUNT);
 		processors = new HashMap<>();
@@ -116,10 +116,6 @@ public class BaseHttpWebCrawler extends Crawler<FetchedContent, Site> {
 
 	public boolean isLimitedToHost() {
 		return limit2Host;
-	}
-
-	@Override
-	public void shutdown() {
 	}
 
 	public CrawlChecker getCrawlChecker() {
@@ -271,8 +267,8 @@ public class BaseHttpWebCrawler extends Crawler<FetchedContent, Site> {
 
 	private void processEmphasizedText(Map<TagDataType, List<TagData>> processedTags, Site site) {
 		// parse headers
-		if (processedTags.containsKey(TagDataType.HTML_TEXT_CONTENT)) {
-			List<TagData> headers = processedTags.get(TagDataType.HTML_TEXT_CONTENT);
+		if (processedTags.containsKey(TagDataType.HTML_EMPHASIZED_TEXT)) {
+			List<TagData> headers = processedTags.get(TagDataType.HTML_EMPHASIZED_TEXT);
 			for (TagData td : headers) {
 				EmphasizedTextContent text = new EmphasizedTextContent();
 				text.setContent(td.get("content", String.class));

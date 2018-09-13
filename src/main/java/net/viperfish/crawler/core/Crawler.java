@@ -31,12 +31,18 @@ public abstract class Crawler<I, O> {
 				@Override
 				public void run() {
 					while (!Thread.interrupted()) {
-						if (in.isClosed() || in.isEndReached()) {
+
+						// exit if there are no data left and that no processing are being done.
+						if ((in.isClosed() || in.isEndReached())
+							&& activeProcessingThreads.get() == 0) {
 							return;
 						}
 
 						try {
-							I next = in.next();
+							I next = in.next(100, TimeUnit.MILLISECONDS);
+							if (next == null) {
+								continue;
+							}
 
 							// submit a new item to be concurrently processed
 							activeProcessingThreads.incrementAndGet();
@@ -75,9 +81,6 @@ public abstract class Crawler<I, O> {
 		try {
 			if (delegateTask != null) {
 				delegateTask.get();
-			}
-			while (!isDone()) {
-				Thread.sleep(50);
 			}
 		} catch (ExecutionException e) {
 			throw new RuntimeException(e);

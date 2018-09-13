@@ -30,7 +30,7 @@ public class TextSectionProcessor implements TagProcessor {
 
 	@Override
 	public boolean shouldProcess(Element e) {
-		if (e.text() == null || e.text().trim().isEmpty()) {
+		if (e.ownText() == null || e.ownText().trim().isEmpty()) {
 			return false;
 		}
 		if (e.parent() == null) {

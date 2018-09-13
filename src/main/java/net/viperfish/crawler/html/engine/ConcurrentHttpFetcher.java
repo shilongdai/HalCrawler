@@ -47,6 +47,22 @@ public class ConcurrentHttpFetcher implements HttpFetcher {
 	}
 
 	@Override
+	public FetchedContent next(long timeout, TimeUnit unit) throws IOException {
+		try {
+			Pair<FetchedContent, Throwable> result = queue.poll(timeout, unit);
+			if (result == null) {
+				return null;
+			}
+			if (result.getSecond() != null) {
+				throw new IOException(result.getSecond());
+			}
+			return result.getFirst();
+		} catch (InterruptedException e) {
+			return null;
+		}
+	}
+
+	@Override
 	public void close() {
 		threadPool.shutdown();
 		try {
