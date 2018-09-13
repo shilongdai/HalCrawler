@@ -1,6 +1,7 @@
-package net.viperfish.crawler.dao;
+package net.viperfish.crawler.html.dao;
 
-import net.viperfish.crawler.core.Header;
+import net.viperfish.crawler.core.ORMLiteDatabase;
+import net.viperfish.crawler.html.Header;
 
 public final class HeaderDatabase extends ORMLiteDatabase<Long, Header> {
 

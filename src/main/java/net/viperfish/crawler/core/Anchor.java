@@ -3,7 +3,7 @@ package net.viperfish.crawler.core;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import java.net.URL;
-import net.viperfish.crawler.dao.URlDataPersister;
+import net.viperfish.crawler.html.dao.URlDataPersister;
 
 /**
  * An anchor on a page, usually an a tag. This class is a POJO java object and is associated with

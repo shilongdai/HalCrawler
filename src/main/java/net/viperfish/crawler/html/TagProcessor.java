@@ -1,10 +1,7 @@
-package net.viperfish.crawler.base;
+package net.viperfish.crawler.html;
 
 import java.util.List;
 import java.util.Map;
-import net.viperfish.crawler.core.Site;
-import net.viperfish.crawler.core.TagData;
-import net.viperfish.crawler.core.TagDataType;
 import net.viperfish.crawler.exceptions.ParsingException;
 import org.jsoup.nodes.Element;
 

@@ -1,4 +1,4 @@
-package net.viperfish.crawler.dao;
+package net.viperfish.crawler.core;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import net.viperfish.crawler.core.DatabaseObject;
 import org.apache.commons.dbcp2.ConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp2.PoolableConnection;
@@ -21,6 +20,8 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 
 	private static DataSourceConnectionSource conn;
+	private static boolean isClosed = true;
+
 	private Dao<T, ID> dao;
 	private Class<T> classType;
 
@@ -40,15 +41,16 @@ public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 		PoolingDataSource<PoolableConnection> pooledDatasource = new PoolingDataSource<>(objPool);
 
 		conn = new DataSourceConnectionSource(pooledDatasource, url);
-
 	}
 
 	public static void closeConn() {
 		conn.closeQuietly();
+		isClosed = true;
 	}
 
 	public ORMLiteDatabase<ID, T> connect() throws SQLException {
 		dao = DaoManager.createDao(conn, classType);
+		isClosed = false;
 		return this;
 	}
 
@@ -113,6 +115,16 @@ public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 
 	@Override
 	public void close() {
+	}
+
+	@Override
+	public void write(T data) throws IOException {
+		save(data);
+	}
+
+	@Override
+	public boolean isClosed() {
+		return isClosed;
 	}
 
 	public List<T> findBy(String field, Object value) throws IOException {

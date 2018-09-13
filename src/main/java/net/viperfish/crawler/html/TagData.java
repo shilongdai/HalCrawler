@@ -1,4 +1,4 @@
-package net.viperfish.crawler.core;
+package net.viperfish.crawler.html;
 
 import java.util.HashMap;
 import java.util.Map;

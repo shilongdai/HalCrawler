@@ -1,4 +1,4 @@
-package net.viperfish.crawler.core;
+package net.viperfish.crawler.html;
 
 /**
  * Categories of data contained in html pages.

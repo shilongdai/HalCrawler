@@ -1,10 +1,10 @@
-package net.viperfish.crawler.engines;
+package net.viperfish.crawler.html.engine;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import net.viperfish.crawler.base.FetchedContent;
 import net.viperfish.crawler.core.IOUtil;
+import net.viperfish.crawler.html.FetchedContent;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,6 +23,6 @@ public class ConcurrentFetcherTest {
 		Assert.assertEquals(testSite, content.getUrl());
 		Assert.assertEquals(200, content.getStatus());
 
-		fetcher.shutdown();
+		fetcher.close();
 	}
 }

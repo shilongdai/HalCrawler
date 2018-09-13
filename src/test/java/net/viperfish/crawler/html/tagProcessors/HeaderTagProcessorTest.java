@@ -2,10 +2,9 @@ package net.viperfish.crawler.html.tagProcessors;
 
 import java.util.List;
 import java.util.Map;
-import net.viperfish.crawler.core.Site;
-import net.viperfish.crawler.core.TagData;
-import net.viperfish.crawler.core.TagDataType;
-import net.viperfish.crawler.exceptions.ParsingException;
+import net.viperfish.crawler.html.Site;
+import net.viperfish.crawler.html.TagData;
+import net.viperfish.crawler.html.TagDataType;
 import org.jsoup.nodes.Element;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +12,7 @@ import org.junit.Test;
 public class HeaderTagProcessorTest {
 
 	@Test
-	public void testHeaderTagProcessor() throws ParsingException {
+	public void testHeaderTagProcessor() {
 		HeaderTagProcessor processor = new HeaderTagProcessor();
 
 		Element e = new Element("h2");

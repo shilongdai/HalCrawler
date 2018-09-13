@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import net.viperfish.crawler.base.TagProcessor;
-import net.viperfish.crawler.core.EmphasizedType;
-import net.viperfish.crawler.core.Site;
-import net.viperfish.crawler.core.TagData;
-import net.viperfish.crawler.core.TagDataType;
+import net.viperfish.crawler.html.EmphasizedType;
+import net.viperfish.crawler.html.Site;
+import net.viperfish.crawler.html.TagData;
+import net.viperfish.crawler.html.TagDataType;
+import net.viperfish.crawler.html.TagProcessor;
 import org.jsoup.nodes.Element;
 
 public class EmphasizedTagProcessor implements TagProcessor {

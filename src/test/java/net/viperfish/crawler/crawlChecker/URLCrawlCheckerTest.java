@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
-import net.viperfish.crawler.core.Site;
-import net.viperfish.crawler.dao.EmphasizedTextDatabase;
-import net.viperfish.crawler.dao.HeaderDatabase;
-import net.viperfish.crawler.dao.ORMLiteDatabase;
-import net.viperfish.crawler.dao.SiteDatabaseImpl;
-import net.viperfish.crawler.dao.TextContentDatabase;
+import net.viperfish.crawler.core.ORMLiteDatabase;
+import net.viperfish.crawler.html.Site;
+import net.viperfish.crawler.html.dao.AnchorDatabase;
+import net.viperfish.crawler.html.dao.EmphasizedTextDatabase;
+import net.viperfish.crawler.html.dao.HeaderDatabase;
+import net.viperfish.crawler.html.dao.SiteDatabaseImpl;
+import net.viperfish.crawler.html.dao.TextContentDatabase;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,7 +23,8 @@ public class URLCrawlCheckerTest {
 	public static void setup() throws SQLException, IOException {
 		ORMLiteDatabase.connect("jdbc:h2:mem:testCheckURL", "testUser", "testPassword");
 		siteDB = (SiteDatabaseImpl) new SiteDatabaseImpl(new HeaderDatabase().connect(),
-			new TextContentDatabase().connect(), new EmphasizedTextDatabase().connect()).connect();
+			new TextContentDatabase().connect(), new EmphasizedTextDatabase().connect(),
+			new AnchorDatabase().connect()).connect();
 		siteDB.executeSql(
 			"CREATE TABLE Site(siteID BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, title VARCHAR(1000) NOT NULL, url VARCHAR(1000) UNIQUE, checksum VARCHAR(128) NOT NULL, compressedHtml BLOB(14000000) NOT NULL);"
 				+ "");

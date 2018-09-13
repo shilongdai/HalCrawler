@@ -1,4 +1,4 @@
-package net.viperfish.crawler.base;
+package net.viperfish.crawler.html;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,23 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import net.viperfish.crawler.core.Anchor;
-import net.viperfish.crawler.core.DatabaseObject;
-import net.viperfish.crawler.core.EmphasizedTextContent;
-import net.viperfish.crawler.core.EmphasizedType;
-import net.viperfish.crawler.core.Header;
-import net.viperfish.crawler.core.HttpWebCrawler;
-import net.viperfish.crawler.core.Site;
-import net.viperfish.crawler.core.SiteDatabase;
-import net.viperfish.crawler.core.TagData;
-import net.viperfish.crawler.core.TagDataType;
-import net.viperfish.crawler.core.TextContent;
+import net.viperfish.crawler.core.Crawler;
 import net.viperfish.crawler.crawlChecker.NullCrawlChecker;
 import net.viperfish.crawler.exceptions.ParsingException;
 import net.viperfish.framework.compression.Compressor;
@@ -46,15 +31,20 @@ import org.jsoup.safety.Whitelist;
 // TODO: refractor the whole thing into more modular structure. Add documentation
 
 /**
- * A base implementation of {@link HttpWebCrawler} that simply crawls the URL supplied by the {@link
- * HttpWebCrawler#submit(URL)} method. By default, this implementation will fill in the URL and
- * Compressed HTML attributes of a site. To make this crawler follow the links on a page, scan text
- * content etc, a custom {@link TagProcessor} need to be supplied through the {@link
- * BaseHttpWebCrawler#registerProcessor(String, TagProcessor)} method.
+ * A {@link Crawler} that crawls http pages. It takes raw html contents and extracts information
+ * from it. By default, this implementation will fill in the URL and Compressed HTML attributes of a
+ * site. To make this crawler follow the links on a page, scan text content etc, a custom {@link
+ * TagProcessor} need to be supplied through the {@link BaseHttpWebCrawler#registerProcessor(String,
+ * TagProcessor)} method. The output written by this class will contain all the successfully
+ * retrieved crawled sites. Pages with response code not included in the 2xx codes are discarded.
+ * This implementation is designed for concurrency.
  */
-public class BaseHttpWebCrawler implements HttpWebCrawler {
+public class BaseHttpWebCrawler extends Crawler<FetchedContent, Site> {
 
+	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
+
+	// the amount of processing threads
 	private static int THREAD_COUNT = 64;
 
 	static {
@@ -68,22 +58,23 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 
 	private Map<String, TagProcessor> processors;
 	private boolean limit2Host;
-	private ExecutorService executor;
 	private ThreadLocal<Digest> hasher;
-	private SiteDatabase db;
-	private DatabaseObject<Long, Anchor> anchorDB;
 	private Compressor compressor;
 	private CrawlChecker crawlChecker;
-	private BlockingQueue<Long> results;
-	private AtomicInteger activeThreads;
 	private HttpFetcher fetcher;
 
-	public BaseHttpWebCrawler(SiteDatabase db, DatabaseObject<Long, Anchor> anchorDB,
+	/**
+	 * creates a new crawler with supplied storage output for site data and anchor data, and the
+	 * {@link HttpFetcher} to be used for downloading sites.
+	 *
+	 * @param db the storage output for the crawled sites
+	 * @param fetcher the {@link HttpFetcher} for fetching contents
+	 */
+	public BaseHttpWebCrawler(SiteDatabase db,
 		HttpFetcher fetcher) {
+		super(fetcher, db, THREAD_COUNT);
 		processors = new HashMap<>();
 		this.fetcher = fetcher;
-		this.db = db;
-		this.anchorDB = anchorDB;
 		limit2Host = false;
 		hasher = new ThreadLocal<Digest>() {
 
@@ -100,15 +91,9 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-		executor = Executors.newFixedThreadPool(THREAD_COUNT);
 		crawlChecker = new NullCrawlChecker();
-		results = new LinkedBlockingQueue<>();
-		activeThreads = new AtomicInteger(0);
-
-		startCrawlers();
 	}
 
-	@Override
 	public void submit(URL url) {
 		fetcher.submit(url);
 	}
@@ -125,26 +110,16 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 		return processors.get(tagName);
 	}
 
-	@Override
 	public void limitToHost(boolean limit) {
 		this.limit2Host = limit;
 	}
 
-	@Override
 	public boolean isLimitedToHost() {
 		return limit2Host;
 	}
 
 	@Override
 	public void shutdown() {
-		fetcher.shutdown();
-		executor.shutdown();
-		try {
-			executor.awaitTermination(10, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			executor.shutdownNow();
-			return;
-		}
 	}
 
 	public CrawlChecker getCrawlChecker() {
@@ -155,29 +130,19 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 		this.crawlChecker = checker;
 	}
 
-	public BlockingQueue<Long> getResults() {
-		return results;
-	}
-
 	@Override
-	public boolean isIdle() {
-		return activeThreads.get() == 0;
-	}
-
-	private void crawlIterative() {
+	protected Site process(FetchedContent content) {
 		try {
-			// parse the content of site
-			FetchedContent content = fetcher.next();
 			if (!ACCEPTED_STATUS_CODE.contains(content.getStatus())) {
-				return;
+				return null;
 			}
 			Site site = toSite(content);
 			// make sure not repeated
 			if (!crawlChecker.shouldCrawl(content.getUrl(), site)) {
-				return;
+				return null;
 			}
 			if (!crawlChecker.lock(content.getUrl(), site)) {
-				return;
+				return null;
 			}
 			String cleanHTML = Jsoup.clean(content.getRawHTML(), content.getUrl().toExternalForm(),
 				Whitelist.relaxed().addTags("title").addTags("head"));
@@ -193,18 +158,12 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 			processTexts(processedTags, site);
 			processEmphasizedText(processedTags, site);
 
-			// save site and gc
-			db.save(site);
-			long siteID = site.getSiteID();
-			results.offer(siteID);
-			site = null;
-
 			// add pages to crawl
 			if (processedTags.containsKey(TagDataType.HTML_LINK)) {
 				List<TagData> linkTags = processedTags.get(TagDataType.HTML_LINK);
 				List<Anchor> anchors = new LinkedList<>();
 				for (TagData td : linkTags) {
-					Anchor anchor = toAnchor(td, siteID);
+					Anchor anchor = toAnchor(td);
 					anchors.add(anchor);
 					// check if limited to host
 					if (limit2Host) {
@@ -218,8 +177,9 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 						fetcher.submit(anchor.getTargetURL());
 					}
 				}
-				anchorDB.save(anchors);
+				site.setAnchors(anchors);
 			}
+			return site;
 		} catch (ParsingException e) {
 			System.out.println("Parsing Error:" + e.getMessage());
 		} catch (FileNotFoundException e) {
@@ -232,11 +192,12 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 			}
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	private Site toSite(FetchedContent content) {
 		byte[] compressed = this.compressor
-			.compress(content.getRawHTML().getBytes(StandardCharsets.UTF_8));
+			.compress(content.getRawHTML().getBytes(StandardCharsets.UTF_16));
 		String checksum = hashSite(content.getRawHTML());
 
 		Site result = new Site();
@@ -329,36 +290,15 @@ public class BaseHttpWebCrawler implements HttpWebCrawler {
 		}
 	}
 
-	private Anchor toAnchor(TagData anchorData, long siteID) throws IOException {
+	private Anchor toAnchor(TagData anchorData) throws IOException {
 		URL linkedPage = anchorData.get("url", URL.class);
 		String anchorName = anchorData.get("anchor", String.class);
 
 		Anchor result = new Anchor();
 		result.setAnchorText(anchorName);
 		result.setTargetURL(linkedPage);
-		result.setSiteID(siteID);
 		return result;
 	}
 
-	private void startCrawlers() {
-		for (int i = 0; i < THREAD_COUNT; ++i) {
-			executor.execute(new Runnable() {
-
-				@Override
-				public void run() {
-					while (!Thread.interrupted() && !fetcher.isShutdown()) {
-						try {
-							activeThreads.incrementAndGet();
-							crawlIterative();
-						} catch (Throwable e) {
-							e.printStackTrace();
-						} finally {
-							activeThreads.decrementAndGet();
-						}
-					}
-				}
-			});
-		}
-	}
 
 }

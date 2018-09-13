@@ -1,4 +1,4 @@
-package net.viperfish.crawler.engines;
+package net.viperfish.crawler.html.engine;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -9,24 +9,28 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import net.viperfish.crawler.base.FetchedContent;
-import net.viperfish.crawler.base.HttpFetcher;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.viperfish.crawler.core.IOUtil;
 import net.viperfish.crawler.core.Pair;
+import net.viperfish.crawler.html.FetchedContent;
+import net.viperfish.crawler.html.HttpFetcher;
 
 public class ConcurrentHttpFetcher implements HttpFetcher {
 
 	private BlockingQueue<Pair<FetchedContent, Throwable>> queue;
 	private ExecutorService threadPool;
+	private AtomicInteger runningTasks;
 
 	public ConcurrentHttpFetcher(int threadCount) {
 		threadPool = Executors.newFixedThreadPool(threadCount);
 		queue = new LinkedBlockingQueue<>();
+		runningTasks = new AtomicInteger(0);
 	}
 
 	@Override
 	public void submit(URL url) {
-		threadPool.submit(new FetchRunnable(url, queue));
+		runningTasks.incrementAndGet();
+		threadPool.submit(new FetchRunnable(url));
 	}
 
 	@Override
@@ -43,7 +47,7 @@ public class ConcurrentHttpFetcher implements HttpFetcher {
 	}
 
 	@Override
-	public void shutdown() {
+	public void close() {
 		threadPool.shutdown();
 		try {
 			threadPool.awaitTermination(5, TimeUnit.SECONDS);
@@ -54,18 +58,22 @@ public class ConcurrentHttpFetcher implements HttpFetcher {
 	}
 
 	@Override
-	public boolean isShutdown() {
+	public boolean isClosed() {
 		return threadPool.isShutdown();
 	}
 
-	private static class FetchRunnable implements Runnable {
+	@Override
+	public boolean isEndReached() {
+		return queue.size() == 0 && runningTasks.get() == 0;
+	}
+
+
+	private class FetchRunnable implements Runnable {
 
 		private URL url;
-		private BlockingQueue<Pair<FetchedContent, Throwable>> queue;
 
-		public FetchRunnable(URL url, BlockingQueue<Pair<FetchedContent, Throwable>> queue) {
+		public FetchRunnable(URL url) {
 			this.url = url;
-			this.queue = queue;
 		}
 
 		@Override
@@ -78,6 +86,8 @@ public class ConcurrentHttpFetcher implements HttpFetcher {
 			} catch (Throwable e) {
 				queue.offer(new Pair<>(null, e));
 				return;
+			} finally {
+				runningTasks.decrementAndGet();
 			}
 		}
 

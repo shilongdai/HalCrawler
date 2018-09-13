@@ -1,4 +1,4 @@
-package net.viperfish.crawler.core;
+package net.viperfish.crawler.html;
 
 /**
  * The ways which an {@link EmphasizedTextContent} is emphasized.

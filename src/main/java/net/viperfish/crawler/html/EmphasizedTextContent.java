@@ -1,4 +1,4 @@
-package net.viperfish.crawler.core;
+package net.viperfish.crawler.html;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;

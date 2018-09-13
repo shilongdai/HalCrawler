@@ -1,8 +1,8 @@
 package net.viperfish.crawler.crawlChecker;
 
 import java.net.URL;
-import net.viperfish.crawler.base.CrawlChecker;
-import net.viperfish.crawler.core.Site;
+import net.viperfish.crawler.html.CrawlChecker;
+import net.viperfish.crawler.html.Site;
 
 public final class NullCrawlChecker implements CrawlChecker {
 

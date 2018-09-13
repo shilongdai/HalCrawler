@@ -1,13 +1,14 @@
-package net.viperfish.crawler.core;
+package net.viperfish.crawler.html;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import net.viperfish.crawler.dao.URlDataPersister;
+import java.util.Objects;
+import net.viperfish.crawler.core.Anchor;
+import net.viperfish.crawler.html.dao.URlDataPersister;
 
 /**
  * A POJO class for representing and storing a crawled html webpage. It is associated with the table
@@ -31,6 +32,7 @@ public final class Site {
 	private List<Header> headers;
 	private List<TextContent> texts;
 	private List<EmphasizedTextContent> emphasizedTexts;
+	private List<Anchor> anchors;
 
 	/**
 	 * creates a new Site with no contents.
@@ -40,6 +42,7 @@ public final class Site {
 		headers = new LinkedList<>();
 		texts = new LinkedList<>();
 		emphasizedTexts = new LinkedList<>();
+		anchors = new LinkedList<>();
 	}
 
 	// Getters and Setters.
@@ -109,79 +112,30 @@ public final class Site {
 		this.emphasizedTexts = emphasizedTexts;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((checksum == null) ? 0 : checksum.hashCode());
-		result = prime * result + Arrays.hashCode(compressedHtml);
-		result = prime * result + ((emphasizedTexts == null) ? 0 : emphasizedTexts.hashCode());
-		result = prime * result + ((headers == null) ? 0 : headers.hashCode());
-		result = prime * result + (int) (siteID ^ (siteID >>> 32));
-		result = prime * result + ((texts == null) ? 0 : texts.hashCode());
-		result = prime * result + ((title == null) ? 0 : title.hashCode());
-		result = prime * result + ((url == null) ? 0 : url.hashCode());
-		return result;
+	public List<Anchor> getAnchors() {
+		return anchors;
+	}
+
+	public void setAnchors(List<Anchor> anchors) {
+		this.anchors = anchors;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (obj == null) {
+		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Site other = (Site) obj;
-		if (checksum == null) {
-			if (other.checksum != null) {
-				return false;
-			}
-		} else if (!checksum.equals(other.checksum)) {
-			return false;
-		}
-		if (!Arrays.equals(compressedHtml, other.compressedHtml)) {
-			return false;
-		}
-		if (emphasizedTexts == null) {
-			if (other.emphasizedTexts != null) {
-				return false;
-			}
-		} else if (!emphasizedTexts.equals(other.emphasizedTexts)) {
-			return false;
-		}
-		if (headers == null) {
-			if (other.headers != null) {
-				return false;
-			}
-		} else if (!headers.equals(other.headers)) {
-			return false;
-		}
-		if (siteID != other.siteID) {
-			return false;
-		}
-		if (texts == null) {
-			if (other.texts != null) {
-				return false;
-			}
-		} else if (!texts.equals(other.texts)) {
-			return false;
-		}
-		if (title == null) {
-			if (other.title != null) {
-				return false;
-			}
-		} else if (!title.equals(other.title)) {
-			return false;
-		}
-		if (url == null) {
-			return other.url == null;
-		} else {
-			return url.equals(other.url);
-		}
+		Site site = (Site) o;
+		return Objects.equals(getTitle(), site.getTitle()) &&
+			Objects.equals(getUrl(), site.getUrl()) &&
+			Objects.equals(getChecksum(), site.getChecksum());
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(getTitle(), getUrl(), getChecksum());
+	}
 }

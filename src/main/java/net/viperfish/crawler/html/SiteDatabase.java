@@ -1,7 +1,8 @@
-package net.viperfish.crawler.core;
+package net.viperfish.crawler.html;
 
 import java.io.IOException;
 import java.net.URL;
+import net.viperfish.crawler.core.DatabaseObject;
 
 /**
  * A {@link DatabaseObject} for storing Sites.

@@ -1,7 +1,6 @@
-package net.viperfish.crawler.base;
+package net.viperfish.crawler.html;
 
 import java.net.URL;
-import net.viperfish.crawler.core.Site;
 
 public interface CrawlChecker {
 

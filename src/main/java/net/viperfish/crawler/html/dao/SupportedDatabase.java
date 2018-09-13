@@ -1,4 +1,4 @@
-package net.viperfish.crawler.dao;
+package net.viperfish.crawler.html.dao;
 
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.db.H2DatabaseType;

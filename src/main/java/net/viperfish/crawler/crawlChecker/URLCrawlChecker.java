@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import net.viperfish.crawler.base.CrawlChecker;
-import net.viperfish.crawler.core.Site;
-import net.viperfish.crawler.core.SiteDatabase;
+import net.viperfish.crawler.html.CrawlChecker;
+import net.viperfish.crawler.html.Site;
+import net.viperfish.crawler.html.SiteDatabase;
 
 public class URLCrawlChecker implements CrawlChecker {
 

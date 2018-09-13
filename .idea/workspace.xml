@@ -2,22 +2,50 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f7387611-93e3-453a-b0ac-07c4a4c50bf2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Crawler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Datasink.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/ResourcesStream.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/BaseHttpWebCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/BaseHttpWebCrawler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/BaseHttpWebCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/BaseHttpWebCrawler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/CrawlChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/CrawlChecker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/FetchedContent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/FetchedContent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/HttpFetcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/HttpFetcher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/TagProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TagProcessor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Anchor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Anchor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/DatabaseObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/DatabaseObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/EmphasizedTextContent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/EmphasizedTextContent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Header.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Header.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/HttpWebCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/HttpWebCrawler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/IOUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/IOUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Pair.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Pair.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Site.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Site.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/SiteDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/SiteDatabase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TagData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TagData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TextContent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TextContent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/ORMLiteDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/ORMLiteDatabase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/framework/compression/Compressor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/framework/compression/Compressor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/framework/compression/Compressors.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/framework/compression/Compressors.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/EmphasizedTextContent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/EmphasizedTextContent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/EmphasizedType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/EmphasizedType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Header.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/Header.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/HttpWebCrawler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Site.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/Site.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/SiteDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/SiteDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TagData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TagData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TagDataType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TagDataType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TextContent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TextContent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/crawlChecker/NullCrawlChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/crawlChecker/NullCrawlChecker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/crawlChecker/URLCrawlChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/crawlChecker/URLCrawlChecker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/AnchorDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/AnchorDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/EmphasizedTextDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/EmphasizedTextDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/HeaderDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/HeaderDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/ORMLiteDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/ORMLiteDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/SiteDatabaseImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/SiteDatabaseImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/SupportedDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/SupportedDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/TextContentDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/TextContentDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/URlDataPersister.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/URlDataPersister.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/engines/ConcurrentHttpFetcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/engine/ConcurrentHttpFetcher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/ALinkTagProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/ALinkTagProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/EmphasizedTagProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/EmphasizedTagProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/HeaderTagProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/HeaderTagProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/TitileTagProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/TitileTagProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/crawlChecker/URLCrawlCheckerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/crawlChecker/URLCrawlCheckerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/engines/ConcurrentFetcherTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/engine/ConcurrentFetcherTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/TestCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/TestCrawler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/ALinkTagProcessorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/ALinkTagProcessorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/EmphasizedTextProcessorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/EmphasizedTextProcessorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/HeaderTagProcessorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/HeaderTagProcessorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/TitleTagProcessorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/TitleTagProcessorTest.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -37,42 +65,43 @@
     <session id="-1686702427">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="6" />
+          <entry key="project.closed" value="7" />
           <entry key="project.open.time.12" value="1" />
           <entry key="project.open.time.2" value="1" />
+          <entry key="project.open.time.27" value="1" />
           <entry key="project.open.time.28" value="1" />
           <entry key="project.open.time.29" value="1" />
           <entry key="project.open.time.42" value="1" />
           <entry key="project.open.time.7" value="1" />
           <entry key="project.open.time.92" value="1" />
-          <entry key="project.opened" value="7" />
+          <entry key="project.opened" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="gradle" value="4" />
-          <entry key="java" value="37" />
+          <entry key="java" value="76" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Groovy" value="4" />
-          <entry key="JAVA" value="37" />
+          <entry key="JAVA" value="76" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="20" />
           <entry key="gradle" value="13" />
-          <entry key="java" value="1912" />
-          <entry key="txt" value="144" />
+          <entry key="java" value="6076" />
+          <entry key="txt" value="193" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Groovy" value="13" />
-          <entry key="JAVA" value="1912" />
-          <entry key="PLAIN_TEXT" value="164" />
+          <entry key="JAVA" value="6076" />
+          <entry key="PLAIN_TEXT" value="213" />
         </counts>
       </usages-collector>
     </session>
@@ -80,10 +109,24 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessorTest.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/BaseHttpWebCrawler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="31" column="29" selection-start-line="31" selection-start-column="29" selection-end-line="31" selection-end-column="29" />
+            <state relative-caret-position="-154">
+              <caret line="146" column="58" lean-forward="true" selection-start-line="146" selection-start-column="58" selection-end-line="146" selection-end-column="58" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#3843#3844#0" expanded="true" />
+                <element signature="e#3869#3870#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Crawler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="176">
+              <caret line="78" selection-start-line="78" selection-end-line="78" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -92,85 +135,83 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/TitleTagProcessorTest.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/engine/ConcurrentHttpFetcher.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-664">
+              <caret line="66" column="44" lean-forward="true" selection-start-line="66" selection-start-column="44" selection-end-line="66" selection-end-column="44" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/SiteDatabase.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="9" column="17" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TextContent.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/crawlChecker/URLCrawlChecker.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
-              <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+              <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessor.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/ORMLiteDatabase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="43" selection-start-line="43" selection-end-line="43" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jsoup/jsoup/1.11.3/871302b15d8cee9bfb393c4f1d0386b17646d8d1/jsoup-1.11.3-sources.jar!/org/jsoup/select/Elements.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8385">
-              <caret line="597" selection-start-line="597" selection-end-line="597" />
+            <state relative-caret-position="281">
+              <caret line="112" column="9" lean-forward="true" selection-start-line="112" selection-start-column="9" selection-end-line="112" selection-end-column="9" />
               <folding>
-                <element signature="e#18658#18659#0" expanded="true" />
+                <element signature="e#3064#3065#0" expanded="true" />
+                <element signature="e#3086#3087#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jsoup/jsoup/1.11.3/871302b15d8cee9bfb393c4f1d0386b17646d8d1/jsoup-1.11.3-sources.jar!/org/jsoup/nodes/Element.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/ResourcesStream.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="10215">
-              <caret line="756" selection-start-line="756" selection-end-line="756" />
+            <state relative-caret-position="105">
+              <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Site.java">
+        <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/TestCrawler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="495">
-              <caret line="42" selection-start-line="42" selection-end-line="42" />
+            <state relative-caret-position="162">
+              <caret line="66" selection-start-line="66" selection-end-line="66" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TagData.java">
+        <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/crawlChecker/URLCrawlCheckerTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="930">
-              <caret line="85" column="16" selection-start-line="85" selection-start-column="16" selection-end-line="85" selection-end-column="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/BaseHttpWebCrawler.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="57" column="41" selection-start-line="57" selection-start-column="41" selection-end-line="57" selection-end-column="41" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Anchor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/DatabaseObject.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="5" column="3" lean-forward="true" selection-start-line="5" selection-start-column="3" selection-end-line="5" selection-end-column="3" />
+            <state relative-caret-position="-34">
+              <caret line="25" column="119" selection-start-line="25" selection-start-column="119" selection-end-line="25" selection-end-column="119" />
             </state>
           </provider>
         </entry>
@@ -515,12 +556,26 @@
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/settings.gradle" />
         <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/HttpFetcher.java" />
-        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/engines/ConcurrentHttpFetcher.java" />
-        <option value="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/TestCrawler.java" />
         <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TagData.java" />
-        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessor.java" />
         <option value="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessorTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessor.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Datasink.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Site.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/dao/SiteDatabaseImpl.java" />
+        <option value="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/crawlChecker/URLCrawlCheckerTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/TestCrawler.java" />
         <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/BaseHttpWebCrawler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/HttpFetcher.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/ResourcesStream.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/engines/ConcurrentHttpFetcher.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/HttpWebCrawler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/DatabaseObject.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/ORMLiteDatabase.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/engine/ConcurrentHttpFetcher.java" />
+        <option value="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/engine/ConcurrentFetcherTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/TestCrawler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Crawler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/BaseHttpWebCrawler.java" />
       </list>
     </option>
   </component>
@@ -542,9 +597,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
-      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -595,16 +648,6 @@
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="viperfish" type="462c0819:PsiDirectoryNode" />
               <item name="crawler" type="462c0819:PsiDirectoryNode" />
-              <item name="base" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="searchEngineCrawler" type="b2602c69:ProjectViewProjectNode" />
-              <item name="HalCrawler" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="viperfish" type="462c0819:PsiDirectoryNode" />
-              <item name="crawler" type="462c0819:PsiDirectoryNode" />
               <item name="core" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -625,26 +668,6 @@
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="viperfish" type="462c0819:PsiDirectoryNode" />
               <item name="crawler" type="462c0819:PsiDirectoryNode" />
-              <item name="dao" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="searchEngineCrawler" type="b2602c69:ProjectViewProjectNode" />
-              <item name="HalCrawler" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="viperfish" type="462c0819:PsiDirectoryNode" />
-              <item name="crawler" type="462c0819:PsiDirectoryNode" />
-              <item name="engines" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="searchEngineCrawler" type="b2602c69:ProjectViewProjectNode" />
-              <item name="HalCrawler" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="viperfish" type="462c0819:PsiDirectoryNode" />
-              <item name="crawler" type="462c0819:PsiDirectoryNode" />
               <item name="exceptions" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -655,7 +678,38 @@
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="viperfish" type="462c0819:PsiDirectoryNode" />
               <item name="crawler" type="462c0819:PsiDirectoryNode" />
-              <item name="tagProcessors" type="462c0819:PsiDirectoryNode" />
+              <item name="html" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="searchEngineCrawler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="HalCrawler" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="viperfish" type="462c0819:PsiDirectoryNode" />
+              <item name="crawler" type="462c0819:PsiDirectoryNode" />
+              <item name="html" type="462c0819:PsiDirectoryNode" />
+              <item name="dao" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="searchEngineCrawler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="HalCrawler" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="viperfish" type="462c0819:PsiDirectoryNode" />
+              <item name="crawler" type="462c0819:PsiDirectoryNode" />
+              <item name="html" type="462c0819:PsiDirectoryNode" />
+              <item name="engine" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="searchEngineCrawler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="HalCrawler" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="viperfish" type="462c0819:PsiDirectoryNode" />
+              <item name="compression" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="searchEngineCrawler" type="b2602c69:ProjectViewProjectNode" />
@@ -694,7 +748,7 @@
               <item name="test" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="crawler" type="462c0819:PsiDirectoryNode" />
-              <item name="engines" type="462c0819:PsiDirectoryNode" />
+              <item name="html" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="searchEngineCrawler" type="b2602c69:ProjectViewProjectNode" />
@@ -704,6 +758,7 @@
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="crawler" type="462c0819:PsiDirectoryNode" />
               <item name="html" type="462c0819:PsiDirectoryNode" />
+              <item name="engine" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="searchEngineCrawler" type="b2602c69:ProjectViewProjectNode" />
@@ -719,12 +774,14 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536696283196" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536808737334" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../HalService" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -746,7 +803,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.TextSectionProcessorTest">
+  <component name="RunManager" selected="Gradle.Tests in 'halCrawler_test'">
     <configuration name="All Features in: main" type="CucumberJavaRunConfigurationType" factoryName="Cucumber java" temporary="true" nameIsGenerated="true">
       <option name="CUCUMBER_CORE_VERSION" value="3" />
       <option name="FILE_PATH" value="$PROJECT_DIR$/src/main" />
@@ -763,6 +820,25 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="TestCrawler" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests net.viperfish.crawler.TestCrawler" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":cleanTest" />
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <method v="2" />
     </configuration>
     <configuration name="Tests in 'halCrawler_test'" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -810,34 +886,20 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="URLCrawlCheckerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="searchEngineCrawler_test" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="net.viperfish.crawler.crawlChecker.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="net.viperfish.crawler.crawlChecker" />
-      <option name="MAIN_CLASS_NAME" value="net.viperfish.crawler.crawlChecker.URLCrawlCheckerTest" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="JUnit.All in searchEngineCrawler_test" />
-      <item itemvalue="JUnit.URLCrawlCheckerTest" />
       <item itemvalue="Cucumber java.All Features in: main" />
       <item itemvalue="Gradle.Tests in 'halCrawler_test'" />
       <item itemvalue="Gradle.TextSectionProcessorTest" />
+      <item itemvalue="Gradle.TestCrawler" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.TextSectionProcessorTest" />
         <item itemvalue="Gradle.Tests in 'halCrawler_test'" />
+        <item itemvalue="Gradle.TestCrawler" />
+        <item itemvalue="Gradle.TextSectionProcessorTest" />
         <item itemvalue="Cucumber java.All Features in: main" />
         <item itemvalue="JUnit.All in searchEngineCrawler_test" />
-        <item itemvalue="JUnit.URLCrawlCheckerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -857,7 +919,8 @@
       <workItem from="1536552217694" duration="659000" />
       <workItem from="1536586546036" duration="335000" />
       <workItem from="1536625495573" duration="5411000" />
-      <workItem from="1536695188536" duration="712000" />
+      <workItem from="1536695188536" duration="2385000" />
+      <workItem from="1536776407307" duration="13467000" />
     </task>
     <task id="LOCAL-00001" summary="refractors code">
       <created>1536352929627</created>
@@ -887,43 +950,57 @@
       <option name="project" value="LOCAL" />
       <updated>1536633322942</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="reformatted the docs.">
+      <created>1536696317216</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1536696317217</updated>
+    </task>
+    <task id="LOCAL-00006" summary="rearranged entries">
+      <created>1536696395003</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1536696395003</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 02m 12s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="Tests_in_'halCrawler_test' - 2018.09.12 at 23h 00m 28s.xml">
+      <configuration name="Tests in 'halCrawler_test'" configurationId="GradleRunConfiguration" />
     </history-entry>
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 03m 06s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="Tests_in_'halCrawler_test' - 2018.09.12 at 23h 00m 41s.xml">
+      <configuration name="Tests in 'halCrawler_test'" configurationId="GradleRunConfiguration" />
     </history-entry>
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 03m 59s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="Tests_in_'halCrawler_test' - 2018.09.12 at 23h 03m 24s.xml">
+      <configuration name="Tests in 'halCrawler_test'" configurationId="GradleRunConfiguration" />
     </history-entry>
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 10m 30s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="Tests_in_'halCrawler_test' - 2018.09.12 at 23h 03m 47s.xml">
+      <configuration name="Tests in 'halCrawler_test'" configurationId="GradleRunConfiguration" />
     </history-entry>
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 11m 13s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="Tests_in_'halCrawler_test' - 2018.09.12 at 23h 04m 55s.xml">
+      <configuration name="Tests in 'halCrawler_test'" configurationId="GradleRunConfiguration" />
     </history-entry>
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 13m 54s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="Tests_in_'halCrawler_test' - 2018.09.12 at 23h 07m 11s.xml">
+      <configuration name="Tests in 'halCrawler_test'" configurationId="GradleRunConfiguration" />
     </history-entry>
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 15m 12s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="TestCrawler - 2018.09.12 at 23h 10m 13s.xml">
+      <configuration name="TestCrawler" configurationId="GradleRunConfiguration" />
     </history-entry>
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 22m 58s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="TestCrawler - 2018.09.12 at 23h 13m 13s.xml">
+      <configuration name="TestCrawler" configurationId="GradleRunConfiguration" />
     </history-entry>
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 23m 33s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="TestCrawler - 2018.09.12 at 23h 13m 22s.xml">
+      <configuration name="TestCrawler" configurationId="GradleRunConfiguration" />
     </history-entry>
-    <history-entry file="TextSectionProcessorTest - 2018.09.10 at 22h 23m 41s.xml">
-      <configuration name="TextSectionProcessorTest" configurationId="GradleRunConfiguration" />
+    <history-entry file="Tests_in_'halCrawler_test' - 2018.09.12 at 23h 13m 39s.xml">
+      <configuration name="Tests in 'halCrawler_test'" configurationId="GradleRunConfiguration" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13204000" />
+    <option name="totallyTimeSpent" value="28344000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -937,7 +1014,7 @@
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1052" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26923078" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2724359" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -945,8 +1022,8 @@
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32894737" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32894737" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32894737" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3991228" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -1014,7 +1091,9 @@
     <MESSAGE value="refractors code" />
     <MESSAGE value="modulized the fetching portion of the crawler" />
     <MESSAGE value="made processor to process only chunks of texts" />
-    <option name="LAST_COMMIT_MESSAGE" value="made processor to process only chunks of texts" />
+    <MESSAGE value="reformatted the docs." />
+    <MESSAGE value="rearranged entries" />
+    <option name="LAST_COMMIT_MESSAGE" value="rearranged entries" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1032,21 +1111,14 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/TagProcessor.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TagProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/EmphasizedTextContent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="6" column="21" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/CrawlChecker.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/CrawlChecker.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
@@ -1054,20 +1126,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/HttpParser.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TextContent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/ALinkTagProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="27" column="9" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
@@ -1102,48 +1160,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/HttpFetcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="13" column="25" selection-start-line="13" selection-start-column="25" selection-end-line="13" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/engines/ConcurrentHttpFetcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1410">
-          <caret line="110" column="34" selection-start-line="110" selection-start-column="34" selection-end-line="110" selection-end-column="34" />
-          <folding>
-            <element signature="e#1513#1514#0" expanded="true" />
-            <element signature="e#1550#1551#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/FetchedContent.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/FetchedContent.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
           <caret line="43" column="24" selection-start-line="43" selection-start-column="24" selection-end-line="43" selection-end-column="24" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/crawlChecker/URLCrawlCheckerTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="23" column="76" selection-start-line="23" selection-start-column="76" selection-end-line="23" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/engines/ConcurrentFetcherTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -1156,16 +1179,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/PTagProcessorTest.java" />
-    <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/TestCrawler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="54" column="39" selection-start-line="54" selection-start-column="39" selection-end-line="54" selection-end-column="39" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessorTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
@@ -1176,20 +1189,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="43" selection-start-line="43" selection-end-line="43" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jsoup/jsoup/1.11.3/871302b15d8cee9bfb393c4f1d0386b17646d8d1/jsoup-1.11.3-sources.jar!/org/jsoup/select/Elements.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="8385">
           <caret line="597" selection-start-line="597" selection-end-line="597" />
-          <folding>
-            <element signature="e#18658#18659#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1200,20 +1203,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Site.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="495">
-          <caret line="42" selection-start-line="42" selection-end-line="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/TagData.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="930">
-          <caret line="85" column="16" selection-start-line="85" selection-start-column="16" selection-end-line="85" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/tagProcessors/TitleTagProcessorTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -1221,10 +1210,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/base/BaseHttpWebCrawler.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/crawlChecker/NullCrawlChecker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="57" column="41" selection-start-line="57" selection-start-column="41" selection-end-line="57" selection-end-column="41" />
+        <state relative-caret-position="60">
+          <caret line="6" column="19" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/ALinkTagProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="27" column="8" selection-start-line="27" selection-start-column="8" selection-end-line="27" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -1235,10 +1231,200 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/DatabaseObject.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/TextSectionProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="35" column="30" selection-start-line="35" selection-start-column="30" selection-end-line="35" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Datasink.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="42" selection-start-line="6" selection-start-column="42" selection-end-line="6" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/SiteDatabaseImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/EmphasizedTextContent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/EmphasizedType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/Header.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/Site.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="18" column="19" selection-start-line="18" selection-start-column="19" selection-end-line="18" selection-end-column="19" />
+          <folding>
+            <element signature="e#2493#2494#0" expanded="true" />
+            <element signature="e#2514#2515#0" expanded="true" />
+            <element signature="e#2563#2564#0" expanded="true" />
+            <element signature="e#2592#2593#0" expanded="true" />
+            <element signature="e#2994#2995#0" expanded="true" />
+            <element signature="e#3057#3058#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TagData.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="9" column="19" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TagDataType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/URlDataPersister.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
-          <caret line="5" column="3" lean-forward="true" selection-start-line="5" selection-start-column="3" selection-end-line="5" selection-end-column="3" />
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/HttpWebCrawler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="5" selection-start-line="5" selection-end-line="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/DatabaseObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-60">
+          <caret line="13" column="57" selection-start-line="13" selection-start-column="57" selection-end-line="13" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/HttpFetcher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="67" selection-start-line="6" selection-start-column="67" selection-end-line="6" selection-end-column="67" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/engine/ConcurrentFetcherTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="25" column="19" selection-start-line="25" selection-start-column="19" selection-end-line="25" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/crawlChecker/URLCrawlCheckerTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-34">
+          <caret line="25" column="119" selection-start-line="25" selection-start-column="119" selection-end-line="25" selection-end-column="119" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/ResourcesStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/ORMLiteDatabase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="112" column="9" lean-forward="true" selection-start-line="112" selection-start-column="9" selection-end-line="112" selection-end-column="9" />
+          <folding>
+            <element signature="e#3064#3065#0" expanded="true" />
+            <element signature="e#3086#3087#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/crawlChecker/URLCrawlChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TextContent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/SiteDatabase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="9" column="17" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/engine/ConcurrentHttpFetcher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-664">
+          <caret line="66" column="44" lean-forward="true" selection-start-line="66" selection-start-column="44" selection-end-line="66" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/BaseHttpWebCrawler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-154">
+          <caret line="146" column="58" lean-forward="true" selection-start-line="146" selection-start-column="58" selection-end-line="146" selection-end-column="58" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3843#3844#0" expanded="true" />
+            <element signature="e#3869#3870#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/TestCrawler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="66" selection-start-line="66" selection-end-line="66" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Crawler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="78" selection-start-line="78" selection-end-line="78" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

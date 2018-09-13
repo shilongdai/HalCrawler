@@ -1,4 +1,4 @@
-package net.viperfish.crawler.base;
+package net.viperfish.crawler.html;
 
 import java.net.URL;
 import java.util.Objects;
