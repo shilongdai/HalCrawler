@@ -21,7 +21,7 @@ public class TextSectionProcessorTest {
 	public void testTextSection() throws ParsingException {
 		TextSectionProcessor processor = new TextSectionProcessor();
 		Document doc = Jsoup.parse(
-			"<div>This is a section<p>This is a paragraph<q>This is a quote</q></p><blockquote>To be or not to be</blockquote></div>");
+			"<div>This should be a 75 character long string that make the div tag signifficant enough to be considered a text chunk.<p>This is a paragraph<q>This is a quote</q></p><blockquote>To be or not to be</blockquote></div>");
 
 		Map<TagDataType, List<TagData>> result = recursiveInterpretTags(
 			doc.getElementsByTag("div").first(), new Site(),
@@ -39,7 +39,7 @@ public class TextSectionProcessorTest {
 		if (e == null || e.tagName() == null) {
 			return result;
 		}
-		if (processor.shouldProcess(e)) {
+		if (processor.match(e)) {
 			result = processor.processTag(e, s);
 		}
 		for (Element child : e.children()) {

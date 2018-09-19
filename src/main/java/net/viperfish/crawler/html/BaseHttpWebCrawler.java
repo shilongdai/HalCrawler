@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import net.viperfish.crawler.core.Crawler;
+import net.viperfish.crawler.core.DataProcessor;
 import net.viperfish.crawler.core.Datasink;
 import net.viperfish.crawler.crawlChecker.NullCrawlChecker;
 import net.viperfish.crawler.exceptions.ParsingException;
@@ -31,7 +31,7 @@ import org.jsoup.safety.Whitelist;
 // TODO: refractor the whole thing into more modular structure. Add documentation
 
 /**
- * A {@link Crawler} that crawls http pages. It takes raw html contents and extracts information
+ * A {@link DataProcessor} that crawls http pages. It takes raw html contents and extracts information
  * from it. By default, this implementation will fill in the URL and Compressed HTML attributes of a
  * site. To make this crawler follow the links on a page, scan text content etc, a custom {@link
  * TagProcessor} need to be supplied through the {@link BaseHttpWebCrawler#registerProcessor(String,
@@ -39,7 +39,7 @@ import org.jsoup.safety.Whitelist;
  * retrieved crawled sites. Pages with response code not included in the 2xx codes are discarded.
  * This implementation is designed for concurrency.
  */
-public class BaseHttpWebCrawler extends Crawler<FetchedContent, Site> {
+public class BaseHttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 
 	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
@@ -53,6 +53,7 @@ public class BaseHttpWebCrawler extends Crawler<FetchedContent, Site> {
 		buffer.add(201);
 		buffer.add(202);
 		buffer.add(203);
+		buffer.add(302);
 		ACCEPTED_STATUS_CODE = Collections.unmodifiableSet(buffer);
 	}
 
@@ -98,12 +99,12 @@ public class BaseHttpWebCrawler extends Crawler<FetchedContent, Site> {
 		fetcher.submit(url);
 	}
 
-	public void registerProcessor(String tagName, TagProcessor processor) {
-		processors.put(tagName, processor);
+	public void registerProcessor(String processorName, TagProcessor processor) {
+		processors.put(processorName, processor);
 	}
 
-	public void unregisterProcessor(String tagName) {
-		processors.remove(tagName);
+	public void unregisterProcessor(String processorName) {
+		processors.remove(processorName);
 	}
 
 	public TagProcessor getProcessor(String tagName) {
@@ -209,12 +210,13 @@ public class BaseHttpWebCrawler extends Crawler<FetchedContent, Site> {
 		if (e == null || e.tagName() == null) {
 			return result;
 		}
-		TagProcessor processor = processors.get(e.tagName());
-		if (processor != null) {
-			if (processor.shouldProcess(e)) {
-				result = processor.processTag(e, s);
+
+		for (TagProcessor processor : processors.values()) {
+			if (processor.match(e)) {
+				result.putAll(processor.processTag(e, s));
 			}
 		}
+
 		for (Element child : e.children()) {
 			Map<TagDataType, List<TagData>> childResult = recursiveInterpretTags(child, s);
 			for (Entry<TagDataType, List<TagData>> entry : childResult.entrySet()) {

@@ -33,7 +33,9 @@ public final class HeaderTagProcessor implements TagProcessor {
 	}
 
 	@Override
-	public boolean shouldProcess(Element e) {
-		return e.text() != null && !e.text().isEmpty();
+	public boolean match(Element e) {
+		boolean notEmpty = e.text() != null && !e.text().isEmpty();
+		boolean isHeader = e.tagName().startsWith("h") && e.tagName().length() == 2;
+		return notEmpty && isHeader;
 	}
 }

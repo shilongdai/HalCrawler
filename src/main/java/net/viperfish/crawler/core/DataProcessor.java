@@ -8,7 +8,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class Crawler<I, O> {
+public abstract class DataProcessor<I, O> {
 
 	private ResourcesStream<? extends I> in;
 	private Datasink<? super O> out;
@@ -17,7 +17,7 @@ public abstract class Crawler<I, O> {
 	private ExecutorService processingThreads;
 	private AtomicInteger activeProcessingThreads;
 
-	public Crawler(ResourcesStream<? extends I> in, Datasink<? super O> out, int threads) {
+	public DataProcessor(ResourcesStream<? extends I> in, Datasink<? super O> out, int threads) {
 		this.in = in;
 		this.out = out;
 		masterDelegater = Executors.newSingleThreadExecutor();
@@ -25,13 +25,14 @@ public abstract class Crawler<I, O> {
 		activeProcessingThreads = new AtomicInteger(0);
 	}
 
-	public void startCrawl() {
+	public void startProcessing() {
 		if (delegateTask == null) {
 			delegateTask = masterDelegater.submit(new Runnable() {
 				@Override
 				public void run() {
 					while (!Thread.interrupted()) {
-
+						System.out.printf("Active Processing Thread: %d\n",
+							activeProcessingThreads.get());
 						// exit if there are no data left and that no processing are being done.
 						if ((in.isClosed() || in.isEndReached())
 							&& activeProcessingThreads.get() == 0) {

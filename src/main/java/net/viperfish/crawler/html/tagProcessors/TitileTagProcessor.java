@@ -28,7 +28,8 @@ public final class TitileTagProcessor implements TagProcessor {
 	}
 
 	@Override
-	public boolean shouldProcess(Element e) {
-		return e.text() != null && !e.text().isEmpty();
+	public boolean match(Element e) {
+		boolean notEmpty = e.text() != null && !e.text().isEmpty();
+		return notEmpty && e.tagName().equalsIgnoreCase("title");
 	}
 }

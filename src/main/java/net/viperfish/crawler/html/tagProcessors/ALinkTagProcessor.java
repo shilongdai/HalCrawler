@@ -44,8 +44,9 @@ public final class ALinkTagProcessor implements TagProcessor {
 	}
 
 	@Override
-	public boolean shouldProcess(Element e) {
-		return e.text() != null && !e.text().isEmpty();
+	public boolean match(Element e) {
+		boolean notEmpty = e.text() != null && !e.text().isEmpty();
+		return e.tagName().equalsIgnoreCase("a") && notEmpty;
 	}
 
 	private boolean isRelative(String url) throws URISyntaxException {

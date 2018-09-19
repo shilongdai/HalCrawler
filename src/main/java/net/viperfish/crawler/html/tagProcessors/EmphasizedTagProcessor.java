@@ -44,9 +44,12 @@ public class EmphasizedTagProcessor implements TagProcessor {
 	}
 
 	@Override
-	public boolean shouldProcess(Element e) {
-		return e.ownText() != null && !e.ownText().isEmpty();
+	public boolean match(Element e) {
+		boolean notEmpty = e.ownText() != null && !e.ownText().isEmpty();
+		boolean isEmphasized =
+			e.tagName().equalsIgnoreCase("b") || e.tagName().equalsIgnoreCase("em") || e.tagName()
+				.equalsIgnoreCase("strong");
+		return notEmpty && isEmphasized;
 	}
-
 
 }

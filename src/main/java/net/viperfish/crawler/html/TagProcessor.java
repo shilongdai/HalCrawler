@@ -10,5 +10,5 @@ public interface TagProcessor {
 	Map<TagDataType, List<TagData>> processTag(Element tag, Site site)
 		throws ParsingException;
 
-	boolean shouldProcess(Element e);
+	boolean match(Element element);
 }

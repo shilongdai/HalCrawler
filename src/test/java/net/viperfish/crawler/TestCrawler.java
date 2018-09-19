@@ -65,7 +65,7 @@ public class TestCrawler {
 		BaseHttpWebCrawler crawler = new BaseHttpWebCrawler(siteDB,
 			new ConcurrentHttpFetcher(1));
 		crawler.submit(new URL("https://example.com/"));
-		crawler.startCrawl();
+		crawler.startProcessing();
 		crawler.waitUntiDone();
 		crawler.shutdown();
 
