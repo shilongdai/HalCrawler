@@ -68,6 +68,16 @@ public class SiteDatabaseImpl extends ORMLiteDatabase<Long, Site> implements Sit
 		}
 	}
 
+	@Override
+	public Site find(String checksum) throws IOException {
+		List<Site> result = this.findBy("checksum", checksum);
+		if (!result.isEmpty()) {
+			return result.get(0);
+		} else {
+			return null;
+		}
+	}
+
 	private void setSiteIDs(Iterable<Header> headers, Site s) {
 		for (Header h : headers) {
 			h.setSiteID(s.getSiteID());

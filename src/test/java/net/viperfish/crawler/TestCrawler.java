@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Base64;
 import net.viperfish.crawler.core.IOUtil;
 import net.viperfish.crawler.core.ORMLiteDatabase;
-import net.viperfish.crawler.html.BaseHttpWebCrawler;
+import net.viperfish.crawler.html.HttpWebCrawler;
 import net.viperfish.crawler.html.Site;
 import net.viperfish.crawler.html.dao.AnchorDatabase;
 import net.viperfish.crawler.html.dao.EmphasizedTextDatabase;
@@ -20,6 +20,8 @@ import net.viperfish.framework.compression.Compressor;
 import net.viperfish.framework.compression.Compressors;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -62,7 +64,7 @@ public class TestCrawler {
 	public void testBasicCrawler()
 		throws IOException, InterruptedException, NoSuchAlgorithmException {
 		URL url2Test = new URL("https://example.com");
-		BaseHttpWebCrawler crawler = new BaseHttpWebCrawler(siteDB,
+		HttpWebCrawler crawler = new HttpWebCrawler(siteDB,
 			new ConcurrentHttpFetcher(1));
 		crawler.submit(new URL("https://example.com/"));
 		crawler.startProcessing();
@@ -72,13 +74,16 @@ public class TestCrawler {
 		Site crawled = siteDB.find(1L);
 
 		String rawHTML = new String(IOUtil.read(url2Test.openStream()), StandardCharsets.UTF_8);
-		byte[] htmlBytes = rawHTML.getBytes(StandardCharsets.UTF_16);
-		Digest md5 = new MD5Digest();
-		md5.update(htmlBytes, 0, htmlBytes.length);
-		byte[] hashOut = new byte[16];
-		md5.doFinal(hashOut, 0);
+		String cleanHTML = Jsoup.clean(rawHTML, url2Test.toExternalForm(),
+			Whitelist.relaxed().addTags("title").addTags("head"));
+
+		byte[] htmlBytes = cleanHTML.getBytes(StandardCharsets.UTF_16);
 		Compressor compressor = Compressors.getCompressor("GZ");
 		byte[] compressed = compressor.compress(htmlBytes);
+		Digest md5 = new MD5Digest();
+		md5.update(compressed, 0, compressed.length);
+		byte[] hashOut = new byte[16];
+		md5.doFinal(hashOut, 0);
 
 		Assert.assertEquals(new URL("https://example.com/"), crawled.getUrl());
 		Assert.assertArrayEquals(compressed, crawled.getCompressedHtml());

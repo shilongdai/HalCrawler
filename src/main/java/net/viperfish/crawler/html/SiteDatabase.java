@@ -17,4 +17,13 @@ public interface SiteDatabase extends DatabaseObject<Long, Site> {
 	 * @throws IOException if any error occurred on query.
 	 */
 	Site find(URL url) throws IOException;
+
+	/**
+	 * finds a specific site by looking up its unique checksum
+	 *
+	 * @param checksum the checksum to lookup
+	 * @return the site found or null if not found
+	 * @throws IOException if a database error occurred.
+	 */
+	Site find(String checksum) throws IOException;
 }

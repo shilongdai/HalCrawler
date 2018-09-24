@@ -31,15 +31,15 @@ import org.jsoup.safety.Whitelist;
 // TODO: refractor the whole thing into more modular structure. Add documentation
 
 /**
- * A {@link DataProcessor} that crawls http pages. It takes raw html contents and extracts information
- * from it. By default, this implementation will fill in the URL and Compressed HTML attributes of a
- * site. To make this crawler follow the links on a page, scan text content etc, a custom {@link
- * TagProcessor} need to be supplied through the {@link BaseHttpWebCrawler#registerProcessor(String,
- * TagProcessor)} method. The output written by this class will contain all the successfully
- * retrieved crawled sites. Pages with response code not included in the 2xx codes are discarded.
- * This implementation is designed for concurrency.
+ * A {@link DataProcessor} that crawls http pages. It takes raw html contents and extracts
+ * information from it. By default, this implementation will fill in the URL and Compressed HTML
+ * attributes of a site. To make this crawler follow the links on a page, scan text content etc, a
+ * custom {@link TagProcessor} need to be supplied through the {@link
+ * HttpWebCrawler#registerProcessor(String, TagProcessor)} method. The output written by this
+ * class will contain all the successfully retrieved crawled sites. Pages with response code not
+ * included in the 2xx codes are discarded. This implementation is designed for concurrency.
  */
-public class BaseHttpWebCrawler extends DataProcessor<FetchedContent, Site> {
+public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 
 	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
@@ -71,7 +71,7 @@ public class BaseHttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 	 * @param db the storage output for the crawled sites
 	 * @param fetcher the {@link HttpFetcher} for fetching contents
 	 */
-	public BaseHttpWebCrawler(Datasink<Site> db,
+	public HttpWebCrawler(Datasink<Site> db,
 		HttpFetcher fetcher) {
 		super(fetcher, db, THREAD_COUNT);
 		processors = new HashMap<>();
@@ -133,6 +133,9 @@ public class BaseHttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			if (!ACCEPTED_STATUS_CODE.contains(content.getStatus())) {
 				return null;
 			}
+			String cleanHTML = Jsoup.clean(content.getHtml(), content.getUrl().toExternalForm(),
+				Whitelist.relaxed().addTags("title").addTags("head"));
+			content.setHtml(cleanHTML);
 			Site site = toSite(content);
 			// make sure not repeated
 			if (!crawlChecker.shouldCrawl(content.getUrl(), site)) {
@@ -141,8 +144,6 @@ public class BaseHttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			if (!crawlChecker.lock(content.getUrl(), site)) {
 				return null;
 			}
-			String cleanHTML = Jsoup.clean(content.getRawHTML(), content.getUrl().toExternalForm(),
-				Whitelist.relaxed().addTags("title").addTags("head"));
 			Document doc = Jsoup.parse(cleanHTML);
 
 			// get and process all of the tags
@@ -194,8 +195,8 @@ public class BaseHttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 
 	private Site toSite(FetchedContent content) {
 		byte[] compressed = this.compressor
-			.compress(content.getRawHTML().getBytes(StandardCharsets.UTF_16));
-		String checksum = hashSite(content.getRawHTML());
+			.compress(content.getHtml().getBytes(StandardCharsets.UTF_16));
+		String checksum = hashSite(compressed);
 
 		Site result = new Site();
 		result.setChecksum(checksum);
@@ -232,11 +233,10 @@ public class BaseHttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 		return result;
 	}
 
-	private String hashSite(String html) {
+	private String hashSite(byte[] compressed) {
 		Digest dig = hasher.get();
 		dig.reset();
-		byte[] inputBytes = html.getBytes(StandardCharsets.UTF_16);
-		dig.update(inputBytes, 0, inputBytes.length);
+		dig.update(compressed, 0, compressed.length);
 		byte[] out = new byte[16];
 		dig.doFinal(out, 0);
 		return Base64.getEncoder().encodeToString(out);

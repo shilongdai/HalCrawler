@@ -125,6 +125,9 @@ public class ConcurrentHttpFetcher implements HttpFetcher {
 				urlc.connect();
 
 				String mime = urlc.getContentType();
+				if (mime == null) {
+					return null;
+				}
 				boolean isHTML = mime.contains("text/html") || mime.contains("text/htm") || mime
 					.contains("text/plain");
 				if (!isHTML) {

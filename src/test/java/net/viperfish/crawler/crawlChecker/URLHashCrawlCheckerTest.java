@@ -15,7 +15,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class URLCrawlCheckerTest {
+public class URLHashCrawlCheckerTest {
 
 	private static SiteDatabaseImpl siteDB;
 
@@ -50,13 +50,24 @@ public class URLCrawlCheckerTest {
 
 	@Test
 	public void testURLChecker() throws MalformedURLException {
-		URLCrawlChecker checker = new URLCrawlChecker(siteDB);
+		URLHashCrawlChecker checker = new URLHashCrawlChecker(siteDB);
 		Assert.assertEquals(false, checker.shouldCrawl(new URL("https://www.example.com")));
-
 		Assert.assertEquals(true, checker.shouldCrawl(new URL("https://google.com")));
-		Assert.assertEquals(true, checker.lock(new URL("https://google.com"), null));
-		Assert.assertEquals(false, checker.shouldCrawl(new URL("https://google.com")));
-		Assert.assertEquals(false, checker.lock(new URL("https://google.com"), null));
+
+		Site exampleSite = new Site();
+		exampleSite.setUrl(new URL("https://exe.com"));
+		exampleSite.setChecksum("7890");
+
+		Site identicalSite = new Site();
+		identicalSite.setUrl(new URL("https://exe.com/index?parameter=this"));
+		identicalSite.setChecksum("7890");
+
+		Assert.assertEquals(true, checker.lock(exampleSite.getUrl(), exampleSite));
+		Assert.assertEquals(false, checker.shouldCrawl(new URL("https://exe.com")));
+		Assert.assertEquals(false, checker.lock(new URL("https://exe.com"), exampleSite));
+		Assert.assertFalse(checker.shouldCrawl(identicalSite.getUrl(), identicalSite));
+		Assert.assertTrue(checker.shouldCrawl(identicalSite.getUrl()));
+		Assert.assertFalse(checker.lock(identicalSite.getUrl(), identicalSite));
 	}
 
 }
