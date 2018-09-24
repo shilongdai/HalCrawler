@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f7387611-93e3-453a-b0ac-07c4a4c50bf2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/Restriction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/RobotTxt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/RestrictionParser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/RobotTxtTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/crawlChecker/URLCrawlChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/crawlChecker/URLHashCrawlChecker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/BaseHttpWebCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/HttpWebCrawler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/FetchedContent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/FetchedContent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/SiteDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/SiteDatabase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/SiteDatabaseImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/dao/SiteDatabaseImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/engine/ConcurrentHttpFetcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/engine/ConcurrentHttpFetcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/TestCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/TestCrawler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/crawlChecker/URLCrawlCheckerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/crawlChecker/URLHashCrawlCheckerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/engine/ConcurrentFetcherTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/engine/ConcurrentFetcherTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/createTables.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/createTables.sql" afterDir="false" />
-    </list>
+    <list default="true" id="f7387611-93e3-453a-b0ac-07c4a4c50bf2" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
     <ignored path="$PROJECT_DIR$/out/" />
@@ -57,14 +41,14 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="gradle" value="4" />
-          <entry key="java" value="92" />
+          <entry key="java" value="93" />
           <entry key="sql" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Groovy" value="4" />
-          <entry key="JAVA" value="92" />
+          <entry key="JAVA" value="93" />
           <entry key="SQL" value="1" />
         </counts>
       </usages-collector>
@@ -72,16 +56,16 @@
         <counts>
           <entry key="dummy" value="46" />
           <entry key="gradle" value="13" />
-          <entry key="java" value="12562" />
+          <entry key="java" value="12768" />
           <entry key="sql" value="4" />
-          <entry key="txt" value="234" />
+          <entry key="txt" value="253" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Groovy" value="13" />
-          <entry key="JAVA" value="12562" />
-          <entry key="PLAIN_TEXT" value="280" />
+          <entry key="JAVA" value="12768" />
+          <entry key="PLAIN_TEXT" value="299" />
           <entry key="SQL" value="4" />
         </counts>
       </usages-collector>
@@ -93,7 +77,19 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/RobotTxt.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="476">
-              <caret line="110" column="44" selection-start-line="110" selection-start-column="44" selection-end-line="110" selection-end-column="44" />
+              <caret line="92" column="44" selection-start-line="92" selection-start-column="44" selection-end-line="92" selection-end-column="44" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/RobotTxtTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1571">
+              <caret line="183" column="78" selection-start-line="183" selection-start-column="78" selection-end-line="183" selection-end-column="78" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -102,13 +98,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/RobotTxtTest.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/HttpFetcher.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="446">
-              <caret line="125" column="28" selection-start-line="125" selection-start-column="28" selection-end-line="125" selection-end-column="28" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="135">
+              <caret line="10" lean-forward="true" selection-start-line="6" selection-end-line="10" />
             </state>
           </provider>
         </entry>
@@ -128,7 +121,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/Restriction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
+            <state relative-caret-position="60">
               <caret line="6" column="20" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
             </state>
           </provider>
@@ -138,7 +131,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/RestrictionParser.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="75">
-              <caret line="6" column="40" selection-start-line="6" selection-start-column="40" selection-end-line="6" selection-end-column="40" />
+              <caret line="7" column="40" selection-start-line="7" selection-start-column="40" selection-end-line="7" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -694,7 +687,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537799499947" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537799828414" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -838,7 +831,7 @@
       <workItem from="1537455847979" duration="5089000" />
       <workItem from="1537562501489" duration="1327000" />
       <workItem from="1537786919525" duration="1952000" />
-      <workItem from="1537794565290" duration="4934000" />
+      <workItem from="1537794565290" duration="5208000" />
     </task>
     <task id="LOCAL-00001" summary="refractors code">
       <created>1536352929627</created>
@@ -896,13 +889,17 @@
       <option name="project" value="LOCAL" />
       <updated>1536871490108</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Working robots.txt">
+      <created>1537799676720</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1537799676720</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="RobotTxtTest - 2018.09.24 at 10h 13m 25s.xml">
-      <configuration name="RobotTxtTest" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="RobotTxtTest_testDisallowWithoutParam - 2018.09.24 at 10h 14m 28s.xml">
       <configuration name="RobotTxtTest.testDisallowWithoutParam" configurationId="JUnit" />
     </history-entry>
@@ -930,9 +927,12 @@
     <history-entry file="RobotTxtTest - 2018.09.24 at 10h 31m 27s.xml">
       <configuration name="RobotTxtTest" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="RobotTxtTest - 2018.09.24 at 10h 34m 02s.xml">
+      <configuration name="RobotTxtTest" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="44924000" />
+    <option name="totallyTimeSpent" value="45198000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -945,9 +945,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1052" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.30662394" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.30662394" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -956,7 +955,7 @@
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32894737" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32894737" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32894737" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3991228" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -966,7 +965,7 @@
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.32894737" />
       <window_info active="true" anchor="bottom" id="Messages" order="10" visible="true" weight="0.32894737" />
       <window_info anchor="bottom" id="Database Changes" order="11" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="12" weight="0.32894737" />
+      <window_info anchor="bottom" id="Version Control" order="12" visible="true" weight="0.32894737" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -1028,7 +1027,8 @@
     <MESSAGE value="rearranged entries" />
     <MESSAGE value="changed architecture" />
     <MESSAGE value="fixed bugs" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed bugs" />
+    <MESSAGE value="Working robots.txt" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working robots.txt" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1229,13 +1229,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/HttpFetcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="67" selection-start-line="6" selection-start-column="67" selection-end-line="6" selection-end-column="67" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/core/Crawler.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/TextContent.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -1317,7 +1310,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/tagProcessors/RestrictionParser.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
-          <caret line="6" column="40" selection-start-line="6" selection-start-column="40" selection-end-line="6" selection-end-column="40" />
+          <caret line="7" column="40" selection-start-line="7" selection-start-column="40" selection-end-line="7" selection-end-column="40" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1371,7 +1364,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/Restriction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
+        <state relative-caret-position="60">
           <caret line="6" column="20" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
         </state>
       </provider>
@@ -1379,7 +1372,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/RobotTxt.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="476">
-          <caret line="110" column="44" selection-start-line="110" selection-start-column="44" selection-end-line="110" selection-end-column="44" />
+          <caret line="92" column="44" selection-start-line="92" selection-start-column="44" selection-end-line="92" selection-end-column="44" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1388,11 +1381,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/net/viperfish/crawler/html/RobotTxtTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="446">
-          <caret line="125" column="28" selection-start-line="125" selection-start-column="28" selection-end-line="125" selection-end-column="28" />
+        <state relative-caret-position="1571">
+          <caret line="183" column="78" selection-start-line="183" selection-start-column="78" selection-end-line="183" selection-end-column="78" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/viperfish/crawler/html/HttpFetcher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="10" lean-forward="true" selection-start-line="6" selection-end-line="10" />
         </state>
       </provider>
     </entry>
