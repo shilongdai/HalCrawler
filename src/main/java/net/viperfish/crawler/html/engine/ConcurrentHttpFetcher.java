@@ -14,17 +14,25 @@ import net.viperfish.crawler.core.IOUtil;
 import net.viperfish.crawler.core.Pair;
 import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HttpFetcher;
+import net.viperfish.crawler.html.Restriction;
+import net.viperfish.crawler.html.RestrictionManager;
 
 public class ConcurrentHttpFetcher implements HttpFetcher {
 
 	private BlockingQueue<Pair<FetchedContent, Throwable>> queue;
 	private ExecutorService threadPool;
 	private AtomicInteger runningTasks;
+	private RestrictionManager manager;
 
-	public ConcurrentHttpFetcher(int threadCount) {
+	public ConcurrentHttpFetcher(int threadCount, RestrictionManager manager) {
 		threadPool = Executors.newFixedThreadPool(threadCount);
 		queue = new LinkedBlockingQueue<>();
 		runningTasks = new AtomicInteger(0);
+		this.manager = manager;
+	}
+
+	public ConcurrentHttpFetcher(int threadCount) {
+		this(threadCount, null);
 	}
 
 	@Override
@@ -83,6 +91,15 @@ public class ConcurrentHttpFetcher implements HttpFetcher {
 		return queue.size() == 0 && runningTasks.get() == 0;
 	}
 
+	@Override
+	public void setRestricitonManager(RestrictionManager mger) {
+		this.manager = mger;
+	}
+
+	@Override
+	public RestrictionManager getRestrictionManager() {
+		return manager;
+	}
 
 	private class FetchRunnable implements Runnable {
 
@@ -95,6 +112,12 @@ public class ConcurrentHttpFetcher implements HttpFetcher {
 		@Override
 		public void run() {
 			try {
+				if (manager != null) {
+					Restriction restriction = manager.getRestriction(url);
+					if (!restriction.canFetch()) {
+						return;
+					}
+				}
 				FetchedContent fetched = fetchSite(url);
 				if (fetched != null) {
 					queue.put(new Pair<>(fetched, null));

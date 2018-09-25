@@ -7,4 +7,8 @@ public interface HttpFetcher extends ResourcesStream<FetchedContent> {
 
 	void submit(URL url);
 
+	void setRestricitonManager(RestrictionManager mger);
+
+	RestrictionManager getRestrictionManager();
+
 }

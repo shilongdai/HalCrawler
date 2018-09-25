@@ -35,9 +35,9 @@ import org.jsoup.safety.Whitelist;
  * information from it. By default, this implementation will fill in the URL and Compressed HTML
  * attributes of a site. To make this crawler follow the links on a page, scan text content etc, a
  * custom {@link TagProcessor} need to be supplied through the {@link
- * HttpWebCrawler#registerProcessor(String, TagProcessor)} method. The output written by this
- * class will contain all the successfully retrieved crawled sites. Pages with response code not
- * included in the 2xx codes are discarded. This implementation is designed for concurrency.
+ * HttpWebCrawler#registerProcessor(String, TagProcessor)} method. The output written by this class
+ * will contain all the successfully retrieved crawled sites. Pages with response code not included
+ * in the 2xx codes are discarded. This implementation is designed for concurrency.
  */
 public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 
