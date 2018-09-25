@@ -107,7 +107,6 @@ public abstract class DataProcessor<I, O> {
 		}
 	}
 
-
 	protected abstract O process(I input) throws Exception;
 
 }

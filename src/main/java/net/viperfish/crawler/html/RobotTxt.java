@@ -77,10 +77,14 @@ public class RobotTxt {
 		if (str.startsWith("http:") || str.startsWith("https")) {
 			return Pattern.compile(str);
 		}
+		String baseURLString = baseURL.toExternalForm();
+		if (baseURLString.endsWith("/")) {
+			baseURLString = baseURLString.substring(0, baseURLString.length() - 1);
+		}
 		if (!(str.equals("/") || str.equals("/*"))) {
-			str = baseURL.toExternalForm() + str;
+			str = baseURLString + str;
 		} else {
-			str = baseURL.toExternalForm();
+			str = baseURLString;
 		}
 		str = str.replaceAll("\\.", "\\\\.");
 		if (str.indexOf("*") == -1) {

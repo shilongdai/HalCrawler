@@ -53,6 +53,7 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 			if (robotTxt == NULL_ROBOT_TXT) {
 				return new UnrestrictedRestriction();
 			}
+			return robotTxt.isAllowed(url);
 		}
 		try {
 			RobotTxt robotTxt = getRobotTxt(url);
@@ -78,7 +79,7 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 	private RobotTxt getRobotTxt(URL url) throws IOException {
 		URL baseURL = getBaseURL(url);
 		URL robotsTxtURL = new URL(baseURL.toExternalForm() + "/robots.txt");
-		HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
+		HttpURLConnection urlc = (HttpURLConnection) robotsTxtURL.openConnection();
 		// fetch robot.txt
 		urlc.setRequestMethod("GET");
 		urlc.setRequestProperty("User-Agent",
@@ -124,11 +125,11 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 			}
 			String fieldName = fields[0].trim();
 			String fieldVal = fields[1].trim();
-			if (fieldName.equals("user-agent") || fieldName.equals("*")) {
+			if (fieldName.equals("user-agent")) {
 				if (alreadyParsed) {
 					break;
 				}
-				if (fieldVal.equals(userAgent)) {
+				if (fieldVal.equals(userAgent) || fieldVal.equals("*")) {
 					startParse = true;
 					continue;
 				} else {
@@ -141,11 +142,11 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 			if (startParse) {
 				switch (fieldName) {
 					case "disallow": {
-						allowed.add(fieldVal);
+						disallowed.add(fieldVal);
 						break;
 					}
 					case "allow": {
-						disallowed.add(fieldVal);
+						allowed.add(fieldVal);
 						break;
 					}
 					case "crawl-delay": {
