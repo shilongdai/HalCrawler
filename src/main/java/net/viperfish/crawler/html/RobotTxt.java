@@ -86,7 +86,7 @@ public class RobotTxt {
 		} else {
 			str = baseURLString;
 		}
-		str = str.replaceAll("\\.", "\\\\.");
+		str = quoteNonWildcard(str);
 		if (str.indexOf("*") == -1) {
 			if (str.endsWith("$")) {
 				str = str.substring(0, str.length() - 1) + "*$";
@@ -113,6 +113,34 @@ public class RobotTxt {
 		}
 	}
 
+	private String quoteNonWildcard(String str) {
+		boolean endsInWildCard = str.endsWith("*");
+		boolean beginsWithWildCard = str.startsWith("*");
+		boolean endsWithDollarSign = str.endsWith("$");
+		if (endsWithDollarSign) {
+			str = str.substring(0, str.length() - 1);
+		}
+		String[] segments = str.split("\\*");
+		String[] quotedSegments = new String[segments.length];
+		for (int i = 0; i < segments.length; ++i) {
+			quotedSegments[i] = Pattern.quote(segments[i]);
+		}
+		StringBuilder sb = new StringBuilder();
+		for (String i : quotedSegments) {
+			sb.append(i).append("*");
+		}
+		if (!endsInWildCard) {
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		if (beginsWithWildCard) {
+			sb.insert(0, "*");
+		}
+		if (endsWithDollarSign) {
+			sb.append("$");
+		}
+		return sb.toString();
+	}
+
 	private static class RestrictionAdapter implements Restriction {
 
 		private boolean isAllowed;
@@ -131,4 +159,5 @@ public class RobotTxt {
 			return isAllowed;
 		}
 	}
+
 }
