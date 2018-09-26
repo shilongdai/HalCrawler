@@ -123,7 +123,7 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 			if (fields.length != 2) {
 				continue;
 			}
-			String fieldName = fields[0].trim();
+			String fieldName = fields[0].trim().toLowerCase();
 			String fieldVal = fields[1].trim();
 			if (fieldName.equals("user-agent")) {
 				if (alreadyParsed) {
