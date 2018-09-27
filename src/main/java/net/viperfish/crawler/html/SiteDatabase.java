@@ -3,11 +3,12 @@ package net.viperfish.crawler.html;
 import java.io.IOException;
 import java.net.URL;
 import net.viperfish.crawler.core.DatabaseObject;
+import net.viperfish.crawler.core.Datasink;
 
 /**
  * A {@link DatabaseObject} for storing Sites.
  */
-public interface SiteDatabase extends DatabaseObject<Long, Site> {
+public interface SiteDatabase extends DatabaseObject<Long, Site>, Datasink<Site> {
 
 	/**
 	 * finds a specific site by looking up its unique URL.

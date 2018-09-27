@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import net.viperfish.crawler.html.restrictions.RobotTxt;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package net.viperfish.crawler.html;
+package net.viperfish.crawler.html.restrictions;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import net.viperfish.crawler.core.IOUtil;
+import net.viperfish.crawler.html.Restriction;
+import net.viperfish.crawler.html.RestrictionManager;
 
 /**
  * A {@link RestrictionManager} that creates {@link Restriction}s based on a Site's robots.txt. This

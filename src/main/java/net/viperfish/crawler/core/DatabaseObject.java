@@ -10,7 +10,7 @@ import java.util.Collection;
  * @param <ID> the type of the lookup id
  * @param <T> the type of the object
  */
-public interface DatabaseObject<ID, T> extends Datasink<T> {
+public interface DatabaseObject<ID, T> {
 
 	/**
 	 * saves the object. The object s would be saved. An auto-generated id should be assigned to the

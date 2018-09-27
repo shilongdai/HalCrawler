@@ -1,4 +1,4 @@
-package net.viperfish.crawler.html;
+package net.viperfish.crawler.html.restrictions;
 
 import java.net.URL;
 import java.util.Collections;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.viperfish.crawler.html.Restriction;
 
 public class RobotTxt {
 

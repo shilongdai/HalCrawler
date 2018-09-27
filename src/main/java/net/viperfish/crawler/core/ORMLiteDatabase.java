@@ -20,7 +20,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 
 	private static DataSourceConnectionSource conn;
-	private static boolean isClosed = true;
+	private static boolean closed = true;
 
 	private Dao<T, ID> dao;
 	private Class<T> classType;
@@ -41,16 +41,20 @@ public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 		PoolingDataSource<PoolableConnection> pooledDatasource = new PoolingDataSource<>(objPool);
 
 		conn = new DataSourceConnectionSource(pooledDatasource, url);
+		closed = false;
 	}
 
 	public static void closeConn() {
 		conn.closeQuietly();
-		isClosed = true;
+		closed = true;
+	}
+
+	public static boolean checkClosed() {
+		return closed;
 	}
 
 	public ORMLiteDatabase<ID, T> connect() throws SQLException {
 		dao = DaoManager.createDao(conn, classType);
-		isClosed = false;
 		return this;
 	}
 
@@ -115,17 +119,9 @@ public class ORMLiteDatabase<ID, T> implements DatabaseObject<ID, T> {
 
 	@Override
 	public void close() {
+
 	}
 
-	@Override
-	public void write(T data) throws IOException {
-		save(data);
-	}
-
-	@Override
-	public boolean isClosed() {
-		return isClosed;
-	}
 
 	public List<T> findBy(String field, Object value) throws IOException {
 		try {

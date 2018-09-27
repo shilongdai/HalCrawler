@@ -22,6 +22,7 @@ public class TextSectionProcessor implements TagProcessor {
 		BLOCK_TAGS.add("blockquote");
 		BLOCK_TAGS.add("pre");
 		BLOCK_TAGS.add("code");
+		BLOCK_TAGS.add("table");
 	}
 
 	@Override

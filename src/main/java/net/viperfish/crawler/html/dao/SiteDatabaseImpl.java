@@ -2,6 +2,7 @@ package net.viperfish.crawler.html.dao;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 import net.viperfish.crawler.core.ORMLiteDatabase;
 import net.viperfish.crawler.html.Anchor;
@@ -18,15 +19,12 @@ public class SiteDatabaseImpl extends ORMLiteDatabase<Long, Site> implements Sit
 	private ORMLiteDatabase<Long, EmphasizedTextContent> emphasizedTextDB;
 	private ORMLiteDatabase<Long, Anchor> anchorDB;
 
-	public SiteDatabaseImpl(ORMLiteDatabase<Long, Header> hDb,
-		ORMLiteDatabase<Long, TextContent> tDB,
-		ORMLiteDatabase<Long, EmphasizedTextContent> emphasizedDB,
-		ORMLiteDatabase<Long, Anchor> anchorDB) {
+	public SiteDatabaseImpl() {
 		super(Site.class);
-		this.headerDB = hDb;
-		this.textContentDB = tDB;
-		this.emphasizedTextDB = emphasizedDB;
-		this.anchorDB = anchorDB;
+		this.headerDB = new HeaderDatabase();
+		this.textContentDB = new TextContentDatabase();
+		this.emphasizedTextDB = new EmphasizedTextDatabase();
+		this.anchorDB = new AnchorDatabase();
 	}
 
 	@Override
@@ -75,6 +73,29 @@ public class SiteDatabaseImpl extends ORMLiteDatabase<Long, Site> implements Sit
 			return result.get(0);
 		} else {
 			return null;
+		}
+	}
+
+	@Override
+	public void write(Site data) throws IOException {
+		save(data);
+	}
+
+	@Override
+	public boolean isClosed() {
+		return checkClosed();
+	}
+
+	@Override
+	public void init() throws IOException {
+		try {
+			this.connect();
+			headerDB.connect();
+			anchorDB.connect();
+			textContentDB.connect();
+			emphasizedTextDB.connect();
+		} catch (SQLException e) {
+			throw new IOException(e);
 		}
 	}
 

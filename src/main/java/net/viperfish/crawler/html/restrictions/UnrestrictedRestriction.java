@@ -1,4 +1,6 @@
-package net.viperfish.crawler.html;
+package net.viperfish.crawler.html.restrictions;
+
+import net.viperfish.crawler.html.Restriction;
 
 public class UnrestrictedRestriction implements Restriction {
 

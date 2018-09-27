@@ -10,11 +10,7 @@ import net.viperfish.crawler.core.IOUtil;
 import net.viperfish.crawler.core.ORMLiteDatabase;
 import net.viperfish.crawler.html.HttpWebCrawler;
 import net.viperfish.crawler.html.Site;
-import net.viperfish.crawler.html.dao.AnchorDatabase;
-import net.viperfish.crawler.html.dao.EmphasizedTextDatabase;
-import net.viperfish.crawler.html.dao.HeaderDatabase;
 import net.viperfish.crawler.html.dao.SiteDatabaseImpl;
-import net.viperfish.crawler.html.dao.TextContentDatabase;
 import net.viperfish.crawler.html.engine.ConcurrentHttpFetcher;
 import net.viperfish.framework.compression.Compressor;
 import net.viperfish.framework.compression.Compressors;
@@ -33,11 +29,10 @@ public class TestCrawler {
 	private static SiteDatabaseImpl siteDB;
 
 	@BeforeClass
-	public static void init() throws SQLException {
+	public static void init() throws IOException, SQLException {
 		ORMLiteDatabase.connect("jdbc:h2:mem:test", "testUser", "testPassword");
-		siteDB = (SiteDatabaseImpl) new SiteDatabaseImpl(new HeaderDatabase().connect(),
-			new TextContentDatabase().connect(), new EmphasizedTextDatabase().connect(),
-			new AnchorDatabase().connect()).connect();
+		siteDB = new SiteDatabaseImpl();
+		siteDB.init();
 		siteDB.executeSql(
 			"CREATE TABLE Site(siteID BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, title VARCHAR(1000) NOT NULL, url VARCHAR(1000) UNIQUE, checksum VARCHAR(128) NOT NULL, compressedHtml BLOB(14000000) NOT NULL);"
 				+ "");
@@ -64,7 +59,7 @@ public class TestCrawler {
 	public void testBasicCrawler()
 		throws IOException, InterruptedException, NoSuchAlgorithmException {
 		URL url2Test = new URL("https://example.com");
-		HttpWebCrawler crawler = new HttpWebCrawler(siteDB,
+		HttpWebCrawler crawler = new HttpWebCrawler(1, siteDB,
 			new ConcurrentHttpFetcher(1));
 		crawler.submit(new URL("https://example.com/"));
 		crawler.startProcessing();

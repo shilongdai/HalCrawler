@@ -2,6 +2,7 @@ package net.viperfish.crawler.html;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import net.viperfish.crawler.html.restrictions.RobotsTxtRestrictionManager;
 import org.junit.Assert;
 import org.junit.Test;
 

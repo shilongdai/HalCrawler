@@ -15,14 +15,14 @@ public abstract class DataProcessor<I, O> {
 	private ExecutorService masterDelegater;
 	private Future<?> delegateTask;
 	private ExecutorService processingThreads;
-	private AtomicInteger activeProcessingThreads;
+	private AtomicInteger activeProcessingTasks;
 
 	public DataProcessor(ResourcesStream<? extends I> in, Datasink<? super O> out, int threads) {
 		this.in = in;
 		this.out = out;
 		masterDelegater = Executors.newSingleThreadExecutor();
 		processingThreads = Executors.newFixedThreadPool(threads);
-		activeProcessingThreads = new AtomicInteger(0);
+		activeProcessingTasks = new AtomicInteger(0);
 	}
 
 	public void startProcessing() {
@@ -31,11 +31,11 @@ public abstract class DataProcessor<I, O> {
 				@Override
 				public void run() {
 					while (!Thread.interrupted()) {
-						System.out.printf("Active Processing Thread: %d\n",
-							activeProcessingThreads.get());
+						System.out.printf("Active Processing Tasks: %d\n",
+							activeProcessingTasks.get());
 						// exit if there are no data left and that no processing are being done.
 						if ((in.isClosed() || in.isEndReached())
-							&& activeProcessingThreads.get() == 0) {
+							&& activeProcessingTasks.get() == 0) {
 							return;
 						}
 
@@ -46,7 +46,7 @@ public abstract class DataProcessor<I, O> {
 							}
 
 							// submit a new item to be concurrently processed
-							activeProcessingThreads.incrementAndGet();
+							activeProcessingTasks.incrementAndGet();
 							processingThreads.submit(new Runnable() {
 								@Override
 								public void run() {
@@ -58,7 +58,7 @@ public abstract class DataProcessor<I, O> {
 									} catch (Exception e) {
 										e.printStackTrace();
 									} finally {
-										activeProcessingThreads.decrementAndGet();
+										activeProcessingTasks.decrementAndGet();
 									}
 								}
 							});
@@ -73,7 +73,7 @@ public abstract class DataProcessor<I, O> {
 
 	public boolean isDone() {
 		if (delegateTask != null) {
-			return delegateTask.isDone() && activeProcessingThreads.get() == 0;
+			return delegateTask.isDone() && activeProcessingTasks.get() == 0;
 		}
 		return true;
 	}

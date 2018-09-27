@@ -17,8 +17,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import net.viperfish.crawler.core.DataProcessor;
 import net.viperfish.crawler.core.Datasink;
-import net.viperfish.crawler.crawlChecker.NullCrawlChecker;
 import net.viperfish.crawler.exceptions.ParsingException;
+import net.viperfish.crawler.html.crawlChecker.YesCrawlChecker;
 import net.viperfish.framework.compression.Compressor;
 import net.viperfish.framework.compression.Compressors;
 import org.bouncycastle.crypto.Digest;
@@ -44,9 +44,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
 
-	// the amount of processing threads
-	private static int THREAD_COUNT = 64;
-
 	static {
 		Set<Integer> buffer = new HashSet<>();
 		buffer.add(200);
@@ -61,19 +58,20 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 	private boolean limit2Host;
 	private ThreadLocal<Digest> hasher;
 	private Compressor compressor;
-	private CrawlChecker crawlChecker;
+	private HttpCrawlerHandler httpCrawlerHandler;
 	private HttpFetcher fetcher;
 
 	/**
 	 * creates a new crawler with supplied storage output for site data and anchor data, and the
 	 * {@link HttpFetcher} to be used for downloading sites.
 	 *
+	 * @param threadCount the amount of processing threads
 	 * @param db the storage output for the crawled sites
 	 * @param fetcher the {@link HttpFetcher} for fetching contents
 	 */
-	public HttpWebCrawler(Datasink<Site> db,
+	public HttpWebCrawler(int threadCount, Datasink<Site> db,
 		HttpFetcher fetcher) {
-		super(fetcher, db, THREAD_COUNT);
+		super(fetcher, db, threadCount);
 		processors = new HashMap<>();
 		this.fetcher = fetcher;
 		limit2Host = false;
@@ -92,7 +90,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-		crawlChecker = new NullCrawlChecker();
+		httpCrawlerHandler = new YesCrawlChecker();
 	}
 
 	public void submit(URL url) {
@@ -119,12 +117,12 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 		return limit2Host;
 	}
 
-	public CrawlChecker getCrawlChecker() {
-		return crawlChecker;
+	public HttpCrawlerHandler getHttpCrawlerHandler() {
+		return httpCrawlerHandler;
 	}
 
-	public void setCrawlChecker(CrawlChecker checker) {
-		this.crawlChecker = checker;
+	public void setHttpCrawlerHandler(HttpCrawlerHandler checker) {
+		this.httpCrawlerHandler = checker;
 	}
 
 	@Override
@@ -137,13 +135,17 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 				Whitelist.relaxed().addTags("title").addTags("head"));
 			content.setHtml(cleanHTML);
 			Site site = toSite(content);
-			// make sure not repeated
-			if (!crawlChecker.shouldCrawl(content.getUrl(), site)) {
+
+			// do post parse operations
+			HandlerResponse postParseResp = httpCrawlerHandler.handlePostParse(site);
+			if (postParseResp == HandlerResponse.HALT) {
 				return null;
 			}
-			if (!crawlChecker.lock(content.getUrl(), site)) {
+			if (postParseResp == HandlerResponse.DEFERRED) {
+				fetcher.submit(site.getUrl());
 				return null;
 			}
+
 			Document doc = Jsoup.parse(cleanHTML);
 
 			// get and process all of the tags
@@ -155,6 +157,16 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			processHeaders(processedTags, site);
 			processTexts(processedTags, site);
 			processEmphasizedText(processedTags, site);
+
+			// do post process operations
+			HandlerResponse postProcessResp = httpCrawlerHandler.handlePostProcess(site);
+			if (postProcessResp == HandlerResponse.HALT) {
+				return null;
+			}
+			if (postProcessResp == HandlerResponse.DEFERRED) {
+				fetcher.submit(site.getUrl());
+				return null;
+			}
 
 			// add pages to crawl
 			if (processedTags.containsKey(TagDataType.HTML_LINK)) {
@@ -171,7 +183,8 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 					}
 
 					// make sure not repeating
-					if (crawlChecker.shouldCrawl(anchor.getTargetURL())) {
+					if (httpCrawlerHandler.handlePreFetch(anchor.getTargetURL())
+						== HandlerResponse.GO_AHEAD) {
 						fetcher.submit(anchor.getTargetURL());
 					}
 				}
