@@ -69,7 +69,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 	 * @param db the storage output for the crawled sites
 	 * @param fetcher the {@link HttpFetcher} for fetching contents
 	 */
-	public HttpWebCrawler(int threadCount, Datasink<Site> db,
+	public HttpWebCrawler(int threadCount, Datasink<? super Site> db,
 		HttpFetcher fetcher) {
 		super(fetcher, db, threadCount);
 		processors = new HashMap<>();

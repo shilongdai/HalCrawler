@@ -89,6 +89,11 @@ public abstract class DataProcessor<I, O> {
 		return;
 	}
 
+	public void reset() {
+		delegateTask.cancel(true);
+		delegateTask = null;
+	}
+
 	public void shutdown() throws IOException {
 		try {
 			in.close();
