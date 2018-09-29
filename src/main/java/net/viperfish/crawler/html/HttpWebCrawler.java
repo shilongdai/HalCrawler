@@ -190,6 +190,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 				}
 				site.setAnchors(anchors);
 			}
+			System.out.println("Crawled:" + content.getUrl());
 			return site;
 		} catch (ParsingException e) {
 			System.out.println("Parsing Error:" + e.getMessage());
