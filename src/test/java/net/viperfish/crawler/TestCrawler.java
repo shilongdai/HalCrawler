@@ -3,11 +3,11 @@ package net.viperfish.crawler;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Base64;
 import net.viperfish.crawler.core.IOUtil;
 import net.viperfish.crawler.core.ORMLiteDatabase;
+import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.HttpWebCrawler;
 import net.viperfish.crawler.html.Site;
 import net.viperfish.crawler.html.dao.SiteDatabaseImpl;
@@ -57,14 +57,16 @@ public class TestCrawler {
 
 	@Test
 	public void testBasicCrawler()
-		throws IOException, InterruptedException, NoSuchAlgorithmException {
+		throws Exception {
 		URL url2Test = new URL("https://example.com");
+		HttpFetcher fetcher = new ConcurrentHttpFetcher(1);
 		HttpWebCrawler crawler = new HttpWebCrawler(1, siteDB,
-			new ConcurrentHttpFetcher(1));
+			fetcher);
 		crawler.submit(new URL("https://example.com/"));
 		crawler.startProcessing();
 		crawler.waitUntiDone();
 		crawler.shutdown();
+		fetcher.close();
 
 		Site crawled = siteDB.find(1L);
 
