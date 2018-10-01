@@ -1,3 +1,5 @@
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
+
 # HalCrawler
 ## Overview
 The HalCrawler project is the first in a series of planned projects that will hopefully lead to a working search engine that returns reasonable results. It provides a framework for creating a webcrawler, both generic and specific, to scrape contents off of various webpages. The end goal of the project is to have a fully modular template for creating specific crawlers that are tailored to various tasks such as fetching text for index, getting data from tables, scanning through forum threads for comments and memes, or downloading all versions of product documentations.
