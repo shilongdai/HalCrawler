@@ -12,7 +12,7 @@ Decouple the crawling from the output entries so that the crawler can be fully m
 
 ## Details
 ### Structure
-The crawler framework has four main components:
+The crawler framework has five main components:
 
 - The base crawler
 - The content processors
