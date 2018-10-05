@@ -15,14 +15,10 @@ public final class Compressors {
 
 	static {
 		cache = new HashMap<>();
-		initCompressors();
 	}
 
 	private Compressors() {
 
-	}
-
-	private static void initCompressors() {
 	}
 
 	/**

@@ -92,8 +92,7 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 			if (urlc.getResponseCode() < 300 && urlc.getResponseCode() > 199) {
 				String robotStr = new String(IOUtil.read(urlc.getInputStream()),
 					StandardCharsets.UTF_8);
-				RobotTxt parsed = parseRobotTxt(baseURL, robotStr);
-				return parsed;
+				return parseRobotTxt(baseURL, robotStr);
 			} else {
 				return NULL_ROBOT_TXT;
 			}

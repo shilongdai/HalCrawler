@@ -1,7 +1,6 @@
 package net.viperfish.crawler.html;
 
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
@@ -269,14 +268,14 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 				anchor.setTargetURL(anchorURL);
 				anchor.setSize(16);
 				anchors.add(anchor);
-			} catch (URISyntaxException | MalformedURLException error) {
+			} catch (MalformedURLException error) {
 				System.out.println("Invalid URL:" + error.getMessage());
 			}
 		}
 		return anchors;
 	}
 
-	private boolean isRelative(String url) throws URISyntaxException {
+	private boolean isRelative(String url) {
 		return !(url.startsWith("http://") || url.startsWith("https://"));
 	}
 
@@ -287,9 +286,8 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 	}
 
 	private URL getNearestPath(URL base) throws MalformedURLException {
-		URL url = new URL(
+		return new URL(
 			base.toExternalForm().substring(0, base.toExternalForm().lastIndexOf("/") + 1));
-		return url;
 	}
 
 }

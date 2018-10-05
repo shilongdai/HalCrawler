@@ -81,7 +81,6 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 			threadPool.shutdownNow();
 		}
 		closed = true;
-		return;
 	}
 
 	@Override
@@ -133,7 +132,6 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 				}
 			} catch (Throwable e) {
 				queue.offer(new Pair<>(null, e));
-				return;
 			} finally {
 				runningTasks.decrementAndGet();
 			}
@@ -142,7 +140,7 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 
 		private FetchedContent fetchSite(URL url) throws IOException {
 			URLConnection conn = url.openConnection();
-			HttpURLConnection urlc = null;
+			HttpURLConnection urlc;
 			if (url.openConnection() instanceof HttpURLConnection) {
 				// establish connection
 				urlc = (HttpURLConnection) conn;
@@ -166,7 +164,7 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 					return null;
 				}
 
-				String pageHtml = null;
+				String pageHtml;
 				try {
 					pageHtml = new String(IOUtil.read(urlc.getInputStream()),
 						getEncoding(urlc));

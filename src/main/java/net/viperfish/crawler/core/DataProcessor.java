@@ -106,7 +106,6 @@ public abstract class DataProcessor<I, O> {
 		} catch (ExecutionException e) {
 			throw new RuntimeException(e);
 		}
-		return;
 	}
 
 	/**
