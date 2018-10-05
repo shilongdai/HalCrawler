@@ -4,9 +4,9 @@ import java.net.URL;
 
 public interface HttpCrawlerHandler {
 
-	HandlerResponse handlePostParse(Site site);
+	HandlerResponse handlePostParse(CrawledData site);
 
 	HandlerResponse handlePreFetch(URL url);
 
-	HandlerResponse handlePostProcess(Site site);
+	HandlerResponse handlePostProcess(CrawledData site);
 }

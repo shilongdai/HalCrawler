@@ -1,72 +1,43 @@
 package net.viperfish.crawler;
 
-import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.Base64;
 import net.viperfish.crawler.core.IOUtil;
-import net.viperfish.crawler.core.ORMLiteDatabase;
+import net.viperfish.crawler.html.CrawledData;
+import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.HttpWebCrawler;
-import net.viperfish.crawler.html.Site;
-import net.viperfish.crawler.html.dao.SiteDatabaseImpl;
-import net.viperfish.crawler.html.engine.ConcurrentHttpFetcher;
+import net.viperfish.crawler.html.InMemSiteDatabase;
+import net.viperfish.crawler.html.engine.ApplicationConcurrentHttpFetcher;
 import net.viperfish.framework.compression.Compressor;
 import net.viperfish.framework.compression.Compressors;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 
 public class TestCrawler {
 
-	private static SiteDatabaseImpl siteDB;
-
-	@BeforeClass
-	public static void init() throws IOException, SQLException {
-		ORMLiteDatabase.connect("jdbc:h2:mem:test", "testUser", "testPassword");
-		siteDB = new SiteDatabaseImpl();
-		siteDB.init();
-		siteDB.executeSql(
-			"CREATE TABLE Site(siteID BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, title VARCHAR(1000) NOT NULL, url VARCHAR(1000) UNIQUE, checksum VARCHAR(128) NOT NULL, compressedHtml BLOB(14000000) NOT NULL);"
-				+ "");
-		siteDB.executeSql(
-			"CREATE TABLE Header(headerID BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, siteID BIGINT NOT NULL, size INT, content VARCHAR(1000) NOT NULL, CONSTRAINT Site_Header FOREIGN KEY (siteID) REFERENCES Site(siteID) ON DELETE CASCADE);"
-				+ "");
-		siteDB.executeSql(
-			"CREATE TABLE Anchor(anchorID BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, siteID BIGINT NOT NULL, anchorText VARCHAR(1000) NOT NULL, targetURL VARCHAR(3000) NOT NULL, CONSTRAINT Site_Anchor FOREIGN KEY (siteID) REFERENCES Site(siteID) ON DELETE CASCADE);"
-				+ "");
-		siteDB.executeSql(
-			"CREATE TABLE TextContent(textID BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, siteID BIGINT NOT NULL, content BLOB(14000000), CONSTRAINT Site_Text FOREIGN KEY (siteID) REFERENCES Site(siteID) ON DELETE CASCADE);"
-				+ "");
-		siteDB.executeSql(
-			"CREATE TABLE EmphasizedText(textID BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, siteID BIGINT NOT NULL, content BLOB(14000000), method VARCHAR(50) NOT NULL, CONSTRAINT Site_EmphasizedText FOREIGN KEY (siteID) REFERENCES Site(siteID) ON DELETE CASCADE);");
-
-	}
-
-	@AfterClass
-	public static void cleanup() {
-		ORMLiteDatabase.closeConn();
-	}
 
 	@Test
 	public void testBasicCrawler()
-		throws IOException, InterruptedException, NoSuchAlgorithmException {
+		throws Exception {
 		URL url2Test = new URL("https://example.com");
+		HttpFetcher fetcher = new ApplicationConcurrentHttpFetcher(1);
+		InMemSiteDatabase siteDB = new InMemSiteDatabase();
+		siteDB.init();
 		HttpWebCrawler crawler = new HttpWebCrawler(1, siteDB,
-			new ConcurrentHttpFetcher(1));
+			fetcher);
 		crawler.submit(new URL("https://example.com/"));
 		crawler.startProcessing();
 		crawler.waitUntiDone();
 		crawler.shutdown();
+		fetcher.close();
 
-		Site crawled = siteDB.find(1L);
+		CrawledData crawled = siteDB.get(new URL("https://example.com/"));
 
 		String rawHTML = new String(IOUtil.read(url2Test.openStream()), StandardCharsets.UTF_8);
 		String cleanHTML = Jsoup.clean(rawHTML, url2Test.toExternalForm(),

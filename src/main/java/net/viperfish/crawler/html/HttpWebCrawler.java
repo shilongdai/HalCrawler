@@ -1,19 +1,14 @@
 package net.viperfish.crawler.html;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import net.viperfish.crawler.core.DataProcessor;
 import net.viperfish.crawler.core.Datasink;
@@ -38,10 +33,12 @@ import org.jsoup.safety.Whitelist;
  * will contain all the successfully retrieved crawled sites. Pages with response code not included
  * in the 2xx codes are discarded. This implementation is designed for concurrency.
  */
-public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
+public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 
 	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
+	private static final String ANCHOR_KEY = "__anchors";
+
 
 	static {
 		Set<Integer> buffer = new HashSet<>();
@@ -68,7 +65,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 	 * @param db the storage output for the crawled sites
 	 * @param fetcher the {@link HttpFetcher} for fetching contents
 	 */
-	public HttpWebCrawler(int threadCount, Datasink<? super Site> db,
+	public HttpWebCrawler(int threadCount, Datasink<? super CrawledData> db,
 		HttpFetcher fetcher) {
 		super(fetcher, db, threadCount);
 		processors = new HashMap<>();
@@ -125,7 +122,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 	}
 
 	@Override
-	protected Site process(FetchedContent content) {
+	protected CrawledData process(FetchedContent content) {
 		try {
 			if (!ACCEPTED_STATUS_CODE.contains(content.getStatus())) {
 				return null;
@@ -133,7 +130,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			String cleanHTML = Jsoup.clean(content.getHtml(), content.getUrl().toExternalForm(),
 				Whitelist.relaxed().addTags("title").addTags("head"));
 			content.setHtml(cleanHTML);
-			Site site = toSite(content);
+			CrawledData site = toSite(content);
 
 			// do post parse operations
 			HandlerResponse handlerResponse = HandlerResponse.GO_AHEAD;
@@ -156,14 +153,8 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			Document doc = Jsoup.parse(cleanHTML);
 
 			// get and process all of the tags
-			Map<TagDataType, List<TagData>> processedTags = recursiveInterpretTags(
+			recursiveInterpretTags(
 				doc.getElementsByTag("html").first(), site);
-
-			// process stuff on the page
-			processTitle(processedTags, site);
-			processHeaders(processedTags, site);
-			processTexts(processedTags, site);
-			processEmphasizedText(processedTags, site);
 
 			// do post process operations
 
@@ -183,11 +174,9 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			}
 
 			// add pages to crawl
-			if (processedTags.containsKey(TagDataType.HTML_LINK)) {
-				List<TagData> linkTags = processedTags.get(TagDataType.HTML_LINK);
-				List<Anchor> anchors = new LinkedList<>();
-				for (TagData td : linkTags) {
-					Anchor anchor = toAnchor(td);
+			if (site.getProperties().containsKey(ANCHOR_KEY)) {
+				List<Anchor> anchors = site.getProperty(ANCHOR_KEY, List.class);
+				for (Anchor anchor : anchors) {
 					anchors.add(anchor);
 					// check if limited to host
 					if (limit2Host) {
@@ -208,63 +197,42 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 						fetcher.submit(anchor.getTargetURL());
 					}
 				}
-				site.setAnchors(anchors);
 			}
 			System.out.println("Crawled:" + content.getUrl());
 			return site;
 		} catch (ParsingException e) {
 			System.out.println("Parsing Error:" + e.getMessage());
-		} catch (FileNotFoundException e) {
-			System.out.println("Page Not Found:" + e.getMessage());
-		} catch (IOException e) {
-			if (e.getCause() instanceof SQLException) {
-				System.out.println("Database Error:" + e.getMessage());
-			} else {
-				System.out.println("Http Error:" + e.getMessage());
-			}
-			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private Site toSite(FetchedContent content) {
+	private CrawledData toSite(FetchedContent content) {
 		byte[] compressed = this.compressor
 			.compress(content.getHtml().getBytes(StandardCharsets.UTF_16));
 		String checksum = hashSite(compressed);
 
-		Site result = new Site();
+		CrawledData result = new CrawledData();
 		result.setChecksum(checksum);
 		result.setCompressedHtml(compressed);
 		result.setUrl(content.getUrl());
 		return result;
 	}
 
-	private Map<TagDataType, List<TagData>> recursiveInterpretTags(Element e, Site s)
+	private void recursiveInterpretTags(Element e, CrawledData s)
 		throws ParsingException {
-		Map<TagDataType, List<TagData>> result = new HashMap<>();
 		if (e == null || e.tagName() == null) {
-			return result;
+			return;
 		}
 
 		for (TagProcessor processor : processors.values()) {
 			if (processor.match(e)) {
-				result.putAll(processor.processTag(e, s));
+				processor.processTag(e, s);
 			}
 		}
 
 		for (Element child : e.children()) {
-			Map<TagDataType, List<TagData>> childResult = recursiveInterpretTags(child, s);
-			for (Entry<TagDataType, List<TagData>> entry : childResult.entrySet()) {
-				if (!result.containsKey(entry.getKey())) {
-					result.put(entry.getKey(), entry.getValue());
-				} else {
-					for (TagData td : entry.getValue()) {
-						result.get(entry.getKey()).add(td);
-					}
-				}
-			}
+			recursiveInterpretTags(child, s);
 		}
-		return result;
 	}
 
 	private String hashSite(byte[] compressed) {
@@ -275,62 +243,5 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 		dig.doFinal(out, 0);
 		return Base64.getEncoder().encodeToString(out);
 	}
-
-	private void processHeaders(Map<TagDataType, List<TagData>> processedTags, Site site) {
-		// parse headers
-		if (processedTags.containsKey(TagDataType.HTML_HEADER_CONTENT)) {
-			List<TagData> headers = processedTags.get(TagDataType.HTML_HEADER_CONTENT);
-			for (TagData td : headers) {
-				Header header = new Header();
-				header.setContent(td.get("headerText", String.class));
-				header.setSize(Integer.parseInt(td.get("size", String.class)));
-				site.getHeaders().add(header);
-			}
-		}
-	}
-
-	private void processTexts(Map<TagDataType, List<TagData>> processedTags, Site site) {
-		// parse headers
-		if (processedTags.containsKey(TagDataType.HTML_TEXT_CONTENT)) {
-			List<TagData> headers = processedTags.get(TagDataType.HTML_TEXT_CONTENT);
-			for (TagData td : headers) {
-				TextContent text = new TextContent();
-				text.setContent(td.get("text", String.class));
-				site.getTexts().add(text);
-			}
-		}
-	}
-
-	private void processEmphasizedText(Map<TagDataType, List<TagData>> processedTags, Site site) {
-		// parse headers
-		if (processedTags.containsKey(TagDataType.HTML_EMPHASIZED_TEXT)) {
-			List<TagData> headers = processedTags.get(TagDataType.HTML_EMPHASIZED_TEXT);
-			for (TagData td : headers) {
-				EmphasizedTextContent text = new EmphasizedTextContent();
-				text.setContent(td.get("content", String.class));
-				text.setMethod(td.get("method", EmphasizedType.class));
-				site.getTexts().add(text);
-			}
-		}
-	}
-
-	private void processTitle(Map<TagDataType, List<TagData>> processedTags, Site site) {
-		// parse title
-		if (processedTags.containsKey(TagDataType.HTML_TITLE)) {
-			site.setTitle(
-				processedTags.get(TagDataType.HTML_TITLE).get(0).get("title", String.class));
-		}
-	}
-
-	private Anchor toAnchor(TagData anchorData) throws IOException {
-		URL linkedPage = anchorData.get("url", URL.class);
-		String anchorName = anchorData.get("anchor", String.class);
-
-		Anchor result = new Anchor();
-		result.setAnchorText(anchorName);
-		result.setTargetURL(linkedPage);
-		return result;
-	}
-
 
 }

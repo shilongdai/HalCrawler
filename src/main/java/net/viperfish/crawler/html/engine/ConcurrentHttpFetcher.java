@@ -17,18 +17,20 @@ import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.Restriction;
 import net.viperfish.crawler.html.RestrictionManager;
 
-public class ConcurrentHttpFetcher implements HttpFetcher {
+public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 
 	private BlockingQueue<Pair<FetchedContent, Throwable>> queue;
 	private ExecutorService threadPool;
 	private AtomicInteger runningTasks;
 	private RestrictionManager manager;
+	private boolean closed;
 
 	public ConcurrentHttpFetcher(int threadCount, RestrictionManager manager) {
 		threadPool = Executors.newFixedThreadPool(threadCount);
 		queue = new LinkedBlockingQueue<>();
 		runningTasks = new AtomicInteger(0);
 		this.manager = manager;
+		closed = false;
 	}
 
 	public ConcurrentHttpFetcher(int threadCount) {
@@ -78,17 +80,8 @@ public class ConcurrentHttpFetcher implements HttpFetcher {
 		} catch (InterruptedException e) {
 			threadPool.shutdownNow();
 		}
+		closed = true;
 		return;
-	}
-
-	@Override
-	public boolean isClosed() {
-		return threadPool.isShutdown();
-	}
-
-	@Override
-	public boolean isEndReached() {
-		return queue.size() == 0 && runningTasks.get() == 0;
 	}
 
 	@Override
@@ -99,6 +92,22 @@ public class ConcurrentHttpFetcher implements HttpFetcher {
 	@Override
 	public RestrictionManager getRestrictionManager() {
 		return manager;
+	}
+
+	protected AtomicInteger getTaskNumber() {
+		return runningTasks;
+	}
+
+	protected ExecutorService getThreadPool() {
+		return threadPool;
+	}
+
+	protected boolean closeCalled() {
+		return closed;
+	}
+
+	protected BlockingQueue<Pair<FetchedContent, Throwable>> queue() {
+		return queue;
 	}
 
 	private class FetchRunnable implements Runnable {

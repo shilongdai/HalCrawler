@@ -3,7 +3,7 @@ package net.viperfish.crawler.html.crawlChecker;
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import net.viperfish.crawler.html.Site;
+import net.viperfish.crawler.html.CrawledData;
 
 public class BaseInMemCrawlHandler extends BaseCrawlHandler {
 
@@ -16,7 +16,7 @@ public class BaseInMemCrawlHandler extends BaseCrawlHandler {
 	}
 
 	@Override
-	protected boolean isParsed(Site site) {
+	protected boolean isParsed(CrawledData site) {
 		return isFetched(site.getUrl()) && hashTracker.containsKey(site.getChecksum());
 	}
 
@@ -26,7 +26,7 @@ public class BaseInMemCrawlHandler extends BaseCrawlHandler {
 	}
 
 	@Override
-	protected boolean lock(Site s) {
+	protected boolean lock(CrawledData s) {
 		return tracker.putIfAbsent(s.getUrl(), true) == null
 			&& hashTracker.putIfAbsent(s.getChecksum(), true) == null;
 	}
