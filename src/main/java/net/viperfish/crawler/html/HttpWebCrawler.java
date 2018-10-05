@@ -18,7 +18,6 @@ import java.util.Set;
 import net.viperfish.crawler.core.DataProcessor;
 import net.viperfish.crawler.core.Datasink;
 import net.viperfish.crawler.exceptions.ParsingException;
-import net.viperfish.crawler.html.crawlChecker.YesCrawlChecker;
 import net.viperfish.framework.compression.Compressor;
 import net.viperfish.framework.compression.Compressors;
 import org.bouncycastle.crypto.Digest;
@@ -58,7 +57,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 	private boolean limit2Host;
 	private ThreadLocal<Digest> hasher;
 	private Compressor compressor;
-	private HttpCrawlerHandler httpCrawlerHandler;
+	private List<HttpCrawlerHandler> httpCrawlerHandler;
 	private HttpFetcher fetcher;
 
 	/**
@@ -90,7 +89,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-		httpCrawlerHandler = new YesCrawlChecker();
+		httpCrawlerHandler = new LinkedList<>();
 	}
 
 	public void submit(URL url) {
@@ -117,12 +116,12 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 		return limit2Host;
 	}
 
-	public HttpCrawlerHandler getHttpCrawlerHandler() {
+	public List<HttpCrawlerHandler> getHttpCrawlerHandlers() {
 		return httpCrawlerHandler;
 	}
 
-	public void setHttpCrawlerHandler(HttpCrawlerHandler checker) {
-		this.httpCrawlerHandler = checker;
+	public void registerCrawlerHandler(HttpCrawlerHandler checker) {
+		this.httpCrawlerHandler.add(checker);
 	}
 
 	@Override
@@ -137,11 +136,19 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			Site site = toSite(content);
 
 			// do post parse operations
-			HandlerResponse postParseResp = httpCrawlerHandler.handlePostParse(site);
-			if (postParseResp == HandlerResponse.HALT) {
+			HandlerResponse handlerResponse = HandlerResponse.GO_AHEAD;
+
+			for (HttpCrawlerHandler handler : httpCrawlerHandler) {
+				HandlerResponse resp = handler.handlePostParse(site);
+				if (resp.overrides(handlerResponse)) {
+					handlerResponse = resp;
+				}
+			}
+
+			if (handlerResponse == HandlerResponse.HALT) {
 				return null;
 			}
-			if (postParseResp == HandlerResponse.DEFERRED) {
+			if (handlerResponse == HandlerResponse.DEFERRED) {
 				fetcher.submit(site.getUrl());
 				return null;
 			}
@@ -159,11 +166,18 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 			processEmphasizedText(processedTags, site);
 
 			// do post process operations
-			HandlerResponse postProcessResp = httpCrawlerHandler.handlePostProcess(site);
-			if (postProcessResp == HandlerResponse.HALT) {
+
+			for (HttpCrawlerHandler handler : httpCrawlerHandler) {
+				HandlerResponse resp = handler.handlePostProcess(site);
+				if (resp.overrides(handlerResponse)) {
+					handlerResponse = resp;
+				}
+			}
+
+			if (handlerResponse == HandlerResponse.HALT) {
 				return null;
 			}
-			if (postProcessResp == HandlerResponse.DEFERRED) {
+			if (handlerResponse == HandlerResponse.DEFERRED) {
 				fetcher.submit(site.getUrl());
 				return null;
 			}
@@ -182,9 +196,15 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, Site> {
 						}
 					}
 
+					for (HttpCrawlerHandler handler : httpCrawlerHandler) {
+						HandlerResponse resp = handler.handlePreFetch(anchor.getTargetURL());
+						if (resp.overrides(handlerResponse)) {
+							handlerResponse = resp;
+						}
+					}
+
 					// make sure not repeating
-					if (httpCrawlerHandler.handlePreFetch(anchor.getTargetURL())
-						== HandlerResponse.GO_AHEAD) {
+					if (handlerResponse == HandlerResponse.GO_AHEAD) {
 						fetcher.submit(anchor.getTargetURL());
 					}
 				}
