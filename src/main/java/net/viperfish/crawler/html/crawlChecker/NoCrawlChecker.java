@@ -1,14 +1,14 @@
 package net.viperfish.crawler.html.crawlChecker;
 
 import java.net.URL;
+import net.viperfish.crawler.html.CrawledData;
 import net.viperfish.crawler.html.HandlerResponse;
 import net.viperfish.crawler.html.HttpCrawlerHandler;
-import net.viperfish.crawler.html.Site;
 
 public class NoCrawlChecker implements HttpCrawlerHandler {
 
 	@Override
-	public HandlerResponse handlePostParse(Site site) {
+	public HandlerResponse handlePostParse(CrawledData site) {
 		return HandlerResponse.HALT;
 	}
 
@@ -18,7 +18,7 @@ public class NoCrawlChecker implements HttpCrawlerHandler {
 	}
 
 	@Override
-	public HandlerResponse handlePostProcess(Site site) {
+	public HandlerResponse handlePostProcess(CrawledData site) {
 		return HandlerResponse.HALT;
 	}
 }
