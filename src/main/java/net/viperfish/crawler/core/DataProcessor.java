@@ -43,8 +43,6 @@ public abstract class DataProcessor<I, O> {
 				@Override
 				public void run() {
 					while (!Thread.interrupted()) {
-						System.out.printf("Active Processing Tasks: %d\n",
-							activeProcessingTasks.get());
 						// exit if there are no data left and that no processing are being done.
 						if ((in.isClosed() || in.isEndReached())
 							&& activeProcessingTasks.get() == 0) {

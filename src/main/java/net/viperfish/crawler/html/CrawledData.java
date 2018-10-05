@@ -2,6 +2,7 @@ package net.viperfish.crawler.html;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,6 +14,7 @@ public class CrawledData {
 	private URL url;
 	private String checksum;
 	private byte[] compressedHtml;
+	private List<Anchor> anchors;
 	private ConcurrentMap<String, Object> properties;
 
 	public CrawledData() {
@@ -52,6 +54,14 @@ public class CrawledData {
 		this.checksum = checksum;
 	}
 
+	public List<Anchor> getAnchors() {
+		return anchors;
+	}
+
+	public void setAnchors(List<Anchor> anchors) {
+		this.anchors = anchors;
+	}
+
 	public Map<String, Object> getProperties() {
 		return properties;
 	}
@@ -81,12 +91,13 @@ public class CrawledData {
 			Objects.equals(url, that.url) &&
 			Objects.equals(checksum, that.checksum) &&
 			Arrays.equals(compressedHtml, that.compressedHtml) &&
+			Objects.equals(anchors, that.anchors) &&
 			Objects.equals(properties, that.properties);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(title, url, checksum, properties);
+		int result = Objects.hash(title, url, checksum, anchors, properties);
 		result = 31 * result + Arrays.hashCode(compressedHtml);
 		return result;
 	}

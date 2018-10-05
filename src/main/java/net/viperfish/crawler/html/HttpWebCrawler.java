@@ -1,5 +1,7 @@
 package net.viperfish.crawler.html;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
@@ -22,6 +24,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
+import org.jsoup.select.Elements;
 
 // TODO: refractor the whole thing into more modular structure. Add documentation
 
@@ -38,7 +41,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 
 	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
-	private static final String ANCHOR_KEY = "__anchors";
 
 
 	static {
@@ -151,14 +153,14 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 				return null;
 			}
 
+			// parse document
 			Document doc = Jsoup.parse(cleanHTML);
-
+			site.setAnchors(extractAnchors(doc, site.getUrl()));
 			// get and process all of the tags
 			recursiveInterpretTags(
 				doc.getElementsByTag("html").first(), site);
 
 			// do post process operations
-
 			for (HttpCrawlerHandler handler : httpCrawlerHandler) {
 				HandlerResponse resp = handler.handlePostProcess(site);
 				if (resp.overrides(handlerResponse)) {
@@ -175,31 +177,26 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 			}
 
 			// add pages to crawl
-			if (site.getProperties().containsKey(ANCHOR_KEY)) {
-				List<Anchor> anchors = site.getProperty(ANCHOR_KEY, List.class);
-				for (Anchor anchor : anchors) {
-					anchors.add(anchor);
-					// check if limited to host
-					if (limit2Host) {
-						if (!anchor.getTargetURL().getHost().equals(content.getUrl().getHost())) {
-							continue;
-						}
-					}
-
-					for (HttpCrawlerHandler handler : httpCrawlerHandler) {
-						HandlerResponse resp = handler.handlePreFetch(anchor.getTargetURL());
-						if (resp.overrides(handlerResponse)) {
-							handlerResponse = resp;
-						}
-					}
-
-					// make sure not repeating
-					if (handlerResponse == HandlerResponse.GO_AHEAD) {
-						fetcher.submit(anchor.getTargetURL());
+			for (Anchor anchor : site.getAnchors()) {
+				// check if limited to host
+				if (limit2Host) {
+					if (!anchor.getTargetURL().getHost().equals(content.getUrl().getHost())) {
+						continue;
 					}
 				}
+
+				for (HttpCrawlerHandler handler : httpCrawlerHandler) {
+					HandlerResponse resp = handler.handlePreFetch(anchor.getTargetURL());
+					if (resp.overrides(handlerResponse)) {
+						handlerResponse = resp;
+					}
+				}
+
+				// make sure not repeating
+				if (handlerResponse == HandlerResponse.GO_AHEAD) {
+					fetcher.submit(anchor.getTargetURL());
+				}
 			}
-			System.out.println("Crawled:" + content.getUrl());
 			return site;
 		} catch (ParsingException e) {
 			System.out.println("Parsing Error:" + e.getMessage());
@@ -243,6 +240,56 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		byte[] out = new byte[16];
 		dig.doFinal(out, 0);
 		return Base64.getEncoder().encodeToString(out);
+	}
+
+	private List<Anchor> extractAnchors(Document document, URL siteURL) {
+		List<Anchor> anchors = new LinkedList<>();
+		Elements links = document.select("a");
+		for (Element e : links) {
+			String href = e.attr("abs:href");
+			if (href == null || href.trim().isEmpty()) {
+				continue;
+			}
+			try {
+				if (isRelative(href)) {
+					if (href.startsWith("/")) {
+						href = parseRelativeDirectly2Host(siteURL, href);
+					} else {
+						URL nearestDir = getNearestPath(siteURL);
+						href = new URL(nearestDir, href).toString();
+					}
+				}
+				if (href.length() < 8) {
+					continue;
+				}
+
+				Anchor anchor = new Anchor();
+				URL anchorURL = new URL(href);
+				anchor.setAnchorText(e.text());
+				anchor.setTargetURL(anchorURL);
+				anchor.setSize(16);
+				anchors.add(anchor);
+			} catch (URISyntaxException | MalformedURLException error) {
+				System.out.println("Invalid URL:" + error.getMessage());
+			}
+		}
+		return anchors;
+	}
+
+	private boolean isRelative(String url) throws URISyntaxException {
+		return !(url.startsWith("http://") || url.startsWith("https://"));
+	}
+
+	private String parseRelativeDirectly2Host(URL base, String url) {
+		StringBuilder sb = new StringBuilder(base.getProtocol());
+		sb.append("://").append(base.getHost()).append(url);
+		return sb.toString();
+	}
+
+	private URL getNearestPath(URL base) throws MalformedURLException {
+		URL url = new URL(
+			base.toExternalForm().substring(0, base.toExternalForm().lastIndexOf("/") + 1));
+		return url;
 	}
 
 }

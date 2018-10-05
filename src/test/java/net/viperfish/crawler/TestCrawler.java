@@ -31,6 +31,7 @@ public class TestCrawler {
 		siteDB.init();
 		HttpWebCrawler crawler = new HttpWebCrawler(1, siteDB,
 			fetcher);
+		crawler.limitToHost(true);
 		crawler.submit(new URL("https://example.com/"));
 		crawler.startProcessing();
 		crawler.waitUntiDone();
