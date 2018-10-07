@@ -5,8 +5,8 @@ import net.viperfish.crawler.html.RestrictionManager;
 public class ApplicationConcurrentHttpFetcher extends ConcurrentHttpFetcher {
 
 	public ApplicationConcurrentHttpFetcher(int threadCount,
-		RestrictionManager manager) {
-		super(threadCount, manager);
+		RestrictionManager manager, String userAgent) {
+		super(threadCount, manager, userAgent);
 	}
 
 	public ApplicationConcurrentHttpFetcher(int threadCount) {

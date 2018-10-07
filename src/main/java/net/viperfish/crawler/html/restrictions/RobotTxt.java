@@ -46,13 +46,13 @@ public class RobotTxt {
 				for (Pattern a : allowedPattern) {
 					Matcher allowMatch = a.matcher(url.toExternalForm());
 					if (allowMatch.find()) {
-						return new RestrictionAdapter(true);
+						return new BasicRestriction(true, true);
 					}
 				}
-				return new RestrictionAdapter(false);
+				return new BasicRestriction(false, false);
 			}
 		}
-		return new RestrictionAdapter(true);
+		return new BasicRestriction(true, true);
 	}
 
 	@Override
@@ -140,25 +140,6 @@ public class RobotTxt {
 			sb.append("$");
 		}
 		return sb.toString();
-	}
-
-	private static class RestrictionAdapter implements Restriction {
-
-		private boolean isAllowed;
-
-		RestrictionAdapter(boolean isAllowed) {
-			this.isAllowed = isAllowed;
-		}
-
-		@Override
-		public boolean canIndex() {
-			return isAllowed;
-		}
-
-		@Override
-		public boolean canFetch() {
-			return isAllowed;
-		}
 	}
 
 }

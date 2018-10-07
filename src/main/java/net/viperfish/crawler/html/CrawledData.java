@@ -1,19 +1,21 @@
 package net.viperfish.crawler.html;
 
+import java.io.Serializable;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class CrawledData {
+public class CrawledData implements Serializable {
+
+	private static final long serialVersionUID = 1;
 
 	private String title;
 	private URL url;
 	private String checksum;
-	private byte[] compressedHtml;
+	private String content;
 	private List<Anchor> anchors;
 	private ConcurrentMap<String, Object> properties;
 
@@ -38,12 +40,12 @@ public class CrawledData {
 		this.title = url.toString();
 	}
 
-	public byte[] getCompressedHtml() {
-		return compressedHtml.clone();
+	public String getContent() {
+		return content;
 	}
 
-	public void setCompressedHtml(byte[] compressedHtml) {
-		this.compressedHtml = compressedHtml;
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public String getChecksum() {
@@ -90,15 +92,13 @@ public class CrawledData {
 		return Objects.equals(title, that.title) &&
 			Objects.equals(url, that.url) &&
 			Objects.equals(checksum, that.checksum) &&
-			Arrays.equals(compressedHtml, that.compressedHtml) &&
+			Objects.equals(content, that.content) &&
 			Objects.equals(anchors, that.anchors) &&
 			Objects.equals(properties, that.properties);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(title, url, checksum, anchors, properties);
-		result = 31 * result + Arrays.hashCode(compressedHtml);
-		return result;
+		return Objects.hash(title, url, checksum, content, anchors, properties);
 	}
 }

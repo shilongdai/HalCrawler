@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import net.viperfish.crawler.core.DataProcessor;
 import net.viperfish.crawler.core.Datasink;
+import net.viperfish.crawler.core.ProcessedResult;
 import net.viperfish.crawler.exceptions.ParsingException;
 import net.viperfish.framework.compression.Compressor;
 import net.viperfish.framework.compression.Compressors;
@@ -107,14 +108,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		return processors.get(tagName);
 	}
 
-	public void limitToHost(boolean limit) {
-		this.limit2Host = limit;
-	}
-
-	public boolean isLimitedToHost() {
-		return limit2Host;
-	}
-
 	public List<HttpCrawlerHandler> getHttpCrawlerHandlers() {
 		return httpCrawlerHandler;
 	}
@@ -124,93 +117,88 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 	}
 
 	@Override
-	protected CrawledData process(FetchedContent content) {
-		try {
-			if (!ACCEPTED_STATUS_CODE.contains(content.getStatus())) {
-				return null;
-			}
-			String cleanHTML = Jsoup.clean(content.getHtml(), content.getUrl().toExternalForm(),
-				Whitelist.relaxed().addTags("title").addTags("head"));
-			content.setHtml(cleanHTML);
-			CrawledData site = toSite(content);
-
-			// do post parse operations
-			HandlerResponse handlerResponse = HandlerResponse.GO_AHEAD;
-
-			for (HttpCrawlerHandler handler : httpCrawlerHandler) {
-				HandlerResponse resp = handler.handlePostParse(site);
-				if (resp.overrides(handlerResponse)) {
-					handlerResponse = resp;
-				}
-			}
-
-			if (handlerResponse == HandlerResponse.HALT) {
-				return null;
-			}
-			if (handlerResponse == HandlerResponse.DEFERRED) {
-				fetcher.submit(site.getUrl());
-				return null;
-			}
-
-			// parse document
-			Document doc = Jsoup.parse(cleanHTML);
-			site.setAnchors(extractAnchors(doc, site.getUrl()));
-			// get and process all of the tags
-			recursiveInterpretTags(
-				doc.getElementsByTag("html").first(), site);
-
-			// do post process operations
-			for (HttpCrawlerHandler handler : httpCrawlerHandler) {
-				HandlerResponse resp = handler.handlePostProcess(site);
-				if (resp.overrides(handlerResponse)) {
-					handlerResponse = resp;
-				}
-			}
-
-			if (handlerResponse == HandlerResponse.HALT) {
-				return null;
-			}
-			if (handlerResponse == HandlerResponse.DEFERRED) {
-				fetcher.submit(site.getUrl());
-				return null;
-			}
-
-			// add pages to crawl
-			for (Anchor anchor : site.getAnchors()) {
-				// check if limited to host
-				if (limit2Host) {
-					if (!anchor.getTargetURL().getHost().equals(content.getUrl().getHost())) {
-						continue;
-					}
-				}
-
-				for (HttpCrawlerHandler handler : httpCrawlerHandler) {
-					HandlerResponse resp = handler.handlePreFetch(anchor.getTargetURL());
-					if (resp.overrides(handlerResponse)) {
-						handlerResponse = resp;
-					}
-				}
-
-				// make sure not repeating
-				if (handlerResponse == HandlerResponse.GO_AHEAD) {
-					fetcher.submit(anchor.getTargetURL());
-				}
-			}
-			return site;
-		} catch (ParsingException e) {
-			System.out.println("Parsing Error:" + e.getMessage());
+	protected ProcessedResult<CrawledData> process(FetchedContent content) throws ParsingException {
+		if (!ACCEPTED_STATUS_CODE.contains(content.getStatus())) {
+			return null;
 		}
-		return null;
+		String cleanHTML = Jsoup.clean(content.getHtml(), content.getUrl().toExternalForm(),
+			Whitelist.relaxed().addTags("title").addTags("head"));
+		content.setHtml(cleanHTML);
+		CrawledData site = toSite(content);
+		boolean shouldIndex = true;
+		// parse document
+		Document doc = Jsoup.parse(cleanHTML);
+		site.setAnchors(extractAnchors(doc, site.getUrl()));
+
+		// do post parse operations
+		HandlerResponse postParseResponse = HandlerResponse.GO_AHEAD;
+
+		for (HttpCrawlerHandler handler : httpCrawlerHandler) {
+			HandlerResponse resp = handler.handlePostParse(site);
+			if (resp.overrides(postParseResponse)) {
+				postParseResponse = resp;
+			}
+		}
+
+		if (postParseResponse == HandlerResponse.HALT) {
+			return null;
+		}
+		if (postParseResponse == HandlerResponse.DEFERRED) {
+			fetcher.submit(site.getUrl());
+			return null;
+		}
+		if (postParseResponse == HandlerResponse.NO_INDEX) {
+			shouldIndex = false;
+		}
+
+		// get and process all of the tags
+		recursiveInterpretTags(
+			doc.getElementsByTag("html").first(), site);
+		site.setTitle(extractTitle(content.getUrl(), doc));
+
+		// do post process operations
+		HandlerResponse postProcessResponse = HandlerResponse.GO_AHEAD;
+		for (HttpCrawlerHandler handler : httpCrawlerHandler) {
+			HandlerResponse resp = handler.handlePostProcess(site);
+			if (resp.overrides(postProcessResponse)) {
+				postProcessResponse = resp;
+			}
+		}
+
+		if (postProcessResponse == HandlerResponse.HALT) {
+			return null;
+		}
+		if (postProcessResponse == HandlerResponse.DEFERRED) {
+			fetcher.submit(site.getUrl());
+			return null;
+		}
+		if (postProcessResponse == HandlerResponse.NO_INDEX) {
+			shouldIndex = false;
+		}
+
+		// add pages to crawl
+		for (Anchor anchor : site.getAnchors()) {
+			HandlerResponse anchorResponse = HandlerResponse.GO_AHEAD;
+			for (HttpCrawlerHandler handler : httpCrawlerHandler) {
+				HandlerResponse resp = handler.handlePreFetch(anchor.getTargetURL());
+				if (resp.overrides(anchorResponse)) {
+					anchorResponse = resp;
+				}
+			}
+			// make sure not repeating
+			if (anchorResponse == HandlerResponse.GO_AHEAD) {
+				fetcher.submit(anchor.getTargetURL());
+			}
+		}
+
+		return new ProcessedResult<CrawledData>(site, shouldIndex);
 	}
 
 	private CrawledData toSite(FetchedContent content) {
-		byte[] compressed = this.compressor
-			.compress(content.getHtml().getBytes(StandardCharsets.UTF_16));
-		String checksum = hashSite(compressed);
-
+		String checksum = hashSite(content.getHtml().getBytes(StandardCharsets.UTF_8));
 		CrawledData result = new CrawledData();
 		result.setChecksum(checksum);
-		result.setCompressedHtml(compressed);
+		result.setContent(content.getHtml());
 		result.setUrl(content.getUrl());
 		return result;
 	}
@@ -230,6 +218,14 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		for (Element child : e.children()) {
 			recursiveInterpretTags(child, s);
 		}
+	}
+
+	private String extractTitle(URL url, Document document) {
+		Elements elements = document.select("title");
+		if (!elements.isEmpty()) {
+			return elements.get(0).text();
+		}
+		return url.toString();
 	}
 
 	private String hashSite(byte[] compressed) {
@@ -261,7 +257,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 				if (href.length() < 8) {
 					continue;
 				}
-
 				Anchor anchor = new Anchor();
 				URL anchorURL = new URL(href);
 				anchor.setAnchorText(e.text());

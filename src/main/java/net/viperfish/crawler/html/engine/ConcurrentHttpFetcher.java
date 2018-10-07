@@ -23,18 +23,20 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 	private ExecutorService threadPool;
 	private AtomicInteger runningTasks;
 	private RestrictionManager manager;
+	private String userAgent;
 	private boolean closed;
 
-	public ConcurrentHttpFetcher(int threadCount, RestrictionManager manager) {
+	public ConcurrentHttpFetcher(int threadCount, RestrictionManager manager, String userAgent) {
 		threadPool = Executors.newFixedThreadPool(threadCount);
 		queue = new LinkedBlockingQueue<>();
 		runningTasks = new AtomicInteger(0);
 		this.manager = manager;
 		closed = false;
+		this.userAgent = userAgent;
 	}
 
 	public ConcurrentHttpFetcher(int threadCount) {
-		this(threadCount, null);
+		this(threadCount, null, "halbot");
 	}
 
 	@Override

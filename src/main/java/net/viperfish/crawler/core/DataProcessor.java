@@ -61,19 +61,21 @@ public abstract class DataProcessor<I, O> {
 								@Override
 								public void run() {
 									try {
-										O result = process(next);
+										ProcessedResult<O> result = process(next);
 										if (result != null) {
-											out.write(result);
+											if (result.shouldIndex()) {
+												out.write(result.getResult());
+											}
 										}
 									} catch (Exception e) {
-										e.printStackTrace();
+										System.out.println("Failed to Process:" + e.getMessage());
 									} finally {
 										activeProcessingTasks.decrementAndGet();
 									}
 								}
 							});
 						} catch (Exception e) {
-							e.printStackTrace();
+							System.out.println("Failed to Fetch:" + e.getMessage());
 						}
 					}
 				}
@@ -137,6 +139,6 @@ public abstract class DataProcessor<I, O> {
 		}
 	}
 
-	protected abstract O process(I input) throws Exception;
+	protected abstract ProcessedResult<O> process(I input) throws Exception;
 
 }

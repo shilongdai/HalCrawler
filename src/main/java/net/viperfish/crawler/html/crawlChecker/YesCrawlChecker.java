@@ -5,7 +5,7 @@ import net.viperfish.crawler.html.CrawledData;
 import net.viperfish.crawler.html.HandlerResponse;
 import net.viperfish.crawler.html.HttpCrawlerHandler;
 
-public final class YesCrawlChecker implements HttpCrawlerHandler {
+public class YesCrawlChecker implements HttpCrawlerHandler {
 
 	public YesCrawlChecker() {
 	}
