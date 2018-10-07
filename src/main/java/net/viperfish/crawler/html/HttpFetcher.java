@@ -1,7 +1,10 @@
 package net.viperfish.crawler.html;
 
 import java.net.URL;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import net.viperfish.crawler.core.ResourcesStream;
+import net.viperfish.crawler.html.exception.FetchFailedException;
 
 /**
  * A {@link ResourcesStream} that fetches site contents as stream data.
@@ -21,14 +24,14 @@ public interface HttpFetcher extends ResourcesStream<FetchedContent> {
 	 *
 	 * @param mger the {@link RestrictionManager} that restricts the {@link HttpFetcher}.
 	 */
-	void setRestricitonManager(RestrictionManager mger);
+	void registerRestrictionManager(RestrictionManager mger);
 
 	/**
 	 * gets the {@link RestrictionManager} currently in use by the class.
 	 *
 	 * @return the current {@link RestrictionManager} or null if none in use.
 	 */
-	RestrictionManager getRestrictionManager();
+	List<RestrictionManager> getRestrictionManagers();
 
 	/**
 	 * checks if:
@@ -41,4 +44,10 @@ public interface HttpFetcher extends ResourcesStream<FetchedContent> {
 	 */
 	@Override
 	boolean isEndReached();
+
+	@Override
+	FetchedContent next() throws FetchFailedException;
+
+	@Override
+	FetchedContent next(long timeout, TimeUnit unit) throws FetchFailedException;
 }

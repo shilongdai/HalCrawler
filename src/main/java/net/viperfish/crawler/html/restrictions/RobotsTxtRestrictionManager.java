@@ -66,6 +66,7 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 			return robotTxt.isAllowed(url);
 		} catch (IOException e) {
 			System.out.println("Failed to get robots.txt:" + e.getMessage());
+			robotTxts.putIfAbsent(url.getProtocol() + url.getHost(), NULL_ROBOT_TXT);
 			return new UnrestrictedRestriction();
 		}
 	}

@@ -14,7 +14,7 @@ public class InMemHandlerTest {
 	public void testURLChecker() throws MalformedURLException {
 		CrawledData existingSite = new CrawledData();
 		existingSite.setChecksum("12345");
-		existingSite.setCompressedHtml(new byte[10]);
+		existingSite.setContent("");
 		existingSite.setTitle("Existing Site");
 		existingSite.setUrl(new URL("https://www.example.com"));
 		BaseInMemCrawlHandler checker = new BaseInMemCrawlHandler();

@@ -68,14 +68,14 @@ public abstract class DataProcessor<I, O> {
 											}
 										}
 									} catch (Exception e) {
-										System.out.println("Failed to Process:" + e.getMessage());
+										processHandlingError(e);
 									} finally {
 										activeProcessingTasks.decrementAndGet();
 									}
 								}
 							});
 						} catch (Exception e) {
-							System.out.println("Failed to Fetch:" + e.getMessage());
+							processFetchError(e);
 						}
 					}
 				}
@@ -140,5 +140,13 @@ public abstract class DataProcessor<I, O> {
 	}
 
 	protected abstract ProcessedResult<O> process(I input) throws Exception;
+
+	protected void processFetchError(Exception e) {
+		System.out.println("Failed to read:" + e.getMessage());
+	}
+
+	protected void processHandlingError(Exception e) {
+		System.out.println("Failed to handle:" + e.getMessage());
+	}
 
 }

@@ -8,9 +8,8 @@ import net.viperfish.crawler.html.CrawledData;
 import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.HttpWebCrawler;
 import net.viperfish.crawler.html.InMemSiteDatabase;
+import net.viperfish.crawler.html.crawlChecker.Limit2HostHandler;
 import net.viperfish.crawler.html.engine.ApplicationConcurrentHttpFetcher;
-import net.viperfish.framework.compression.Compressor;
-import net.viperfish.framework.compression.Compressors;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;
 import org.jsoup.Jsoup;
@@ -31,7 +30,7 @@ public class TestCrawler {
 		siteDB.init();
 		HttpWebCrawler crawler = new HttpWebCrawler(1, siteDB,
 			fetcher);
-		crawler.limitToHost(true);
+		crawler.registerCrawlerHandler(new Limit2HostHandler(new URL("https://example.com")));
 		crawler.submit(new URL("https://example.com/"));
 		crawler.startProcessing();
 		crawler.waitUntiDone();
@@ -44,16 +43,14 @@ public class TestCrawler {
 		String cleanHTML = Jsoup.clean(rawHTML, url2Test.toExternalForm(),
 			Whitelist.relaxed().addTags("title").addTags("head"));
 
-		byte[] htmlBytes = cleanHTML.getBytes(StandardCharsets.UTF_16);
-		Compressor compressor = Compressors.getCompressor("GZ");
-		byte[] compressed = compressor.compress(htmlBytes);
 		Digest md5 = new MD5Digest();
-		md5.update(compressed, 0, compressed.length);
+		md5.update(cleanHTML.getBytes(StandardCharsets.UTF_8), 0,
+			cleanHTML.getBytes(StandardCharsets.UTF_8).length);
 		byte[] hashOut = new byte[16];
 		md5.doFinal(hashOut, 0);
 
 		Assert.assertEquals(new URL("https://example.com/"), crawled.getUrl());
-		Assert.assertArrayEquals(compressed, crawled.getCompressedHtml());
+		Assert.assertEquals(cleanHTML, crawled.getContent());
 		Assert.assertEquals(Base64.getEncoder().encodeToString(hashOut), crawled.getChecksum());
 	}
 }

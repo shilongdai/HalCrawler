@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,27 +18,28 @@ import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.Restriction;
 import net.viperfish.crawler.html.RestrictionManager;
+import net.viperfish.crawler.html.exception.FetchFailedException;
 
 public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 
 	private BlockingQueue<Pair<FetchedContent, Throwable>> queue;
 	private ExecutorService threadPool;
 	private AtomicInteger runningTasks;
-	private RestrictionManager manager;
+	private List<RestrictionManager> managers;
 	private String userAgent;
 	private boolean closed;
 
-	public ConcurrentHttpFetcher(int threadCount, RestrictionManager manager, String userAgent) {
+	public ConcurrentHttpFetcher(int threadCount, String userAgent) {
 		threadPool = Executors.newFixedThreadPool(threadCount);
 		queue = new LinkedBlockingQueue<>();
 		runningTasks = new AtomicInteger(0);
-		this.manager = manager;
+		this.managers = new LinkedList<>();
 		closed = false;
 		this.userAgent = userAgent;
 	}
 
 	public ConcurrentHttpFetcher(int threadCount) {
-		this(threadCount, null, "halbot");
+		this(threadCount, "halbot");
 	}
 
 	@Override
@@ -46,11 +49,11 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 	}
 
 	@Override
-	public FetchedContent next() throws IOException {
+	public FetchedContent next() throws FetchFailedException {
 		try {
 			Pair<FetchedContent, Throwable> result = queue.take();
 			if (result.getSecond() != null) {
-				throw new IOException(result.getSecond());
+				throw new FetchFailedException(null, result.getFirst().getUrl());
 			}
 			return result.getFirst();
 		} catch (InterruptedException e) {
@@ -59,14 +62,17 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 	}
 
 	@Override
-	public FetchedContent next(long timeout, TimeUnit unit) throws IOException {
+	public FetchedContent next(long timeout, TimeUnit unit) throws FetchFailedException {
 		try {
 			Pair<FetchedContent, Throwable> result = queue.poll(timeout, unit);
 			if (result == null) {
 				return null;
 			}
 			if (result.getSecond() != null) {
-				throw new IOException(result.getSecond());
+				if (result.getSecond() instanceof FetchFailedException) {
+					throw (FetchFailedException) result.getSecond();
+				}
+				throw new FetchFailedException(result.getSecond());
 			}
 			return result.getFirst();
 		} catch (InterruptedException e) {
@@ -86,13 +92,13 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 	}
 
 	@Override
-	public void setRestricitonManager(RestrictionManager mger) {
-		this.manager = mger;
+	public void registerRestrictionManager(RestrictionManager mger) {
+		this.managers.add(mger);
 	}
 
 	@Override
-	public RestrictionManager getRestrictionManager() {
-		return manager;
+	public List<RestrictionManager> getRestrictionManagers() {
+		return managers;
 	}
 
 	protected AtomicInteger getTaskNumber() {
@@ -122,8 +128,8 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 		@Override
 		public void run() {
 			try {
-				if (manager != null) {
-					Restriction restriction = manager.getRestriction(url);
+				for (RestrictionManager rm : managers) {
+					Restriction restriction = rm.getRestriction(url);
 					if (!restriction.canFetch()) {
 						return;
 					}
@@ -133,7 +139,7 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 					queue.put(new Pair<>(fetched, null));
 				}
 			} catch (Throwable e) {
-				queue.offer(new Pair<>(null, e));
+				queue.offer(new Pair<>(null, new FetchFailedException(e, url)));
 			} finally {
 				runningTasks.decrementAndGet();
 			}
@@ -152,8 +158,7 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 			try {
 				// fetch content
 				urlc.setRequestMethod("GET");
-				urlc.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
+				urlc.setRequestProperty("User-Agent", userAgent);
 				urlc.connect();
 
 				String mime = urlc.getContentType();
