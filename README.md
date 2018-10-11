@@ -1,4 +1,5 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
+[![Maintainability](https://api.codeclimate.com/v1/badges/cc6aba39b5828f2955ec/maintainability)](https://codeclimate.com/github/shilongdai/HalCrawler/maintainability)
 
 # HalCrawler
 ## Overview
