@@ -73,19 +73,11 @@ public class RobotTxt {
 	 * @return a restriction representing the permissions regarding the specified URL.
 	 */
 	public Restriction isAllowed(URL url) {
-		for (Pattern p : disallowedPattern) {
-			Matcher disallowMatch = p.matcher(url.toExternalForm());
-			if (disallowMatch.find()) {
-				for (Pattern a : allowedPattern) {
-					Matcher allowMatch = a.matcher(url.toExternalForm());
-					if (allowMatch.find()) {
-						return new BasicRestriction(true, true);
-					}
-				}
-				return new BasicRestriction(false, false);
-			}
-		}
-		return new BasicRestriction(true, true);
+		boolean disallowed = checkDisallowed(url);
+		boolean allowed = checkAllowed(url);
+
+		boolean finalVerdict = !disallowed || allowed;
+		return new BasicRestriction(finalVerdict, finalVerdict);
 	}
 
 	@Override
@@ -105,6 +97,39 @@ public class RobotTxt {
 	@Override
 	public int hashCode() {
 		return Objects.hash(allowed, disallowed, crawlDelay);
+	}
+
+
+	/**
+	 * checks if the specified URL matches any disallowed urls.
+	 *
+	 * @param toTest the URL to test
+	 * @return true if matches false otherwise.
+	 */
+	private boolean checkDisallowed(URL toTest) {
+		for (Pattern p : disallowedPattern) {
+			Matcher match = p.matcher(toTest.toExternalForm());
+			if (match.find()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * checks if the specified URL matches any allowed URLs
+	 *
+	 * @param toTest the URL to test
+	 * @return true if matches false otherwise.
+	 */
+	private boolean checkAllowed(URL toTest) {
+		for (Pattern p : allowedPattern) {
+			Matcher match = p.matcher(toTest.toExternalForm());
+			if (match.find()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
