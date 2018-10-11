@@ -39,47 +39,7 @@ public abstract class DataProcessor<I, O> {
 	 */
 	public void startProcessing() {
 		if (delegateTask == null) {
-			delegateTask = masterDelegater.submit(new Runnable() {
-				@Override
-				public void run() {
-					while (!Thread.interrupted()) {
-						// exit if there are no data left and that no processing are being done.
-						if ((in.isClosed() || in.isEndReached())
-							&& activeProcessingTasks.get() == 0) {
-							return;
-						}
-
-						try {
-							I next = in.next(100, TimeUnit.MILLISECONDS);
-							if (next == null) {
-								continue;
-							}
-
-							// submit a new item to be concurrently processed
-							activeProcessingTasks.incrementAndGet();
-							processingThreads.submit(new Runnable() {
-								@Override
-								public void run() {
-									try {
-										ProcessedResult<O> result = process(next);
-										if (result != null) {
-											if (result.shouldOutput()) {
-												out.write(result.getResult());
-											}
-										}
-									} catch (Exception e) {
-										handleProcessingError(e);
-									} finally {
-										activeProcessingTasks.decrementAndGet();
-									}
-								}
-							});
-						} catch (Exception e) {
-							processFetchError(e);
-						}
-					}
-				}
-			});
+			delegateTask = masterDelegater.submit(new Delegator());
 		}
 	}
 
@@ -167,6 +127,58 @@ public abstract class DataProcessor<I, O> {
 	 */
 	protected void handleProcessingError(Exception e) {
 		System.out.println("Failed to handle:" + e.getMessage());
+	}
+
+	private class Delegator implements Runnable {
+
+		@Override
+		public void run() {
+			while (!Thread.interrupted()) {
+				// exit if there are no data left and that no processing are being done.
+				if ((in.isClosed() || in.isEndReached())
+					&& activeProcessingTasks.get() == 0) {
+					return;
+				}
+
+				try {
+					I next = in.next(100, TimeUnit.MILLISECONDS);
+					if (next == null) {
+						continue;
+					}
+
+					// submit a new item to be concurrently processed
+					activeProcessingTasks.incrementAndGet();
+					processingThreads.submit(new Processor(next));
+				} catch (Exception e) {
+					processFetchError(e);
+				}
+			}
+		}
+	}
+
+	private class Processor implements Runnable {
+
+		private I next;
+
+		public Processor(I next) {
+			this.next = next;
+		}
+
+		@Override
+		public void run() {
+			try {
+				ProcessedResult<O> result = process(next);
+				if (result != null) {
+					if (result.shouldOutput()) {
+						out.write(result.getResult());
+					}
+				}
+			} catch (Exception e) {
+				handleProcessingError(e);
+			} finally {
+				activeProcessingTasks.decrementAndGet();
+			}
+		}
 	}
 
 }

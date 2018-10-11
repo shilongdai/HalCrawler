@@ -38,6 +38,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 
 	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
+	private static final String DOC_ATTR;
 
 
 	static {
@@ -48,6 +49,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		buffer.add(203);
 		buffer.add(302);
 		ACCEPTED_STATUS_CODE = Collections.unmodifiableSet(buffer);
+		DOC_ATTR = "_doc";
 	}
 
 	private Map<String, TagProcessor> processors;
@@ -142,25 +144,18 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		if (!ACCEPTED_STATUS_CODE.contains(content.getStatus())) {
 			return null;
 		}
-		String cleanHTML = Jsoup.clean(content.getHtml(), content.getUrl().toExternalForm(),
-			Whitelist.relaxed().addTags("title").addTags("head"));
-		content.setHtml(cleanHTML);
-		CrawledData site = toSite(content);
 		boolean shouldIndex = true;
-		// parse document
-		Document doc = Jsoup.parse(cleanHTML);
-		site.setAnchors(extractAnchors(doc, site.getUrl()));
 
+		CrawledData site = parseFetchedContent(content);
+		Document doc = site.getProperty(DOC_ATTR, Document.class);
 		// do post parse operations
 		HandlerResponse postParseResponse = HandlerResponse.GO_AHEAD;
-
 		for (HttpCrawlerHandler handler : httpCrawlerHandler) {
 			HandlerResponse resp = handler.handlePostParse(site);
 			if (resp.overrides(postParseResponse)) {
 				postParseResponse = resp;
 			}
 		}
-
 		if (postParseResponse == HandlerResponse.HALT) {
 			return null;
 		}
@@ -175,8 +170,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		// get and process all of the tags
 		recursiveInterpretTags(
 			doc.getElementsByTag("html").first(), site);
-		site.setTitle(extractTitle(content.getUrl(), doc));
-
 		// do post process operations
 		HandlerResponse postProcessResponse = HandlerResponse.GO_AHEAD;
 		for (HttpCrawlerHandler handler : httpCrawlerHandler) {
@@ -185,7 +178,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 				postProcessResponse = resp;
 			}
 		}
-
 		if (postProcessResponse == HandlerResponse.HALT) {
 			return null;
 		}
@@ -197,6 +189,17 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 			shouldIndex = false;
 		}
 
+		submitAnchors(site);
+
+		return new ProcessedResult<>(site, shouldIndex);
+	}
+
+	/**
+	 * submits all the parsed anchors from a site to be crawled in future.
+	 *
+	 * @param site the root site.
+	 */
+	private void submitAnchors(CrawledData site) {
 		// add pages to crawl
 		for (Anchor anchor : site.getAnchors()) {
 			HandlerResponse anchorResponse = HandlerResponse.GO_AHEAD;
@@ -211,12 +214,29 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 				fetcher.submit(anchor.getTargetURL());
 			}
 		}
-
-		return new ProcessedResult<>(site, shouldIndex);
 	}
 
 	/**
-	 * parse the fetched content into a {@link CrawledData}.
+	 * parses and cleans the fetched site into a {@link CrawledData}.
+	 *
+	 * @param content the content fetched.
+	 * @return the parsed {@link CrawledData}.
+	 */
+	private CrawledData parseFetchedContent(FetchedContent content) {
+		String cleanHTML = Jsoup.clean(content.getHtml(), content.getUrl().toExternalForm(),
+			Whitelist.relaxed().addTags("title").addTags("head"));
+		content.setHtml(cleanHTML);
+		CrawledData site = toSite(content);
+		// parse document
+		Document doc = Jsoup.parse(cleanHTML);
+		site.setAnchors(extractAnchors(doc, site.getUrl()));
+		site.setTitle(extractTitle(content.getUrl(), doc));
+		site.setProperty(DOC_ATTR, doc);
+		return site;
+	}
+
+	/**
+	 * converts the fetched content into a {@link CrawledData}.
 	 *
 	 * @param content the fetched content
 	 * @return a crawled data built from the fetched content.
