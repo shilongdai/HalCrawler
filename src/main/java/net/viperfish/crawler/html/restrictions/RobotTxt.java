@@ -9,6 +9,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.viperfish.crawler.html.Restriction;
 
+/**
+ * A representation of the robots.txt file with utilities to match urls against the url patterns.
+ */
 public class RobotTxt {
 
 	private URL baseURL;
@@ -18,6 +21,14 @@ public class RobotTxt {
 	private List<Pattern> disallowedPattern;
 	private List<Pattern> allowedPattern;
 
+	/**
+	 * creates a new RobotTxt with the specified values.
+	 *
+	 * @param baseURL the base url of the site, i.e. https://www.oracle.com
+	 * @param allowed the urls allowed by the robots.txt
+	 * @param disallowed the urls disallowed by the robots.txt
+	 * @param crawlDelay the numerical delays in between requests in seconds
+	 */
 	public RobotTxt(URL baseURL, List<String> allowed, List<String> disallowed, int crawlDelay) {
 		this.allowed = Collections.unmodifiableList(new LinkedList<>(allowed));
 		this.disallowed = Collections.unmodifiableList(new LinkedList<>(disallowed));
@@ -27,18 +38,40 @@ public class RobotTxt {
 		createPatterns();
 	}
 
+	/**
+	 * gets the allowed urls.
+	 *
+	 * @return the allowed urls.
+	 */
 	public List<String> getAllowed() {
 		return allowed;
 	}
 
+	/**
+	 * gets the disallowed urls
+	 *
+	 * @return the disallowed urls.
+	 */
 	public List<String> getDisallowed() {
 		return disallowed;
 	}
 
+	/**
+	 * gets the crawl delays between requests
+	 *
+	 * @return the crawl delay
+	 */
 	public int getCrawlDelay() {
 		return crawlDelay;
 	}
 
+	/**
+	 * tests whether a given url is allowed based on the allowed list and the disallowed list. This
+	 * implementation uses Google's standard where allowed can override disallowed.
+	 *
+	 * @param url the url to check
+	 * @return a restriction representing the permissions regarding the specified URL.
+	 */
 	public Restriction isAllowed(URL url) {
 		for (Pattern p : disallowedPattern) {
 			Matcher disallowMatch = p.matcher(url.toExternalForm());
@@ -74,6 +107,12 @@ public class RobotTxt {
 		return Objects.hash(allowed, disallowed, crawlDelay);
 	}
 
+	/**
+	 * generates the Java regex patterns based on the robots.txt patterns.
+	 *
+	 * @param str the URL pattern
+	 * @return a regex pattern representing the URL pattern.
+	 */
 	private Pattern generatePattern(String str) {
 		if (str.startsWith("http:") || str.startsWith("https")) {
 			return Pattern.compile(str);
@@ -102,6 +141,9 @@ public class RobotTxt {
 		return Pattern.compile(str);
 	}
 
+	/**
+	 * generates a regex pattern for each URL pattern in the allowed and disallowed lists.
+	 */
 	private void createPatterns() {
 		allowedPattern = new LinkedList<>();
 		disallowedPattern = new LinkedList<>();
@@ -114,6 +156,14 @@ public class RobotTxt {
 		}
 	}
 
+	/**
+	 * pre-processes the url pattern before converting regex to make processing easier. It escapes
+	 * all the special characters in the non-special parts of the URL pattern, and pieces the
+	 * pattern back together with special pattern characters.
+	 *
+	 * @param str the pattern to escape
+	 * @return the escaped pattern.
+	 */
 	private String quoteNonWildcard(String str) {
 		boolean endsInWildCard = str.endsWith("*");
 		boolean beginsWithWildCard = str.startsWith("*");

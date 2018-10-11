@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * A concurrent data processsor that takes input from a {@link ResourcesStream} and output results
- * to a {@link Datasink}. It is the template base class for other classes that provide concrete
+ * A concurrent data processor that takes input from a {@link ResourcesStream} and output results to
+ * a {@link Datasink}. It is the template base class for other classes that provide concrete
  * processing operations. All implementations of this class must be thread safe.
  */
 public abstract class DataProcessor<I, O> {
@@ -63,12 +63,12 @@ public abstract class DataProcessor<I, O> {
 									try {
 										ProcessedResult<O> result = process(next);
 										if (result != null) {
-											if (result.shouldIndex()) {
+											if (result.shouldOutput()) {
 												out.write(result.getResult());
 											}
 										}
 									} catch (Exception e) {
-										processHandlingError(e);
+										handleProcessingError(e);
 									} finally {
 										activeProcessingTasks.decrementAndGet();
 									}
@@ -139,13 +139,31 @@ public abstract class DataProcessor<I, O> {
 		}
 	}
 
+	/**
+	 * processes an item from the input stream. This is the template method for this class. The
+	 * calls to this method will be concurrent, so the implementation should ensure thread safety.
+	 *
+	 * @param input the pulled item from the stream.
+	 * @return the result of the processing.
+	 * @throws Exception if any error occurred during the processing.
+	 */
 	protected abstract ProcessedResult<O> process(I input) throws Exception;
 
+	/**
+	 * handles an error that occurred when fetching an item from the {@link ResourcesStream}. This method should be thread safe.
+	 * @param e the exception that occurred.
+	 */
 	protected void processFetchError(Exception e) {
 		System.out.println("Failed to read:" + e.getMessage());
 	}
 
-	protected void processHandlingError(Exception e) {
+	/**
+	 * handles an error that occurred during the processing phase. This method should be thread
+	 * safe.
+	 *
+	 * @param e the exception that occurred.
+	 */
+	protected void handleProcessingError(Exception e) {
 		System.out.println("Failed to handle:" + e.getMessage());
 	}
 

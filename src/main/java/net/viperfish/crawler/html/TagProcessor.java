@@ -1,6 +1,6 @@
 package net.viperfish.crawler.html;
 
-import net.viperfish.crawler.exceptions.ParsingException;
+import net.viperfish.crawler.html.exception.ParsingException;
 import org.jsoup.nodes.Element;
 
 /**

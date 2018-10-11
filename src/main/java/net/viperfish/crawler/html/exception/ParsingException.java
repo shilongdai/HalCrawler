@@ -1,5 +1,9 @@
-package net.viperfish.crawler.exceptions;
+package net.viperfish.crawler.html.exception;
 
+/**
+ * An exception where an error occurred while the {@link net.viperfish.crawler.html.TagProcessor}
+ * processed the html information.
+ */
 public class ParsingException extends Exception {
 
 	/**

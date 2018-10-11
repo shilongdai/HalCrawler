@@ -4,6 +4,9 @@ import java.net.URL;
 import net.viperfish.crawler.html.Restriction;
 import net.viperfish.crawler.html.RestrictionManager;
 
+/**
+ * A restriction manager that does not restrict against any URLs.
+ */
 public class UnrestrictiveRestrictionManager implements RestrictionManager {
 
 	@Override

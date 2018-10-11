@@ -12,15 +12,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import net.viperfish.crawler.core.DataProcessor;
 import net.viperfish.crawler.core.Datasink;
 import net.viperfish.crawler.core.ProcessedResult;
-import net.viperfish.crawler.exceptions.ParsingException;
-import net.viperfish.crawler.html.exception.FetchFailedException;
-import net.viperfish.crawler.html.restrictions.BasicRestriction;
+import net.viperfish.crawler.html.exception.ParsingException;
 import net.viperfish.framework.compression.Compressor;
 import net.viperfish.framework.compression.Compressors;
 import org.bouncycastle.crypto.Digest;
@@ -46,7 +41,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 
 	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
-	private static int CONSECUTIVE_COUNT = 3;
 
 
 	static {
@@ -65,7 +59,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 	private Compressor compressor;
 	private List<HttpCrawlerHandler> httpCrawlerHandler;
 	private HttpFetcher fetcher;
-	private ConsecutiveFailRestrictionManager failCounter;
 
 	/**
 	 * creates a new crawler with supplied storage output for site data and anchor data, and the
@@ -97,8 +90,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 			throw new RuntimeException(e);
 		}
 		httpCrawlerHandler = new LinkedList<>();
-		failCounter = new ConsecutiveFailRestrictionManager(CONSECUTIVE_COUNT);
-		fetcher.registerRestrictionManager(failCounter);
 	}
 
 	public void submit(URL url) {
@@ -200,7 +191,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 			}
 		}
 
-		return new ProcessedResult<CrawledData>(site, shouldIndex);
+		return new ProcessedResult<>(site, shouldIndex);
 	}
 
 	private CrawledData toSite(FetchedContent content) {
@@ -294,41 +285,4 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 			base.toExternalForm().substring(0, base.toExternalForm().lastIndexOf("/") + 1));
 	}
 
-	@Override
-	protected void processFetchError(Exception e) {
-		super.processFetchError(e);
-		if (e instanceof FetchFailedException) {
-			FetchFailedException failedFetch = (FetchFailedException) e;
-			if (failedFetch.getFailedURL() != null) {
-				failCounter.fail(failedFetch.getFailedURL());
-			}
-		}
-	}
-
-	private static class ConsecutiveFailRestrictionManager implements RestrictionManager {
-
-		private int consecutive;
-		private ConcurrentMap<String, AtomicInteger> mapCounts;
-
-		private ConsecutiveFailRestrictionManager(int consecutiveCount) {
-			this.consecutive = consecutiveCount;
-			mapCounts = new ConcurrentHashMap<>();
-		}
-
-		@Override
-		public Restriction getRestriction(URL url) {
-			mapCounts.putIfAbsent(url.getHost(), new AtomicInteger(0));
-			AtomicInteger count = mapCounts.get(url.getHost());
-			if (count.get() > consecutive) {
-				return new BasicRestriction(false, false);
-			}
-			return new BasicRestriction(true, true);
-		}
-
-		public void fail(URL url) {
-			mapCounts.putIfAbsent(url.getHost(), new AtomicInteger(0));
-			AtomicInteger count = mapCounts.get(url.getHost());
-			count.incrementAndGet();
-		}
-	}
 }

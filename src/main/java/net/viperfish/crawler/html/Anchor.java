@@ -4,8 +4,8 @@ import java.net.URL;
 import java.util.Objects;
 
 /**
- * An anchor on a page, usually an a tag. This class is a POJO java object and is associated with
- * the Database Table "Anchor". It is not designed for thread safety.
+ * An anchor on a page, usually an a tag. This class is a POJO java object with information about
+ * the anchor. It is not designed for thread safety.
  */
 public class Anchor {
 

@@ -1,16 +1,11 @@
 package net.viperfish.crawler.html.restrictions;
 
-import net.viperfish.crawler.html.Restriction;
+/**
+ * A restriction that indicates everything is allowed.
+ */
+public class UnrestrictedRestriction extends BasicRestriction {
 
-public class UnrestrictedRestriction implements Restriction {
-
-	@Override
-	public boolean canIndex() {
-		return true;
-	}
-
-	@Override
-	public boolean canFetch() {
-		return true;
+	public UnrestrictedRestriction() {
+		super(true, true);
 	}
 }
