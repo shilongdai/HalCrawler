@@ -3,7 +3,6 @@ package net.viperfish.crawler.html;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,8 +15,6 @@ import net.viperfish.crawler.core.DataProcessor;
 import net.viperfish.crawler.core.Datasink;
 import net.viperfish.crawler.core.ProcessedResult;
 import net.viperfish.crawler.html.exception.ParsingException;
-import net.viperfish.framework.compression.Compressor;
-import net.viperfish.framework.compression.Compressors;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;
 import org.jsoup.Jsoup;
@@ -30,12 +27,12 @@ import org.jsoup.select.Elements;
 
 /**
  * A {@link DataProcessor} that crawls http pages. It takes raw html contents and extracts
- * information from it. By default, this implementation will fill in the URL and Compressed HTML
- * attributes of a site. To make this crawler follow the links on a page, scan text content etc, a
- * custom {@link TagProcessor} need to be supplied through the {@link
- * HttpWebCrawler#registerProcessor(String, TagProcessor)} method. The output written by this class
- * will contain all the successfully retrieved crawled sites. Pages with response code not included
- * in the 2xx codes are discarded. This implementation is designed for concurrency.
+ * information from it. By default, without any additional processors, it will fill in all the
+ * built-in attributes in the {@link CrawledData} class. The output written by this class will
+ * contain all the successfully retrieved crawled sites. Pages with response code not included in
+ * the 2xx codes are discarded. To control the flow of processing, or insert code during the
+ * processing, implement and register a {@link HttpCrawlerHandler}. To customize/specialize the
+ * output of this class, implement and register a {@link TagProcessor}.
  */
 public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 
@@ -54,9 +51,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 	}
 
 	private Map<String, TagProcessor> processors;
-	private boolean limit2Host;
 	private ThreadLocal<Digest> hasher;
-	private Compressor compressor;
 	private List<HttpCrawlerHandler> httpCrawlerHandler;
 	private HttpFetcher fetcher;
 
@@ -73,7 +68,6 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		super(fetcher, db, threadCount);
 		processors = new HashMap<>();
 		this.fetcher = fetcher;
-		limit2Host = false;
 		hasher = new ThreadLocal<Digest>() {
 
 			@Override
@@ -82,36 +76,63 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 			}
 
 		};
-		try {
-			compressor = Compressors.getCompressor("GZ");
-		} catch (NoSuchAlgorithmException e) {
-			// Guaranteed not gonna happen
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
 		httpCrawlerHandler = new LinkedList<>();
 	}
 
+	/**
+	 * submits URL to be fetched and processed. This will skip over all the {@link
+	 * HttpCrawlerHandler#handlePreFetch(URL)}.
+	 *
+	 * @param url the URl to be fetched and processed.
+	 */
 	public void submit(URL url) {
 		fetcher.submit(url);
 	}
 
+	/**
+	 * registers a {@link TagProcessor} to customize the crawled output.
+	 *
+	 * @param processorName the unique name of the processor.
+	 * @param processor the processor itself.
+	 */
 	public void registerProcessor(String processorName, TagProcessor processor) {
 		processors.put(processorName, processor);
 	}
 
+	/**
+	 * removes a processor by its name.
+	 *
+	 * @param processorName the name of the processor.
+	 */
 	public void unregisterProcessor(String processorName) {
 		processors.remove(processorName);
 	}
 
-	public TagProcessor getProcessor(String tagName) {
-		return processors.get(tagName);
+	/**
+	 * gets a registered processor by its name.
+	 *
+	 * @param name the name of the processor.
+	 * @return the registered processor with the name or null.
+	 */
+	public TagProcessor getProcessor(String name) {
+		return processors.get(name);
 	}
 
+	/**
+	 * gets all the registered handler attached to the crawler.
+	 *
+	 * @return the list of {@link HttpCrawlerHandler}.
+	 */
 	public List<HttpCrawlerHandler> getHttpCrawlerHandlers() {
 		return httpCrawlerHandler;
 	}
 
+	/**
+	 * registers a {@link HttpCrawlerHandler} to control and perform operation during the
+	 * processing.
+	 *
+	 * @param checker the handler to register.
+	 */
 	public void registerCrawlerHandler(HttpCrawlerHandler checker) {
 		this.httpCrawlerHandler.add(checker);
 	}
@@ -194,6 +215,12 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		return new ProcessedResult<>(site, shouldIndex);
 	}
 
+	/**
+	 * parse the fetched content into a {@link CrawledData}.
+	 *
+	 * @param content the fetched content
+	 * @return a crawled data built from the fetched content.
+	 */
 	private CrawledData toSite(FetchedContent content) {
 		String checksum = hashSite(content.getHtml().getBytes(StandardCharsets.UTF_8));
 		CrawledData result = new CrawledData();
@@ -203,6 +230,13 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		return result;
 	}
 
+	/**
+	 * recursively process all the elements of the HTML document.
+	 *
+	 * @param e the HTML element
+	 * @param s the current site being processed
+	 * @throws ParsingException if failed to parse the elements.
+	 */
 	private void recursiveInterpretTags(Element e, CrawledData s)
 		throws ParsingException {
 		if (e == null || e.tagName() == null) {
@@ -220,6 +254,14 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		}
 	}
 
+	/**
+	 * extracts the title from the html document. If no title found, then the string representation
+	 * of the URL is returned.
+	 *
+	 * @param url the URL of the site.
+	 * @param document the parsed HTML document.
+	 * @return the title of the site.
+	 */
 	private String extractTitle(URL url, Document document) {
 		Elements elements = document.select("title");
 		if (!elements.isEmpty()) {
@@ -228,15 +270,30 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		return url.toString();
 	}
 
-	private String hashSite(byte[] compressed) {
+	/**
+	 * generates the checksum of the site.
+	 *
+	 * @param html the html bytes.
+	 * @return a base64 encoded checksum.
+	 */
+	private String hashSite(byte[] html) {
 		Digest dig = hasher.get();
 		dig.reset();
-		dig.update(compressed, 0, compressed.length);
+		dig.update(html, 0, html.length);
 		byte[] out = new byte[16];
 		dig.doFinal(out, 0);
 		return Base64.getEncoder().encodeToString(out);
 	}
 
+	// TODO: add support for size parsing for anchors.
+
+	/**
+	 * gets all the anchors on a html page. It converts all the relative URLs to absolute URLs.
+	 *
+	 * @param document the html document.
+	 * @param siteURL the URL of the site.
+	 * @return a list of anchors on the page.
+	 */
 	private List<Anchor> extractAnchors(Document document, URL siteURL) {
 		List<Anchor> anchors = new LinkedList<>();
 		Elements links = document.select("a");
@@ -270,16 +327,35 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		return anchors;
 	}
 
+	/**
+	 * checks if a URL is a relative URL.
+	 *
+	 * @param url the url string.
+	 * @return true if the url is relative, false otherwise.
+	 */
 	private boolean isRelative(String url) {
 		return !(url.startsWith("http://") || url.startsWith("https://"));
 	}
 
+	/**
+	 * change a relative url in the path format to the absolute URL.
+	 *
+	 * @param base the base URL of the host.
+	 * @param url the relative URL.
+	 * @return the absolute URL.
+	 */
 	private String parseRelativeDirectly2Host(URL base, String url) {
 		StringBuilder sb = new StringBuilder(base.getProtocol());
 		sb.append("://").append(base.getHost()).append(url);
 		return sb.toString();
 	}
 
+	/**
+	 * gets the URL to the current directory on the host.
+	 *
+	 * @return the URL of the current directory.
+	 * @throws MalformedURLException if the result is not a good URL.
+	 */
 	private URL getNearestPath(URL base) throws MalformedURLException {
 		return new URL(
 			base.toExternalForm().substring(0, base.toExternalForm().lastIndexOf("/") + 1));

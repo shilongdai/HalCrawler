@@ -150,7 +150,9 @@ public abstract class DataProcessor<I, O> {
 	protected abstract ProcessedResult<O> process(I input) throws Exception;
 
 	/**
-	 * handles an error that occurred when fetching an item from the {@link ResourcesStream}. This method should be thread safe.
+	 * handles an error that occurred when fetching an item from the {@link ResourcesStream}. This
+	 * method should be thread safe.
+	 *
 	 * @param e the exception that occurred.
 	 */
 	protected void processFetchError(Exception e) {

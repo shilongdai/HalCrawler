@@ -34,11 +34,8 @@ public interface HttpFetcher extends ResourcesStream<FetchedContent> {
 	List<RestrictionManager> getRestrictionManagers();
 
 	/**
-	 * checks if:
-	 * <ol>
-	 * <li>if the fetcher is currently fetching</li>
-	 * <li>if there are still urls to be fetched</li>
-	 * </ol>
+	 * checks if the fetching is finished. The definition of finished depends on the
+	 * implementation.
 	 *
 	 * @return true if none of the conditions above are met, false otherwise.
 	 */

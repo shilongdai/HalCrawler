@@ -24,6 +24,7 @@ public class FetchFailedException extends IOException {
 
 	/**
 	 * creates a new exception with the failed URL.
+	 *
 	 * @param failedURL the URL with error
 	 */
 	public FetchFailedException(URL failedURL) {
@@ -33,6 +34,7 @@ public class FetchFailedException extends IOException {
 
 	/**
 	 * creates a new exception with the original standard exception.
+	 *
 	 * @param e the original exception.
 	 */
 	public FetchFailedException(Throwable e) {
@@ -41,6 +43,7 @@ public class FetchFailedException extends IOException {
 
 	/**
 	 * gets the url that failed.
+	 *
 	 * @return the failed url or null if unspecified.
 	 */
 	public URL getFailedURL() {
@@ -49,6 +52,7 @@ public class FetchFailedException extends IOException {
 
 	/**
 	 * sets the failed url.
+	 *
 	 * @param failedURL the failed url.
 	 */
 	public void setFailedURL(URL failedURL) {

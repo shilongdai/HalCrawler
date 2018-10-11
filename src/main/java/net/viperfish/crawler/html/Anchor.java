@@ -20,26 +20,56 @@ public class Anchor {
 		size = 0;
 	}
 
+	/**
+	 * gets the text of this anchor.
+	 *
+	 * @return the text of the anchor.
+	 */
 	public String getAnchorText() {
 		return anchorText;
 	}
 
+	/**
+	 * sets the text field of this POJO.
+	 *
+	 * @param anchorText the text of the anchor.
+	 */
 	public void setAnchorText(String anchorText) {
 		this.anchorText = anchorText;
 	}
 
+	/**
+	 * gets the URL of the anchor.
+	 *
+	 * @return the URL.
+	 */
 	public URL getTargetURL() {
 		return targetURL;
 	}
 
+	/**
+	 * sets the URL of the anchor.
+	 *
+	 * @param targetURL the url of the anchor.
+	 */
 	public void setTargetURL(URL targetURL) {
 		this.targetURL = targetURL;
 	}
 
+	/**
+	 * gets the size of the anchor.
+	 *
+	 * @return the size of the anchor.
+	 */
 	public int getSize() {
 		return size;
 	}
 
+	/**
+	 * sets the size of the anchor.
+	 *
+	 * @param size the size of the anchor.
+	 */
 	public void setSize(int size) {
 		this.size = size;
 	}
