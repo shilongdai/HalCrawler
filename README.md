@@ -5,10 +5,8 @@
 The HalCrawler project is the first in a series of planned projects that will hopefully lead to a working search engine that returns reasonable results. It provides a framework for creating a webcrawler, both generic and specific, to scrape contents off of various webpages. The end goal of the project is to have a fully modular template for creating specific crawlers that are tailored to various tasks such as fetching text for index, getting data from tables, scanning through forum threads for comments and memes, or downloading all versions of product documentations.
 
 ## Status
-Currently, the crawler is able to follow the links through various websites and interpret the html results based on supplied customized modules. It respects robots.txt and have tunable throttle controls. However, the output definition of the crawler is more geared towards search engine indexing. The plan is to:
+Currently, the crawler is able to follow the links through various websites and interpret the html results based on supplied customized modules. It respects robots.txt and have tunable throttle controls. The output of the crawling can now be customized by various processors to have different attributes. It is ready to be applied to the search engine.
 
-Further enhance the quality of the output for search engine.
-Decouple the crawling from the output entries so that the crawler can be fully modularized.
 
 ## Details
 ### Structure
