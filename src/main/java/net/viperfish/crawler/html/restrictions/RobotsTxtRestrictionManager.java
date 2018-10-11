@@ -50,36 +50,42 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 
 	@Override
 	public Restriction getRestriction(URL url) {
-		if (robotTxts.containsKey(url.getProtocol() + url.getHost())) {
-			RobotTxt robotTxt = robotTxts.get(url.getProtocol() + url.getHost());
-			if (robotTxt == NULL_ROBOT_TXT) {
-				return new UnrestrictedRestriction();
-			}
-			return robotTxt.isAllowed(url);
-		}
-		try {
-			RobotTxt robotTxt = getRobotTxt(url);
-			robotTxts.putIfAbsent(url.getProtocol() + url.getHost(), robotTxt);
-			if (robotTxt == NULL_ROBOT_TXT) {
-				return new UnrestrictedRestriction();
-			}
-			return robotTxt.isAllowed(url);
-		} catch (IOException e) {
-			System.out.println("Failed to get robots.txt:" + e.getMessage());
-			robotTxts.putIfAbsent(url.getProtocol() + url.getHost(), NULL_ROBOT_TXT);
-			return new UnrestrictedRestriction();
-		}
+		RobotTxt robotTxt = getRobotsTxt(url);
+		return robotTxt.isAllowed(url);
+
 	}
 
 	/**
-	 * gets a {@link RobotTxt} from the base url of the specified url. If fetching failed, return
+	 * gets a {@link RobotTxt} by either fetching it online or pulling it from the cache.
+	 *
+	 * @param url the URL to check
+	 * @return a fetched robots.txt
+	 */
+	private RobotTxt getRobotsTxt(URL url) {
+		if (robotTxts.containsKey(url.getProtocol() + url.getHost())) {
+			return robotTxts.get(url.getProtocol() + url.getHost());
+		}
+		RobotTxt fetched = null;
+		try {
+			fetched = fetchRobotsTxt(url);
+		} catch (IOException e) {
+			System.out.println("Failed to get robots.txt:" + e.getMessage());
+			fetched = NULL_ROBOT_TXT;
+		} finally {
+			robotTxts.putIfAbsent(url.getProtocol() + url.getHost(), fetched);
+		}
+		return fetched;
+	}
+
+	/**
+	 * fetch a {@link RobotTxt} from the base url of the specified url. If fetching failed, return
 	 * the NULL_ROBOT_TXT.
 	 *
 	 * @param url the url from which the base url will be derived.
 	 * @return the parsed {@link RobotTxt} or NULL_ROBOT_TXT if failed to fetch.
 	 * @throws IOException if network error occurred.
 	 */
-	private RobotTxt getRobotTxt(URL url) throws IOException {
+	private RobotTxt fetchRobotsTxt(URL url) throws IOException {
 		URL baseURL = getBaseURL(url);
 		URL robotsTxtURL = new URL(baseURL.toExternalForm() + "/robots.txt");
 		HttpURLConnection urlc = (HttpURLConnection) robotsTxtURL.openConnection();
