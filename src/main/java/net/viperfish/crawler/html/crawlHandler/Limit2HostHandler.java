@@ -1,4 +1,4 @@
-package net.viperfish.crawler.html.crawlChecker;
+package net.viperfish.crawler.html.crawlHandler;
 
 import java.net.URL;
 import net.viperfish.crawler.html.HandlerResponse;

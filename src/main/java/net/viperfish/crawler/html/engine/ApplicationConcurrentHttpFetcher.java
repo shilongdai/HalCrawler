@@ -12,7 +12,7 @@ public class ApplicationConcurrentHttpFetcher extends ConcurrentHttpFetcher {
 
 	@Override
 	public boolean isEndReached() {
-		return queue().size() == 0 && getTaskNumber().get() == 0;
+		return resultQueue().size() == 0 && getTaskNumber().get() == 0 && urlQueue().size() == 0;
 	}
 
 	@Override

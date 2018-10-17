@@ -1,4 +1,4 @@
-package net.viperfish.crawler.html.crawlChecker;
+package net.viperfish.crawler.html.crawlHandler;
 
 import java.net.MalformedURLException;
 import java.net.URL;

@@ -65,7 +65,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 	 * @param db the storage output for the crawled sites
 	 * @param fetcher the {@link HttpFetcher} for fetching contents
 	 */
-	public HttpWebCrawler(int threadCount, Datasink<? super CrawledData> db,
+	public HttpWebCrawler(int threadCount, Datasink<CrawledData> db,
 		HttpFetcher fetcher) {
 		super(fetcher, db, threadCount);
 		processors = new HashMap<>();
@@ -88,7 +88,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 	 * @param url the URl to be fetched and processed.
 	 */
 	public void submit(URL url) {
-		fetcher.submit(url);
+		fetcher.submit(url, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -145,6 +145,24 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 			return null;
 		}
 		boolean shouldIndex = true;
+
+		HandlerResponse preParseResp = HandlerResponse.GO_AHEAD;
+		for (HttpCrawlerHandler handler : httpCrawlerHandler) {
+			HandlerResponse resp = handler.handlePreParse(content);
+			if (resp.overrides(preParseResp)) {
+				preParseResp = resp;
+			}
+		}
+		if (preParseResp == HandlerResponse.HALT) {
+			return null;
+		}
+		if (preParseResp == HandlerResponse.DEFERRED) {
+			fetcher.submit(content.getUrl().getToFetch());
+			return null;
+		}
+		if (preParseResp == HandlerResponse.NO_INDEX) {
+			shouldIndex = false;
+		}
 
 		CrawledData site = parseFetchedContent(content);
 		Document doc = site.getProperty(DOC_ATTR, Document.class);
@@ -223,14 +241,14 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 	 * @return the parsed {@link CrawledData}.
 	 */
 	private CrawledData parseFetchedContent(FetchedContent content) {
-		String cleanHTML = Jsoup.clean(content.getHtml(), content.getUrl().toExternalForm(),
-			Whitelist.relaxed().addTags("title").addTags("head"));
-		content.setHtml(cleanHTML);
+		String cleanHTML = Jsoup
+			.clean(content.getHtml(), content.getUrl().getToFetch().toExternalForm(),
+				Whitelist.relaxed().addTags("title").addTags("head"));
 		CrawledData site = toSite(content);
 		// parse document
 		Document doc = Jsoup.parse(cleanHTML);
 		site.setAnchors(extractAnchors(doc, site.getUrl()));
-		site.setTitle(extractTitle(content.getUrl(), doc));
+		site.setTitle(extractTitle(content.getUrl().getToFetch(), doc));
 		site.setProperty(DOC_ATTR, doc);
 		return site;
 	}
@@ -246,7 +264,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		CrawledData result = new CrawledData();
 		result.setChecksum(checksum);
 		result.setContent(content.getHtml());
-		result.setUrl(content.getUrl());
+		result.setUrl(content.getUrl().getToFetch());
 		return result;
 	}
 

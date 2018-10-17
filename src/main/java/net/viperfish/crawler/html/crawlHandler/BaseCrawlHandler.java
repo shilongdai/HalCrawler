@@ -1,7 +1,8 @@
-package net.viperfish.crawler.html.crawlChecker;
+package net.viperfish.crawler.html.crawlHandler;
 
 import java.net.URL;
 import net.viperfish.crawler.html.CrawledData;
+import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HandlerResponse;
 import net.viperfish.crawler.html.HttpCrawlerHandler;
 
@@ -12,6 +13,11 @@ public abstract class BaseCrawlHandler implements HttpCrawlerHandler {
 	protected abstract boolean lock(CrawledData s);
 
 	protected abstract boolean isFetched(URL url);
+
+	@Override
+	public HandlerResponse handlePreParse(FetchedContent content) {
+		return HandlerResponse.GO_AHEAD;
+	}
 
 	@Override
 	public HandlerResponse handlePostParse(CrawledData site) {
@@ -39,4 +45,6 @@ public abstract class BaseCrawlHandler implements HttpCrawlerHandler {
 	public HandlerResponse handlePostProcess(CrawledData site) {
 		return HandlerResponse.GO_AHEAD;
 	}
+
+
 }

@@ -1,6 +1,8 @@
 package net.viperfish.crawler.html;
 
 import java.net.URL;
+import java.util.logging.Handler;
+import net.viperfish.crawler.html.engine.PrioritizedURL;
 
 /**
  * A handler that can be attached to the {@link HttpWebCrawler} to perform operations at various
@@ -8,6 +10,13 @@ import java.net.URL;
  * {@link HandlerResponse}. All implementations of this class should ensure thread safety.
  */
 public interface HttpCrawlerHandler {
+
+	/**
+	 * performs an operation or control flow before the initial parse. At this stage, only the fetched contents are available.
+	 * @param content the fetched content.
+	 * @return the control signal.
+	 */
+	HandlerResponse handlePreParse(FetchedContent content);
 
 	/**
 	 * perform operation or control flow after the initial parse. At this stage, all the built-in

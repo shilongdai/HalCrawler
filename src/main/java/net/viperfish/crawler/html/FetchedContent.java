@@ -1,7 +1,7 @@
 package net.viperfish.crawler.html;
 
-import java.net.URL;
 import java.util.Objects;
+import net.viperfish.crawler.html.engine.PrioritizedURL;
 
 /**
  * A class containing downloaded contents by the {@link HttpFetcher}. It is a simple POJO class
@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class FetchedContent {
 
-	private URL url;
+	private PrioritizedURL url;
 	private int status;
 	private String html;
 
@@ -20,7 +20,7 @@ public class FetchedContent {
 	 * @param status the HTTP return status.
 	 * @param html the downloaded HTML.
 	 */
-	public FetchedContent(URL url, int status, String html) {
+	public FetchedContent(PrioritizedURL url, int status, String html) {
 		this.url = url;
 		this.status = status;
 		this.html = html;
@@ -31,7 +31,7 @@ public class FetchedContent {
 	 *
 	 * @return the URL of the site.
 	 */
-	public URL getUrl() {
+	public PrioritizedURL getUrl() {
 		return url;
 	}
 
@@ -40,7 +40,7 @@ public class FetchedContent {
 	 *
 	 * @param url the URL of the site.
 	 */
-	public void setUrl(URL url) {
+	public void setUrl(PrioritizedURL url) {
 		this.url = url;
 	}
 

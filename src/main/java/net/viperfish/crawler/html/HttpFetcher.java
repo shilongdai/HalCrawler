@@ -7,16 +7,24 @@ import net.viperfish.crawler.core.ResourcesStream;
 import net.viperfish.crawler.html.exception.FetchFailedException;
 
 /**
- * A {@link ResourcesStream} that fetches site contents as stream data.
+ * A {@link ResourcesStream} that fetches site contents with priorities as stream data.
  */
 public interface HttpFetcher extends ResourcesStream<FetchedContent> {
 
 	/**
-	 * submits a new url to be fetched.
+	 * submits a new url to be fetched. This URL will be checked against all
+	 * constraints/restrictions of this fetcher. In terms of priority, this is the equivalent of
+	 * calling submit(url, 0).
 	 *
 	 * @param url the url to fetch
 	 */
 	void submit(URL url);
+
+	/**
+	 * submits a new URL to be fetched with a certain priority. The URL with the highest priority
+	 * will be fetched first.
+	 */
+	void submit(URL url, int priority);
 
 	/**
 	 * sets the {@link RestrictionManager} that dictates whether the fetcher should fetch from a

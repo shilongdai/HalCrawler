@@ -115,7 +115,7 @@ public abstract class DataProcessor<I, O> {
 	 *
 	 * @param e the exception that occurred.
 	 */
-	protected void processFetchError(Exception e) {
+	protected void processFetchError(Throwable e) {
 		System.out.println("Failed to read:" + e.getMessage());
 	}
 
@@ -125,7 +125,7 @@ public abstract class DataProcessor<I, O> {
 	 *
 	 * @param e the exception that occurred.
 	 */
-	protected void handleProcessingError(Exception e) {
+	protected void handleProcessingError(Throwable e) {
 		System.out.println("Failed to handle:" + e.getMessage());
 	}
 
@@ -149,7 +149,7 @@ public abstract class DataProcessor<I, O> {
 					// submit a new item to be concurrently processed
 					activeProcessingTasks.incrementAndGet();
 					processingThreads.submit(new Processor(next));
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					processFetchError(e);
 				}
 			}
@@ -173,7 +173,7 @@ public abstract class DataProcessor<I, O> {
 						out.write(result.getResult());
 					}
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				handleProcessingError(e);
 			} finally {
 				activeProcessingTasks.decrementAndGet();

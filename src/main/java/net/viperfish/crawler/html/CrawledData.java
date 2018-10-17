@@ -2,6 +2,7 @@ package net.viperfish.crawler.html;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,6 +47,9 @@ public class CrawledData implements Serializable {
 	 * @param title the title of the site
 	 */
 	public void setTitle(String title) {
+		if (title == null) {
+			throw new NullPointerException("Title is null");
+		}
 		this.title = title;
 	}
 
@@ -64,8 +68,11 @@ public class CrawledData implements Serializable {
 	 * @param url the URL of the site.
 	 */
 	public void setUrl(URL url) {
+		if (url == null) {
+			throw new NullPointerException("URL cannot be null");
+		}
+
 		this.url = url;
-		this.title = url.toString();
 	}
 
 	/**
@@ -83,6 +90,10 @@ public class CrawledData implements Serializable {
 	 * @param content the content of the site.
 	 */
 	public void setContent(String content) {
+		if (content == null) {
+			throw new NullPointerException("Content cannot be null");
+		}
+
 		this.content = content;
 	}
 
@@ -101,6 +112,10 @@ public class CrawledData implements Serializable {
 	 * @param checksum the checksum of the site.
 	 */
 	public void setChecksum(String checksum) {
+		if (checksum == null) {
+			throw new NullPointerException("Checksum cannot be null");
+		}
+
 		this.checksum = checksum;
 	}
 
@@ -119,7 +134,7 @@ public class CrawledData implements Serializable {
 	 * @param anchors the anchors on the site.
 	 */
 	public void setAnchors(List<Anchor> anchors) {
-		this.anchors = anchors;
+		this.anchors = new LinkedList<>(anchors);
 	}
 
 	/**
