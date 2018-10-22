@@ -21,7 +21,7 @@ The crawler framework has five main components:
 
 The base crawler is the master controller of all the other components. It accepts URLs from external sources to craw, uses the content fetcher to fetch the resources referenced by the URLs, processes the contents with various content processors, and store the crawled results into the storage backend.
 
-Each content processor is matched to a specific section in the fetched content. In HTML, that would be sections identified by various structural informations. The content processors are responsible for processing their designated sections that are meaningful to the context of the crawler.
+Each content processor is matched to a specific section in the fetched content. In HTML, that would be sections identified by various structural informations. The content processors are responsible for processing their designated sections and add the processed attributes to the current site object.
 
 The content fetcher fetches web pages by URL. It deals with all the raw information such as encoding, rate limits, mime type etc specific to the sites. It is responsible to produce the raw data readable by the processors.
 
