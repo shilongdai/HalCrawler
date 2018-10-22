@@ -21,6 +21,7 @@ public class RobotTxt {
 	private List<Pattern> disallowedPattern;
 	private List<Pattern> allowedPattern;
 
+
 	/**
 	 * creates a new RobotTxt with the specified values.
 	 *
@@ -152,7 +153,7 @@ public class RobotTxt {
 			str = baseURLString;
 		}
 		str = quoteNonWildcard(str);
-		if (str.indexOf("*") == -1) {
+		if (!str.contains("*")) {
 			if (str.endsWith("$")) {
 				str = str.substring(0, str.length() - 1) + "*$";
 			} else {

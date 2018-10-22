@@ -185,9 +185,8 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 			shouldIndex = false;
 		}
 
-		// get and process all of the tags
-		recursiveInterpretTags(
-			doc.getElementsByTag("html").first(), site);
+		// process the document
+		processDocument(doc, site);
 		// do post process operations
 		HandlerResponse postProcessResponse = HandlerResponse.GO_AHEAD;
 		for (HttpCrawlerHandler handler : httpCrawlerHandler) {
@@ -208,7 +207,7 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 		}
 
 		submitAnchors(site);
-
+		site.getProperties().remove(DOC_ATTR);
 		return new ProcessedResult<>(site, shouldIndex);
 	}
 
@@ -269,26 +268,16 @@ public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
 	}
 
 	/**
-	 * recursively process all the elements of the HTML document.
+	 * processes the document with the tag processors.
 	 *
-	 * @param e the HTML element
-	 * @param s the current site being processed
-	 * @throws ParsingException if failed to parse the elements.
+	 * @param doc the document to process
+	 * @param s the crawled data
+	 * @throws ParsingException if failed to parse
 	 */
-	private void recursiveInterpretTags(Element e, CrawledData s)
+	private void processDocument(Document doc, CrawledData s)
 		throws ParsingException {
-		if (e == null || e.tagName() == null) {
-			return;
-		}
-
-		for (TagProcessor processor : processors.values()) {
-			if (processor.match(e)) {
-				processor.processTag(e, s);
-			}
-		}
-
-		for (Element child : e.children()) {
-			recursiveInterpretTags(child, s);
+		for (TagProcessor t : this.processors.values()) {
+			t.processTag(doc, s);
 		}
 	}
 

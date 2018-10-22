@@ -1,7 +1,7 @@
 package net.viperfish.crawler.html;
 
 import net.viperfish.crawler.html.exception.ParsingException;
-import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Document;
 
 /**
  * A processor that processes HTML elements. This interface is used to customize the output of the
@@ -10,21 +10,13 @@ import org.jsoup.nodes.Element;
 public interface TagProcessor {
 
 	/**
-	 * processes a tag on the HTML page that matches this processor.
+	 * processes the html document and modifies the {@link CrawledData}
 	 *
-	 * @param tag the tag on the HTML page.
-	 * @param site the currently processing site.
+	 * @param document the document to parse.
 	 * @throws ParsingException if failed to parse.
 	 */
-	void processTag(Element tag, CrawledData site)
+	void processTag(Document document, CrawledData crawledData)
 		throws ParsingException;
 
-	/**
-	 * tests whether this processor match to the specified tag.
-	 *
-	 * @param element the element to test against.
-	 * @return true if this processor should be applied, false otherwise.
-	 */
-	boolean match(Element element);
 
 }

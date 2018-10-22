@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.viperfish.crawler.core.IOUtil;
 import net.viperfish.crawler.html.Restriction;
 import net.viperfish.crawler.html.RestrictionManager;
@@ -95,78 +96,19 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 			userAgent);
 		try {
 			urlc.connect();
-
 			if (urlc.getResponseCode() < 300 && urlc.getResponseCode() > 199) {
 				String robotStr = new String(IOUtil.read(urlc.getInputStream()),
 					StandardCharsets.UTF_8);
-				return parseRobotTxt(baseURL, robotStr);
-			} else {
-				return NULL_ROBOT_TXT;
+				RobotTxt result = applySection(baseURL, userAgent, robotStr);
+				if (result == NULL_ROBOT_TXT) {
+					result = applySection(baseURL, "*", robotStr);
+				}
+				return result;
 			}
 		} finally {
 			urlc.disconnect();
 		}
-	}
-
-	// TODO: change the parsing algorithm so that the order of the robots.txt will not cause problem with the agent.
-
-	/**
-	 * parses the content of the robots.txt file. It will parse the section matching the agent
-	 * specified.
-	 *
-	 * @param base the base url of the site
-	 * @param robotStr the fetched robots.txt content
-	 * @return the parsed robots.txt
-	 */
-	private RobotTxt parseRobotTxt(URL base, String robotStr) {
-		List<String> allowed = new LinkedList<>();
-		List<String> disallowed = new LinkedList<>();
-		int crawlDelay = 0;
-
-		String[] robotLines = robotStr.split("\n");
-		boolean startParse = false;
-		boolean alreadyParsed = false;
-		for (String i : robotLines) {
-			String[] fields = i.split(":");
-			if (fields.length != 2) {
-				continue;
-			}
-			String fieldName = fields[0].trim().toLowerCase();
-			String fieldVal = fields[1].trim();
-			if (fieldName.equals("user-agent")) {
-				if (alreadyParsed) {
-					break;
-				}
-				if (fieldVal.equals(userAgent) || fieldVal.equals("*")) {
-					startParse = true;
-					continue;
-				} else {
-					if (startParse) {
-						alreadyParsed = true;
-					}
-					startParse = false;
-				}
-			}
-			if (startParse) {
-				switch (fieldName) {
-					case "disallow": {
-						disallowed.add(fieldVal);
-						break;
-					}
-					case "allow": {
-						allowed.add(fieldVal);
-						break;
-					}
-					case "crawl-delay": {
-						if (fieldVal.matches("\\d+")) {
-							crawlDelay = Integer.parseInt(fieldVal);
-						}
-						break;
-					}
-				}
-			}
-		}
-		return new RobotTxt(base, allowed, disallowed, crawlDelay);
+		return NULL_ROBOT_TXT;
 	}
 
 	/**
@@ -180,4 +122,80 @@ public class RobotsTxtRestrictionManager implements RestrictionManager {
 		String baseStr = url.getProtocol() + "://" + url.getHost() + "/";
 		return new URL(baseStr);
 	}
+
+	/**
+	 * gets a specific section of the robots.txt as the {@link RobotTxt} object based on the
+	 * user-agent.
+	 *
+	 * @param base the base url of the site.
+	 * @param userAgent the user-agent to match
+	 * @param robotTxtContent the content of the actual robots.txt
+	 * @return whether any section matched.
+	 */
+	private RobotTxt applySection(URL base, String userAgent,
+		String robotTxtContent) {
+		String[] lines = robotTxtContent.split("\n");
+		boolean startParse = false;
+		boolean matched = false;
+		List<String> allowed = new LinkedList<>();
+		List<String> disallowed = new LinkedList<>();
+		AtomicInteger crawlDelay = new AtomicInteger(0);
+		for (String l : lines) {
+			// remove all control characters
+			l = l.replaceAll("\\p{Cntrl}", "");
+			String[] parameters = l.split(":");
+			if (parameters.length != 2) {
+				continue;
+			}
+			String key = parameters[0];
+			String value = parameters[1];
+			if (key.trim().equalsIgnoreCase("user-agent")) {
+				if (value.trim().equals(userAgent)) {
+					startParse = true;
+					matched = true;
+				} else {
+					startParse = false;
+				}
+			}
+			if (startParse) {
+				parseParameters(allowed, disallowed, crawlDelay, key, value);
+			}
+		}
+		if (matched) {
+			return new RobotTxt(base, allowed, disallowed, crawlDelay.get());
+		}
+		return NULL_ROBOT_TXT;
+	}
+
+	/**
+	 * fills in the fields of the {@link RobotTxt} based on the key value pair in robots.txt
+	 *
+	 * @param allowed the allowed list
+	 * @param disallowed the disallowed list
+	 * @param crawlDelay the crawl delay
+	 * @param key the key of the pair
+	 * @param value the value of the pair.
+	 */
+	private void parseParameters(List<String> allowed, List<String> disallowed,
+		AtomicInteger crawlDelay, String key, String value) {
+		key = key.trim().toLowerCase();
+		value = value.trim();
+		switch (key) {
+			case "disallow": {
+				disallowed.add(value);
+				break;
+			}
+			case "allow": {
+				allowed.add(value);
+				break;
+			}
+			case "crawl-delay": {
+				if (value.matches("\\d+")) {
+					crawlDelay.set(Integer.parseInt(value));
+				}
+				break;
+			}
+		}
+	}
+
 }
