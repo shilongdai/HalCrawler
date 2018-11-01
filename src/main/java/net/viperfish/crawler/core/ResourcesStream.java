@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A data input stream that provides data. This class is used by the {@link DataProcessor} to get
- * new data. All implementation of this interface must be thread safe.
+ * A data input stream that provides data. This class is used by the {@link ConcurrentDataProcessor}
+ * to get new data. All implementation of this interface must be thread safe.
  *
  * @param <T> the type of data input
  */

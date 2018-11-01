@@ -10,7 +10,7 @@ import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.HttpWebCrawler;
 import net.viperfish.crawler.html.InMemSiteDatabase;
 import net.viperfish.crawler.html.crawlHandler.Limit2HostHandler;
-import net.viperfish.crawler.html.engine.ApplicationConcurrentHttpFetcher;
+import net.viperfish.crawler.html.engine.ApplicationPrioritizedConcurrentHttpFetcher;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;
 import org.junit.Assert;
@@ -24,7 +24,8 @@ public class TestCrawler {
 	public void testBasicCrawler()
 		throws Exception {
 		URL url2Test = new URL("https://example.com");
-		HttpFetcher fetcher = new ApplicationConcurrentHttpFetcher(1);
+		HttpFetcher fetcher = new ApplicationPrioritizedConcurrentHttpFetcher(1);
+		fetcher.init();
 		InMemSiteDatabase siteDB = new InMemSiteDatabase();
 		siteDB.init();
 		HttpWebCrawler crawler = new HttpWebCrawler(1, siteDB,

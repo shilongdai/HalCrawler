@@ -15,7 +15,9 @@ public class ConcurrentFetcherTest {
 		URL testSite = new URL("https://www.viperfish.net/test/testCrawl.html");
 		String pageHTML = new String(IOUtil.read(testSite.openStream()), StandardCharsets.UTF_8);
 
-		ConcurrentHttpFetcher fetcher = new ApplicationConcurrentHttpFetcher(2);
+		PrioritizedConcurrentHttpFetcher fetcher = new ApplicationPrioritizedConcurrentHttpFetcher(
+			2);
+		fetcher.init();
 		fetcher.submit(testSite);
 		FetchedContent content = fetcher.next();
 

@@ -3,8 +3,9 @@ package net.viperfish.crawler.core;
 import java.io.IOException;
 
 /**
- * An output sink that data can be written to. This class is used by the {@link DataProcessor} to
- * write data output. All implementation of this class must be thread safe.
+ * An output sink that data can be written to. This class is used by the {@link
+ * ConcurrentDataProcessor} to write data output. All implementation of this class must be thread
+ * safe.
  *
  * @param <T> the type of output data
  */

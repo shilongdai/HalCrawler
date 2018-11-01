@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * a {@link Datasink}. It is the template base class for other classes that provide concrete
  * processing operations. All implementations of this class must be thread safe.
  */
-public abstract class DataProcessor<I, O> {
+public abstract class ConcurrentDataProcessor<I, O> implements Processor {
 
 	private ResourcesStream<? extends I> in;
 	private Datasink<? super O> out;
@@ -22,10 +22,11 @@ public abstract class DataProcessor<I, O> {
 	private AtomicInteger activeProcessingTasks;
 
 	/**
-	 * creates a new {@link DataProcessor} with an input stream and an output stream. The object
-	 * will spawn the specified amounts of thread to process informations.
+	 * creates a new {@link ConcurrentDataProcessor} with an input stream and an output stream. The
+	 * object will spawn the specified amounts of thread to process informations.
 	 */
-	public DataProcessor(ResourcesStream<? extends I> in, Datasink<? super O> out, int threads) {
+	public ConcurrentDataProcessor(ResourcesStream<? extends I> in, Datasink<? super O> out,
+		int threads) {
 		this.in = in;
 		this.out = out;
 		masterDelegater = Executors.newSingleThreadExecutor();
@@ -37,6 +38,7 @@ public abstract class DataProcessor<I, O> {
 	 * starts to pull data from the {@link ResourcesStream} and process it to the {@link Datasink}
 	 * concurrently. This method will not block.
 	 */
+	@Override
 	public void startProcessing() {
 		if (delegateTask == null) {
 			delegateTask = masterDelegater.submit(new Delegator());
@@ -48,6 +50,7 @@ public abstract class DataProcessor<I, O> {
 	 *
 	 * @return if data from the stream have been processed.
 	 */
+	@Override
 	public boolean isDone() {
 		if (delegateTask != null) {
 			return delegateTask.isDone() && activeProcessingTasks.get() == 0;
@@ -60,6 +63,7 @@ public abstract class DataProcessor<I, O> {
 	 *
 	 * @throws InterruptedException if an interruption occurs.
 	 */
+	@Override
 	public void waitUntiDone() throws InterruptedException {
 		try {
 			if (delegateTask != null) {
@@ -71,10 +75,11 @@ public abstract class DataProcessor<I, O> {
 	}
 
 	/**
-	 * resets the {@link DataProcessor} to start processing again. This method will only reset the
-	 * {@link DataProcessor}, and will not touch the {@link ResourcesStream} or the {@link
-	 * Datasink}.
+	 * resets the {@link ConcurrentDataProcessor} to start processing again. This method will only
+	 * reset the {@link ConcurrentDataProcessor}, and will not touch the {@link ResourcesStream} or
+	 * the {@link Datasink}.
 	 */
+	@Override
 	public void reset() {
 		delegateTask.cancel(true);
 		delegateTask = null;
@@ -85,6 +90,7 @@ public abstract class DataProcessor<I, O> {
 	 * shuts down all processing operations and clean up. This method will not touch the {@link
 	 * ResourcesStream} or the {@link Datasink}.
 	 */
+	@Override
 	public void shutdown() {
 		try {
 			masterDelegater.shutdown();

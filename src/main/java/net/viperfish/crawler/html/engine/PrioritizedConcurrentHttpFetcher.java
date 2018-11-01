@@ -4,8 +4,6 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -16,13 +14,11 @@ import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.RestrictionManager;
 import net.viperfish.crawler.html.exception.FetchFailedException;
 
-public abstract class ConcurrentHttpFetcher implements HttpFetcher {
+public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 
 	// concurrency stuff
 	private BlockingQueue<Pair<FetchedContent, Throwable>> resultQueue;
 	private PrioritizedURLBlockingQueue prioritizedURLBlockingQueue;
-	private ExecutorService threadPool;
-	private ExecutorService delegatorThread;
 	private AtomicInteger runningTasks;
 	private Future<?> delegateInterrupter;
 
@@ -31,22 +27,18 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 	private String userAgent;
 	private boolean closed;
 
-	public ConcurrentHttpFetcher(int threadCount, String userAgent) {
-		threadPool = Executors.newFixedThreadPool(threadCount);
+	public PrioritizedConcurrentHttpFetcher(String userAgent) {
 		resultQueue = new LinkedBlockingQueue<>();
 		runningTasks = new AtomicInteger(0);
 		prioritizedURLBlockingQueue = new DefaultPrioritizedURLBlockingQueue();
-		delegatorThread = Executors.newSingleThreadExecutor();
-
 		this.managers = new LinkedList<>();
 		closed = false;
 		this.userAgent = userAgent;
-
-		delegateInterrupter = delegatorThread.submit(new DelegatorRunnable());
 	}
 
-	public ConcurrentHttpFetcher(int threadCount) {
-		this(threadCount, "halbot");
+	@Override
+	public void init() {
+		this.delegateInterrupter = runDelegator(new DelegatorRunnable());
 	}
 
 	@Override
@@ -94,15 +86,7 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 	@Override
 	public void close() {
 		delegateInterrupter.cancel(true);
-		delegatorThread.shutdown();
-		threadPool.shutdown();
-		try {
-			delegatorThread.awaitTermination(5, TimeUnit.SECONDS);
-			threadPool.awaitTermination(5, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			threadPool.shutdownNow();
-			delegatorThread.shutdownNow();
-		}
+		shutdownThreads();
 		closed = true;
 	}
 
@@ -132,6 +116,12 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 		return prioritizedURLBlockingQueue;
 	}
 
+	protected abstract Future<?> runDelegator(Runnable delegator);
+
+	protected abstract Future<?> runFetcher(Runnable fetcher);
+
+	protected abstract void shutdownThreads();
+
 	private class DelegatorRunnable implements Runnable {
 
 		@Override
@@ -142,7 +132,7 @@ public abstract class ConcurrentHttpFetcher implements HttpFetcher {
 						.take(200, TimeUnit.MILLISECONDS);
 					if (pURL != null) {
 						runningTasks.incrementAndGet();
-						threadPool.submit(getRunnable(pURL));
+						runFetcher(getRunnable(pURL));
 					}
 				}
 			} catch (InterruptedException e) {

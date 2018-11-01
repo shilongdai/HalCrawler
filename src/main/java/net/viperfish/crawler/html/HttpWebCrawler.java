@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.viperfish.crawler.core.DataProcessor;
+import net.viperfish.crawler.core.ConcurrentDataProcessor;
 import net.viperfish.crawler.core.Datasink;
 import net.viperfish.crawler.core.ProcessedResult;
 import net.viperfish.crawler.html.exception.ParsingException;
@@ -26,7 +26,7 @@ import org.jsoup.select.Elements;
 // TODO: refractor the whole thing into more modular structure. Add documentation
 
 /**
- * A {@link DataProcessor} that crawls http pages. It takes raw html contents and extracts
+ * A {@link ConcurrentDataProcessor} that crawls http pages. It takes raw html contents and extracts
  * information from it. By default, without any additional processors, it will fill in all the
  * built-in attributes in the {@link CrawledData} class. The output written by this class will
  * contain all the successfully retrieved crawled sites. Pages with response code not included in
@@ -34,7 +34,7 @@ import org.jsoup.select.Elements;
  * processing, implement and register a {@link HttpCrawlerHandler}. To customize/specialize the
  * output of this class, implement and register a {@link TagProcessor}.
  */
-public class HttpWebCrawler extends DataProcessor<FetchedContent, CrawledData> {
+public class HttpWebCrawler extends ConcurrentDataProcessor<FetchedContent, CrawledData> {
 
 	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
