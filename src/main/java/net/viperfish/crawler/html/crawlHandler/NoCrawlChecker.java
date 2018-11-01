@@ -6,6 +6,10 @@ import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HandlerResponse;
 import net.viperfish.crawler.html.HttpCrawlerHandler;
 
+/**
+ * A {@link HttpCrawlerHandler} that ensures no further sites are crawled after the initial
+ * submission has been crawled.
+ */
 public class NoCrawlChecker implements HttpCrawlerHandler {
 
 	@Override

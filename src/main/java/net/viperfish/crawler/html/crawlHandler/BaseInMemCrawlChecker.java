@@ -5,12 +5,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import net.viperfish.crawler.html.CrawledData;
 
-public class BaseInMemCrawlHandler extends BaseCrawlHandler {
+/**
+ * A basic implementation of the {@link BaseCrawlChecker} that keeps all the data in memory.
+ */
+public class BaseInMemCrawlChecker extends BaseCrawlChecker {
 
 	private ConcurrentMap<URL, Boolean> tracker;
 	private ConcurrentMap<String, Boolean> hashTracker;
 
-	public BaseInMemCrawlHandler() {
+	/**
+	 * creates a new {@link BaseInMemCrawlChecker}.
+	 */
+	public BaseInMemCrawlChecker() {
 		tracker = new ConcurrentHashMap<>();
 		hashTracker = new ConcurrentHashMap<>();
 	}

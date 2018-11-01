@@ -135,6 +135,10 @@ public abstract class ConcurrentDataProcessor<I, O> implements Processor {
 		System.out.println("Failed to handle:" + e.getMessage());
 	}
 
+	/**
+	 * A delegator Runnable that is responsible for dispatching incoming fetched sites to different
+	 * threads in the form of the {@link Processor}.
+	 */
 	private class Delegator implements Runnable {
 
 		@Override
@@ -162,6 +166,10 @@ public abstract class ConcurrentDataProcessor<I, O> implements Processor {
 		}
 	}
 
+	/**
+	 * The processing unit that accepts a crawled site, processes it, and write the result to the
+	 * {@link Datasink}.
+	 */
 	private class Processor implements Runnable {
 
 		private I next;
