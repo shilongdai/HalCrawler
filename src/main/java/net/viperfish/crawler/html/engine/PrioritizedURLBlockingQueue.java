@@ -4,9 +4,9 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A blocking resultQueue that ensures the most frequently added URL has the highest priority. The
- * URL with the higher frequency submitted should be retrieved earlier. All implementation of this
- * class must be thread safe.
+ * A blocking url queue that ensures the most frequently added URL has the highest priority. The URL
+ * with the higher frequency submitted should be retrieved earlier. All implementation of this class
+ * must be thread safe.
  */
 public interface PrioritizedURLBlockingQueue {
 

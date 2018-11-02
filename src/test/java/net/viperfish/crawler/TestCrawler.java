@@ -30,7 +30,7 @@ public class TestCrawler {
 		siteDB.init();
 		HttpWebCrawler crawler = new HttpWebCrawler(1, siteDB,
 			fetcher);
-		crawler.registerCrawlerHandler(new Limit2HostHandler(new URL("https://example.com")));
+		crawler.registerCrawlerHandler(new Limit2HostHandler("example.com"));
 		crawler.submit(new URL("https://example.com/"));
 		Date begin = new Date();
 		crawler.startProcessing();

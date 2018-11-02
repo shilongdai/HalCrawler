@@ -14,6 +14,10 @@ import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.RestrictionManager;
 import net.viperfish.crawler.html.exception.FetchFailedException;
 
+/**
+ * A base implementation of the {@link HttpFetcher} that delegates fetch to threads. All
+ * implementations of this base class need to provide the threading/concurrent mechanism.
+ */
 public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 
 	// concurrency stuff
@@ -27,6 +31,11 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 	private String userAgent;
 	private boolean closed;
 
+	/**
+	 * creates a new {@link PrioritizedConcurrentHttpFetcher} with the user-agent string.
+	 *
+	 * @param userAgent the user-agent sent with the requests.
+	 */
 	public PrioritizedConcurrentHttpFetcher(String userAgent) {
 		resultQueue = new LinkedBlockingQueue<>();
 		runningTasks = new AtomicInteger(0);
@@ -86,7 +95,7 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 	@Override
 	public void close() {
 		delegateInterrupter.cancel(true);
-		shutdownThreads();
+		cleanup();
 		closed = true;
 	}
 
@@ -100,28 +109,68 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 		return managers;
 	}
 
+	/**
+	 * gets the amount of fetching tasks that are submitted. This method is mostly for subclasses to
+	 * determine when fetching is done.
+	 *
+	 * @return the amount of fetching tasks submitted.
+	 */
 	protected AtomicInteger getTaskNumber() {
 		return runningTasks;
 	}
 
+	/**
+	 * gets whether the close method is called. This method is mostly for subclasses.
+	 *
+	 * @return whether close is called.
+	 */
 	protected boolean closeCalled() {
 		return closed;
 	}
 
+	/**
+	 * gets the queue that contains all the fetch results.
+	 *
+	 * @return the queue with all the fetch result.
+	 */
 	protected BlockingQueue<Pair<FetchedContent, Throwable>> resultQueue() {
 		return resultQueue;
 	}
 
+	/**
+	 * gets the submission queue with urls to be processed.
+	 *
+	 * @return the queue with urls to be processed.
+	 */
 	protected PrioritizedURLBlockingQueue urlQueue() {
 		return prioritizedURLBlockingQueue;
 	}
 
+	/**
+	 * run the fetch task delegator concurrently.
+	 *
+	 * @param delegator the delegator runnable.
+	 * @return a control point for the delegator.
+	 */
 	protected abstract Future<?> runDelegator(Runnable delegator);
 
+	/**
+	 * run a fetch task concurrently.
+	 *
+	 * @param fetcher the fetch task runnable.
+	 * @return a control point for the fetch task.
+	 */
 	protected abstract Future<?> runFetcher(Runnable fetcher);
 
-	protected abstract void shutdownThreads();
+	/**
+	 * clean up all resources used.
+	 */
+	protected abstract void cleanup();
 
+	/**
+	 * The delegator runnable task. It takes a url from the submission queue and delegate the
+	 * fetching to {@link FetchRunnable}.
+	 */
 	private class DelegatorRunnable implements Runnable {
 
 		@Override
@@ -136,10 +185,16 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 					}
 				}
 			} catch (InterruptedException e) {
-				return;
+				System.out.println("Interruption Received");
 			}
 		}
 
+		/**
+		 * shorthand for creating a {@link FetchRunnable}.
+		 *
+		 * @param url the url to fetch.
+		 * @return a fetch runnable that will fetch the url.
+		 */
 		private FetchRunnable getRunnable(PrioritizedURL url) {
 			return new FetchRunnable(url, resultQueue, managers, runningTasks, userAgent);
 		}

@@ -7,6 +7,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The default implementation for the {@link PrioritizedURLBlockingQueue}. For this queue, the
+ * higher the priority number, the greater the importance.
+ */
 public class DefaultPrioritizedURLBlockingQueue implements PrioritizedURLBlockingQueue {
 
 	private static final int INITIAL_CAPACITY = 100;
@@ -14,6 +18,9 @@ public class DefaultPrioritizedURLBlockingQueue implements PrioritizedURLBlockin
 	private PriorityBlockingQueue<PrioritizedURL> queue;
 	private ConcurrentMap<URL, PrioritizedURL> urlTracker;
 
+	/**
+	 * creates an empty queue.
+	 */
 	public DefaultPrioritizedURLBlockingQueue() {
 		queue = new PriorityBlockingQueue<>(INITIAL_CAPACITY, comparator());
 		urlTracker = new ConcurrentHashMap<>();

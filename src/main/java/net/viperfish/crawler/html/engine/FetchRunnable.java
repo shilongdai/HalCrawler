@@ -13,6 +13,11 @@ import net.viperfish.crawler.html.Restriction;
 import net.viperfish.crawler.html.RestrictionManager;
 import net.viperfish.crawler.html.exception.FetchFailedException;
 
+/**
+ * A fetch task that fetches a specified URL. This task checks the url to fetch against a {@link
+ * RestrictionManager}, registers iteself as a running task, and pushes the result to a result
+ * queue.
+ */
 class FetchRunnable implements Runnable {
 
 	private PrioritizedURL url;
@@ -21,6 +26,15 @@ class FetchRunnable implements Runnable {
 	private AtomicInteger runningTasks;
 	private String userAgent;
 
+	/**
+	 * creates a new fetch task with required parameters.
+	 *
+	 * @param url the url to fetch.
+	 * @param queue the result queue.
+	 * @param managers the list of restriction managers to check against.
+	 * @param runningTasks the running task counter to register to.
+	 * @param userAgent the user-agent sent to the server.
+	 */
 	public FetchRunnable(PrioritizedURL url,
 		BlockingQueue<Pair<FetchedContent, Throwable>> queue,
 		List<RestrictionManager> managers, AtomicInteger runningTasks, String userAgent) {
@@ -52,6 +66,13 @@ class FetchRunnable implements Runnable {
 	}
 
 
+	/**
+	 * fetches the specified url with the user-agent.
+	 *
+	 * @param url the url of the site.
+	 * @return the fetched page, or null if the page is not html.
+	 * @throws IOException if failed to fetch the site.
+	 */
 	private FetchedContent fetchSite(PrioritizedURL url) throws IOException {
 		URLConnection conn = url.getToFetch().openConnection();
 		HttpURLConnection urlc;
@@ -92,6 +113,12 @@ class FetchRunnable implements Runnable {
 		}
 	}
 
+	/**
+	 * gets the encoding of a http remote resource.
+	 *
+	 * @param urlConnection the connection to the remote resource.
+	 * @return the encofing or UTF-8 if encoding information unavailable.
+	 */
 	private String getEncoding(HttpURLConnection urlConnection) {
 		String mime = urlConnection.getContentType();
 		String encoding = urlConnection.getContentEncoding();
