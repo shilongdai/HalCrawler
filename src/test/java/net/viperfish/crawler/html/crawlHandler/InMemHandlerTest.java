@@ -17,7 +17,7 @@ public class InMemHandlerTest {
 		existingSite.setContent("");
 		existingSite.setTitle("Existing Site");
 		existingSite.setUrl(new URL("https://www.example.com"));
-		BaseInMemCrawlHandler checker = new BaseInMemCrawlHandler();
+		BaseInMemCrawlChecker checker = new BaseInMemCrawlChecker();
 		checker.lock(existingSite);
 
 		Assert.assertEquals(HandlerResponse.HALT,

@@ -7,15 +7,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HandlerResponse;
 
+/**
+ * A {@link net.viperfish.crawler.html.HttpCrawlerHandler} that defers page fetch with low priority
+ * and kill page after a certain number of defer. This handler was created in order to try to ensure
+ * that the most important pages are crawled first, and the deep linked pages with few reference are
+ * abandoned to avoid crawler traps.
+ */
 public class TTLCrawlHandler extends YesCrawlChecker {
 
 	private ConcurrentMap<URL, AtomicInteger> ttlTracker;
-	private int ttlThreshold;
+	private int priorityThreshold;
 	private int deferredThreshold;
 
-
-	public TTLCrawlHandler(int ttlThreshold, int deferredThreshold) {
-		this.ttlThreshold = ttlThreshold;
+	/**
+	 * creates a new {@link TTLCrawlHandler} specifying its minimal priority and its maximum
+	 * deferred time.
+	 *
+	 * @param priorityThreshold the minimal required priority
+	 * @param deferredThreshold the maximum deferred time.
+	 */
+	public TTLCrawlHandler(int priorityThreshold, int deferredThreshold) {
+		this.priorityThreshold = priorityThreshold;
 		ttlTracker = new ConcurrentHashMap<>();
 		this.deferredThreshold = deferredThreshold;
 	}
@@ -24,7 +36,7 @@ public class TTLCrawlHandler extends YesCrawlChecker {
 	public HandlerResponse handlePreParse(FetchedContent content) {
 		ttlTracker.putIfAbsent(content.getUrl().getToFetch(), new AtomicInteger(0));
 		AtomicInteger current = ttlTracker.get(content.getUrl().getToFetch());
-		if (content.getUrl().getPriority() - current.get() < ttlThreshold) {
+		if (content.getUrl().getPriority() - current.get() < priorityThreshold) {
 			if (current.incrementAndGet() > deferredThreshold) {
 				return HandlerResponse.HALT;
 			}

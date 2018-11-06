@@ -6,6 +6,9 @@ import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HandlerResponse;
 import net.viperfish.crawler.html.HttpCrawlerHandler;
 
+/**
+ * A {@link HttpCrawlerHandler} that will always return an affirmative on crawling.
+ */
 public class YesCrawlChecker implements HttpCrawlerHandler {
 
 	public YesCrawlChecker() {

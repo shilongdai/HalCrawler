@@ -3,7 +3,7 @@ package net.viperfish.crawler.core;
 import java.util.Objects;
 
 /**
- * The result of the processing operation. This class is used by the {@link DataProcessor} as a data
+ * The result of the processing operation. This class is used by the {@link ConcurrentDataProcessor} as a data
  * structure that stored the result from the processing. It contains the actual result as well as
  * meta-information regarding this result.
  */
