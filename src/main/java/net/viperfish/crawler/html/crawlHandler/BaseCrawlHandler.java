@@ -16,6 +16,9 @@ public abstract class BaseCrawlHandler implements HttpCrawlerHandler {
 
 	@Override
 	public HandlerResponse handlePreParse(FetchedContent content) {
+		if (isFetched(content.getUrl().getToFetch())) {
+			return HandlerResponse.HALT;
+		}
 		return HandlerResponse.GO_AHEAD;
 	}
 

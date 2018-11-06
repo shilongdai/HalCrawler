@@ -30,4 +30,12 @@ public class BaseInMemCrawlHandler extends BaseCrawlHandler {
 		return tracker.putIfAbsent(s.getUrl(), true) == null
 			&& hashTracker.putIfAbsent(s.getChecksum(), true) == null;
 	}
+
+	protected ConcurrentMap<URL, Boolean> getURLTracker() {
+		return this.tracker;
+	}
+
+	protected ConcurrentMap<String, Boolean> getHashTracker() {
+		return this.hashTracker;
+	}
 }
