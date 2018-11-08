@@ -9,6 +9,7 @@ import net.viperfish.crawler.html.CrawledData;
 import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.HttpWebCrawler;
 import net.viperfish.crawler.html.InMemSiteDatabase;
+import net.viperfish.crawler.html.ThreadPoolHttpWebCrawler;
 import net.viperfish.crawler.html.crawlHandler.Limit2HostHandler;
 import net.viperfish.crawler.html.engine.ApplicationPrioritizedConcurrentHttpFetcher;
 import org.bouncycastle.crypto.Digest;
@@ -28,7 +29,7 @@ public class TestCrawler {
 		fetcher.init();
 		InMemSiteDatabase siteDB = new InMemSiteDatabase();
 		siteDB.init();
-		HttpWebCrawler crawler = new HttpWebCrawler(1, siteDB,
+		HttpWebCrawler crawler = new ThreadPoolHttpWebCrawler(1, siteDB,
 			fetcher);
 		crawler.registerCrawlerHandler(new Limit2HostHandler("example.com"));
 		crawler.submit(new URL("https://example.com/"));

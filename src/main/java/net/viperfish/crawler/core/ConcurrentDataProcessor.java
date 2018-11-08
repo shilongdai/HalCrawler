@@ -1,8 +1,6 @@
 package net.viperfish.crawler.core;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,21 +14,16 @@ public abstract class ConcurrentDataProcessor<I, O> implements Processor {
 
 	private ResourcesStream<? extends I> in;
 	private Datasink<? super O> out;
-	private ExecutorService masterDelegater;
 	private Future<?> delegateTask;
-	private ExecutorService processingThreads;
 	private AtomicInteger activeProcessingTasks;
 
 	/**
 	 * creates a new {@link ConcurrentDataProcessor} with an input stream and an output stream. The
 	 * object will spawn the specified amounts of thread to process informations.
 	 */
-	public ConcurrentDataProcessor(ResourcesStream<? extends I> in, Datasink<? super O> out,
-		int threads) {
+	public ConcurrentDataProcessor(ResourcesStream<? extends I> in, Datasink<? super O> out) {
 		this.in = in;
 		this.out = out;
-		masterDelegater = Executors.newSingleThreadExecutor();
-		processingThreads = Executors.newFixedThreadPool(threads);
 		activeProcessingTasks = new AtomicInteger(0);
 	}
 
@@ -41,7 +34,7 @@ public abstract class ConcurrentDataProcessor<I, O> implements Processor {
 	@Override
 	public void startProcessing() {
 		if (delegateTask == null) {
-			delegateTask = masterDelegater.submit(new Delegator());
+			delegateTask = this.runDelegator(new Delegator());
 		}
 	}
 
@@ -92,17 +85,10 @@ public abstract class ConcurrentDataProcessor<I, O> implements Processor {
 	 */
 	@Override
 	public void shutdown() {
-		try {
-			masterDelegater.shutdown();
-			processingThreads.shutdown();
-			masterDelegater.awaitTermination(5, TimeUnit.SECONDS);
-			processingThreads.awaitTermination(5, TimeUnit.SECONDS);
-			masterDelegater.shutdownNow();
-			processingThreads.shutdownNow();
-		} catch (InterruptedException e) {
-			masterDelegater.shutdownNow();
-			processingThreads.shutdownNow();
+		if (delegateTask != null) {
+			delegateTask.cancel(true);
 		}
+		cleanup();
 	}
 
 	/**
@@ -136,6 +122,27 @@ public abstract class ConcurrentDataProcessor<I, O> implements Processor {
 	}
 
 	/**
+	 * runs the delegator concurrently. This will only be called for once in a given instance.
+	 *
+	 * @param delegatorTask the delegator.
+	 * @return a control point.
+	 */
+	protected abstract Future<?> runDelegator(Runnable delegatorTask);
+
+	/**
+	 * runs a processing task concurrently. This will be called for every incoming item from the
+	 * queue.
+	 *
+	 * @return a control point.
+	 */
+	protected abstract Future<?> runProcessor(Runnable processor);
+
+	/**
+	 * cleans up all resources used by the subclasses.
+	 */
+	protected abstract void cleanup();
+
+	/**
 	 * A delegator Runnable that is responsible for dispatching incoming fetched sites to different
 	 * threads in the form of the {@link Processor}.
 	 */
@@ -158,7 +165,7 @@ public abstract class ConcurrentDataProcessor<I, O> implements Processor {
 
 					// submit a new item to be concurrently processed
 					activeProcessingTasks.incrementAndGet();
-					processingThreads.submit(new Processor(next));
+					runProcessor(new Processor(next));
 				} catch (Throwable e) {
 					processFetchError(e);
 				}

@@ -34,7 +34,7 @@ import org.jsoup.select.Elements;
  * processing, implement and register a {@link HttpCrawlerHandler}. To customize/specialize the
  * output of this class, implement and register a {@link TagProcessor}.
  */
-public class HttpWebCrawler extends ConcurrentDataProcessor<FetchedContent, CrawledData> {
+public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedContent, CrawledData> {
 
 	// the crawler will save codes contained in this set
 	private static final Set<Integer> ACCEPTED_STATUS_CODE;
@@ -61,13 +61,12 @@ public class HttpWebCrawler extends ConcurrentDataProcessor<FetchedContent, Craw
 	 * creates a new crawler with supplied storage output for site data and anchor data, and the
 	 * {@link HttpFetcher} to be used for downloading sites.
 	 *
-	 * @param threadCount the amount of processing threads
 	 * @param db the storage output for the crawled sites
 	 * @param fetcher the {@link HttpFetcher} for fetching contents
 	 */
-	public HttpWebCrawler(int threadCount, Datasink<CrawledData> db,
+	public HttpWebCrawler(Datasink<CrawledData> db,
 		HttpFetcher fetcher) {
-		super(fetcher, db, threadCount);
+		super(fetcher, db);
 		processors = new HashMap<>();
 		this.fetcher = fetcher;
 		hasher = new ThreadLocal<Digest>() {
