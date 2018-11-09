@@ -30,7 +30,7 @@ public class DefaultPrioritizedURLBlockingQueue implements PrioritizedURLBlockin
 	public void offer(URL url) {
 		PrioritizedURL existing = urlTracker.get(url);
 		if (existing == null) {
-			PrioritizedURL newURL = new PrioritizedURL(url, 0);
+			PrioritizedURL newURL = new PrioritizedURL(url, 1);
 			if (urlTracker.putIfAbsent(url, newURL) == null) {
 				queue.offer(newURL);
 			}

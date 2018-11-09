@@ -12,6 +12,8 @@ import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.Restriction;
 import net.viperfish.crawler.html.RestrictionManager;
 import net.viperfish.crawler.html.exception.FetchFailedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A fetch task that fetches a specified URL. This task checks the url to fetch against a {@link
@@ -25,6 +27,7 @@ class FetchRunnable implements Runnable {
 	private List<RestrictionManager> managers;
 	private AtomicInteger runningTasks;
 	private String userAgent;
+	private Logger logger;
 
 	/**
 	 * creates a new fetch task with required parameters.
@@ -43,17 +46,21 @@ class FetchRunnable implements Runnable {
 		this.managers = managers;
 		this.runningTasks = runningTasks;
 		this.userAgent = userAgent;
+		this.logger = LoggerFactory.getLogger(this.getClass());
 	}
 
 	@Override
 	public void run() {
 		try {
 			for (RestrictionManager rm : managers) {
+				logger.debug("Checking {} against {}", url.getToFetch(), rm);
 				Restriction restriction = rm.getRestriction(url.getToFetch());
 				if (!restriction.canFetch()) {
+					logger.debug("Restriction check failed for {}", url.getToFetch());
 					return;
 				}
 			}
+			logger.info("Fetching: {}", url.getToFetch());
 			FetchedContent fetched = fetchSite(url);
 			if (fetched != null) {
 				queue.put(new Pair<>(fetched, null));

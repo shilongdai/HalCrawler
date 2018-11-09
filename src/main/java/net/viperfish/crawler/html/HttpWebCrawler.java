@@ -5,12 +5,13 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import net.viperfish.crawler.core.ConcurrentDataProcessor;
 import net.viperfish.crawler.core.Datasink;
 import net.viperfish.crawler.core.ProcessedResult;
@@ -22,6 +23,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: refractor the whole thing into more modular structure. Add documentation
 
@@ -56,6 +59,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 	private ThreadLocal<Digest> hasher;
 	private List<HttpCrawlerHandler> httpCrawlerHandler;
 	private HttpFetcher fetcher;
+	private Logger logger;
 
 	/**
 	 * creates a new crawler with supplied storage output for site data and anchor data, and the
@@ -67,7 +71,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 	public HttpWebCrawler(Datasink<CrawledData> db,
 		HttpFetcher fetcher) {
 		super(fetcher, db);
-		processors = new HashMap<>();
+		processors = new ConcurrentHashMap<>();
 		this.fetcher = fetcher;
 		hasher = new ThreadLocal<Digest>() {
 
@@ -77,7 +81,8 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 			}
 
 		};
-		httpCrawlerHandler = new LinkedList<>();
+		httpCrawlerHandler = new CopyOnWriteArrayList<>();
+		this.logger = LoggerFactory.getLogger(this.getClass());
 	}
 
 	/**
@@ -148,6 +153,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 		HandlerResponse preParseResp = HandlerResponse.GO_AHEAD;
 		for (HttpCrawlerHandler handler : httpCrawlerHandler) {
 			HandlerResponse resp = handler.handlePreParse(content);
+			logger.debug("{} is handling pre-parse operation, resulting in {}", handler, resp);
 			if (resp.overrides(preParseResp)) {
 				preParseResp = resp;
 			}
@@ -169,6 +175,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 		HandlerResponse postParseResponse = HandlerResponse.GO_AHEAD;
 		for (HttpCrawlerHandler handler : httpCrawlerHandler) {
 			HandlerResponse resp = handler.handlePostParse(site);
+			logger.debug("{} is handling post-parse operation, resulting in {}", handler, resp);
 			if (resp.overrides(postParseResponse)) {
 				postParseResponse = resp;
 			}
@@ -190,6 +197,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 		HandlerResponse postProcessResponse = HandlerResponse.GO_AHEAD;
 		for (HttpCrawlerHandler handler : httpCrawlerHandler) {
 			HandlerResponse resp = handler.handlePostProcess(site);
+			logger.debug("{} is handling post-process operation, resulting in {}", handler, resp);
 			if (resp.overrides(postProcessResponse)) {
 				postProcessResponse = resp;
 			}
@@ -221,6 +229,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 			HandlerResponse anchorResponse = HandlerResponse.GO_AHEAD;
 			for (HttpCrawlerHandler handler : httpCrawlerHandler) {
 				HandlerResponse resp = handler.handlePreFetch(anchor.getTargetURL());
+				logger.debug("{} is handling pre-fetch operation, resulting in {}", handler, resp);
 				if (resp.overrides(anchorResponse)) {
 					anchorResponse = resp;
 				}

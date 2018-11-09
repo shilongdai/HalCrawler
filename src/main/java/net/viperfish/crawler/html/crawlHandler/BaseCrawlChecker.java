@@ -5,6 +5,8 @@ import net.viperfish.crawler.html.CrawledData;
 import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HandlerResponse;
 import net.viperfish.crawler.html.HttpCrawlerHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The base implementation of a {@link HttpCrawlerHandler} that ensures all pages are only crawled
@@ -13,6 +15,12 @@ import net.viperfish.crawler.html.HttpCrawlerHandler;
  * implementations of this class must be thread safe.
  */
 public abstract class BaseCrawlChecker implements HttpCrawlerHandler {
+
+	private Logger logger;
+
+	public BaseCrawlChecker() {
+		logger = LoggerFactory.getLogger(this.getClass());
+	}
 
 	/**
 	 * checks if the site has already been processed.
@@ -39,7 +47,10 @@ public abstract class BaseCrawlChecker implements HttpCrawlerHandler {
 
 	@Override
 	public HandlerResponse handlePreParse(FetchedContent content) {
+		logger.debug("PreParse: Checking {} against fetched:",
+			content.getUrl().getToFetch().toExternalForm());
 		if (isFetched(content.getUrl().getToFetch())) {
+			logger.debug("PreParse: {} already fetched, halting.", content.getUrl().getToFetch());
 			return HandlerResponse.HALT;
 		}
 		return HandlerResponse.GO_AHEAD;
@@ -47,12 +58,18 @@ public abstract class BaseCrawlChecker implements HttpCrawlerHandler {
 
 	@Override
 	public HandlerResponse handlePostParse(CrawledData site) {
+		logger.debug("PostParse: Checking if {} is already in progress",
+			site.getUrl().toExternalForm());
 		boolean isParsed = isParsed(site);
 		if (isParsed) {
+			logger.debug("PostParse: {} is already in progress, halting",
+				site.getUrl().toExternalForm());
 			return HandlerResponse.HALT;
 		}
+		logger.debug("PostParse: Attempting to lock {}", site.getUrl().toExternalForm());
 		boolean lock = lock(site);
 		if (!lock) {
+			logger.debug("PostParse: Locking failed, halting");
 			return HandlerResponse.HALT;
 		}
 		return HandlerResponse.GO_AHEAD;
@@ -60,8 +77,10 @@ public abstract class BaseCrawlChecker implements HttpCrawlerHandler {
 
 	@Override
 	public HandlerResponse handlePreFetch(URL url) {
+		logger.debug("PreFetch: Checking if {} is fetched", url.toExternalForm());
 		boolean isFetched = isFetched(url);
 		if (isFetched) {
+			logger.debug("PreFetch: {} already fetched, halting", url.toExternalForm());
 			return HandlerResponse.HALT;
 		}
 		return HandlerResponse.GO_AHEAD;

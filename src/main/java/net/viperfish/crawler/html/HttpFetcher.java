@@ -28,6 +28,9 @@ public interface HttpFetcher extends ResourcesStream<FetchedContent> {
 	/**
 	 * submits a new URL to be fetched with a certain priority. The URL with the highest priority
 	 * will be fetched first.
+	 *
+	 * @param url the url to fetch
+	 * @param priority the priority of the url
 	 */
 	void submit(URL url, int priority);
 

@@ -13,6 +13,8 @@ import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HttpFetcher;
 import net.viperfish.crawler.html.RestrictionManager;
 import net.viperfish.crawler.html.exception.FetchFailedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A base implementation of the {@link HttpFetcher} that delegates fetch to threads. All
@@ -30,6 +32,7 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 	private List<RestrictionManager> managers;
 	private String userAgent;
 	private boolean closed;
+	private Logger logger;
 
 	/**
 	 * creates a new {@link PrioritizedConcurrentHttpFetcher} with the user-agent string.
@@ -43,6 +46,7 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 		this.managers = new LinkedList<>();
 		closed = false;
 		this.userAgent = userAgent;
+		logger = LoggerFactory.getLogger(this.getClass());
 	}
 
 	@Override
@@ -181,6 +185,7 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 						.take(200, TimeUnit.MILLISECONDS);
 					if (pURL != null) {
 						runningTasks.incrementAndGet();
+						logger.info("Going to fetch: {}", pURL.getToFetch());
 						runFetcher(getRunnable(pURL));
 					}
 				}

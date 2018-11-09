@@ -3,6 +3,7 @@ package net.viperfish.crawler.html.engine;
 import java.net.URL;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntBinaryOperator;
 
 /**
  * A URL that has a priority in respect to fetching. This class is safe for multi-threading.
@@ -50,6 +51,20 @@ public final class PrioritizedURL {
 	 */
 	public void increasePriority() {
 		priority.incrementAndGet();
+	}
+
+	/**
+	 * boosts the priority of this url by a factor.
+	 *
+	 * @param multiplier the boost factor.
+	 */
+	public void boostPriority(int multiplier) {
+		priority.accumulateAndGet(multiplier, new IntBinaryOperator() {
+			@Override
+			public int applyAsInt(int left, int right) {
+				return left * right;
+			}
+		});
 	}
 
 	@Override

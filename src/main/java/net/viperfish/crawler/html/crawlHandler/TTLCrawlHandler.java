@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HandlerResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link net.viperfish.crawler.html.HttpCrawlerHandler} that defers page fetch with low priority
@@ -18,6 +20,7 @@ public class TTLCrawlHandler extends YesCrawlChecker {
 	private ConcurrentMap<URL, AtomicInteger> ttlTracker;
 	private int priorityThreshold;
 	private int deferredThreshold;
+	private Logger logger;
 
 	/**
 	 * creates a new {@link TTLCrawlHandler} specifying its minimal priority and its maximum
@@ -30,16 +33,23 @@ public class TTLCrawlHandler extends YesCrawlChecker {
 		this.priorityThreshold = priorityThreshold;
 		ttlTracker = new ConcurrentHashMap<>();
 		this.deferredThreshold = deferredThreshold;
+		this.logger = LoggerFactory.getLogger(this.getClass());
 	}
 
 	@Override
 	public HandlerResponse handlePreParse(FetchedContent content) {
 		ttlTracker.putIfAbsent(content.getUrl().getToFetch(), new AtomicInteger(0));
 		AtomicInteger current = ttlTracker.get(content.getUrl().getToFetch());
+		logger.debug("Deferred count for {}: {}", content.getUrl().getToFetch().toExternalForm(),
+			current.get());
 		if (content.getUrl().getPriority() - current.get() < priorityThreshold) {
 			if (current.incrementAndGet() > deferredThreshold) {
+				logger.debug("{} exceeding TTL threshold {}, halting",
+					content.getUrl().getToFetch().toExternalForm(), deferredThreshold);
 				return HandlerResponse.HALT;
 			}
+			logger.debug("{} under priority threshold {}, deferring",
+				content.getUrl().getToFetch().toExternalForm(), priorityThreshold);
 			return HandlerResponse.DEFERRED;
 		}
 		return HandlerResponse.GO_AHEAD;
