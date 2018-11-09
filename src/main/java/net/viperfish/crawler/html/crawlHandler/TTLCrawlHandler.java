@@ -48,8 +48,9 @@ public class TTLCrawlHandler extends YesCrawlChecker {
 					content.getUrl().getToFetch().toExternalForm(), deferredThreshold);
 				return HandlerResponse.HALT;
 			}
-			logger.debug("{} under priority threshold {}, deferring",
-				content.getUrl().getToFetch().toExternalForm(), priorityThreshold);
+			logger.debug("{} with priority {} under priority threshold {}, deferring",
+				content.getUrl().getToFetch().toExternalForm(), content.getUrl().getPriority(),
+				priorityThreshold);
 			return HandlerResponse.DEFERRED;
 		}
 		return HandlerResponse.GO_AHEAD;

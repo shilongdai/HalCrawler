@@ -49,12 +49,16 @@ public class DefaultPrioritizedURLBlockingQueue implements PrioritizedURLBlockin
 
 	@Override
 	public PrioritizedURL take() throws InterruptedException {
-		return queue.take();
+		PrioritizedURL result = queue.take();
+		urlTracker.remove(result.getToFetch());
+		return result;
 	}
 
 	@Override
 	public PrioritizedURL take(int time, TimeUnit unit) throws InterruptedException {
-		return queue.poll(time, unit);
+		PrioritizedURL result = queue.poll(time, unit);
+		urlTracker.remove(result.getToFetch());
+		return result;
 	}
 
 	@Override
@@ -62,6 +66,11 @@ public class DefaultPrioritizedURLBlockingQueue implements PrioritizedURLBlockin
 		return queue.size();
 	}
 
+	/**
+	 * gets a comparator that can be used to compare priorities.
+	 *
+	 * @return a priority comparator.
+	 */
 	protected Comparator<PrioritizedURL> comparator() {
 		return new DefaultComparator();
 	}

@@ -92,7 +92,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 	 * @param url the URl to be fetched and processed.
 	 */
 	public void submit(URL url) {
-		fetcher.submit(url, Integer.MAX_VALUE);
+		fetcher.submit(url);
 	}
 
 	/**
@@ -157,12 +157,12 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 			if (resp.overrides(preParseResp)) {
 				preParseResp = resp;
 			}
+			if (preParseResp == HandlerResponse.DEFERRED) {
+				fetcher.submit(content.getUrl().getToFetch());
+				return null;
+			}
 		}
 		if (preParseResp == HandlerResponse.HALT) {
-			return null;
-		}
-		if (preParseResp == HandlerResponse.DEFERRED) {
-			fetcher.submit(content.getUrl().getToFetch());
 			return null;
 		}
 		if (preParseResp == HandlerResponse.NO_INDEX) {
@@ -179,12 +179,12 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 			if (resp.overrides(postParseResponse)) {
 				postParseResponse = resp;
 			}
+			if (postParseResponse == HandlerResponse.DEFERRED) {
+				fetcher.submit(site.getUrl());
+				return null;
+			}
 		}
 		if (postParseResponse == HandlerResponse.HALT) {
-			return null;
-		}
-		if (postParseResponse == HandlerResponse.DEFERRED) {
-			fetcher.submit(site.getUrl());
 			return null;
 		}
 		if (postParseResponse == HandlerResponse.NO_INDEX) {
@@ -201,12 +201,12 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 			if (resp.overrides(postProcessResponse)) {
 				postProcessResponse = resp;
 			}
+			if (postProcessResponse == HandlerResponse.DEFERRED) {
+				fetcher.submit(site.getUrl());
+				return null;
+			}
 		}
 		if (postProcessResponse == HandlerResponse.HALT) {
-			return null;
-		}
-		if (postProcessResponse == HandlerResponse.DEFERRED) {
-			fetcher.submit(site.getUrl());
 			return null;
 		}
 		if (postProcessResponse == HandlerResponse.NO_INDEX) {
@@ -235,7 +235,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 				}
 			}
 			// make sure not repeating
-			if (anchorResponse == HandlerResponse.GO_AHEAD) {
+			if (anchorResponse != HandlerResponse.HALT) {
 				fetcher.submit(anchor.getTargetURL());
 			}
 		}
