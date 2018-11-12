@@ -27,9 +27,9 @@ public class TestPrioritizedURLQueue {
 		}
 
 		Assert.assertEquals(3, queue.size());
-		Assert.assertEquals(first, queue.take().getToFetch());
-		Assert.assertEquals(second, queue.take().getToFetch());
-		Assert.assertEquals(least, queue.take().getToFetch());
+		Assert.assertEquals(first, queue.take().getSource());
+		Assert.assertEquals(second, queue.take().getSource());
+		Assert.assertEquals(least, queue.take().getSource());
 	}
 
 }

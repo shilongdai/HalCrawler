@@ -38,18 +38,18 @@ public class TTLCrawlHandler extends YesCrawlChecker {
 
 	@Override
 	public HandlerResponse handlePreParse(FetchedContent content) {
-		ttlTracker.putIfAbsent(content.getUrl().getToFetch(), new AtomicInteger(0));
-		AtomicInteger current = ttlTracker.get(content.getUrl().getToFetch());
-		logger.debug("Deferred count for {}: {}", content.getUrl().getToFetch().toExternalForm(),
+		ttlTracker.putIfAbsent(content.getUrl().getSource(), new AtomicInteger(0));
+		AtomicInteger current = ttlTracker.get(content.getUrl().getSource());
+		logger.debug("Deferred count for {}: {}", content.getUrl().getSource().toExternalForm(),
 			current.get());
 		if (content.getUrl().getPriority() - current.get() < priorityThreshold) {
 			if (current.incrementAndGet() > deferredThreshold) {
 				logger.debug("{} exceeding TTL threshold {}, halting",
-					content.getUrl().getToFetch().toExternalForm(), deferredThreshold);
+					content.getUrl().getSource().toExternalForm(), deferredThreshold);
 				return HandlerResponse.HALT;
 			}
 			logger.debug("{} with priority {} under priority threshold {}, deferring",
-				content.getUrl().getToFetch().toExternalForm(), content.getUrl().getPriority(),
+				content.getUrl().getSource().toExternalForm(), content.getUrl().getPriority(),
 				priorityThreshold);
 			return HandlerResponse.DEFERRED;
 		}

@@ -1,7 +1,7 @@
 package net.viperfish.crawler.html.crawlHandler;
 
-import java.net.URL;
 import net.viperfish.crawler.html.HandlerResponse;
+import net.viperfish.crawler.html.engine.PrioritizedURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +25,9 @@ public class Limit2HostHandler extends YesCrawlChecker {
 	}
 
 	@Override
-	public HandlerResponse handlePreFetch(URL url) {
-		logger.debug("Checking {} against {}", url.getHost(), host);
-		if (url.getHost().equals(host)) {
+	public HandlerResponse handlePreFetch(PrioritizedURL url) {
+		logger.debug("Checking {} against {}", url.getSource().getHost(), host);
+		if (url.getSource().getHost().equals(host)) {
 			return HandlerResponse.GO_AHEAD;
 		}
 		logger.debug("Host does not match, halting");

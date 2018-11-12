@@ -5,6 +5,7 @@ import net.viperfish.crawler.html.CrawledData;
 import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HandlerResponse;
 import net.viperfish.crawler.html.HttpCrawlerHandler;
+import net.viperfish.crawler.html.engine.PrioritizedURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +49,9 @@ public abstract class BaseCrawlChecker implements HttpCrawlerHandler {
 	@Override
 	public HandlerResponse handlePreParse(FetchedContent content) {
 		logger.debug("PreParse: Checking {} against fetched:",
-			content.getUrl().getToFetch().toExternalForm());
-		if (isFetched(content.getUrl().getToFetch())) {
-			logger.debug("PreParse: {} already fetched, halting.", content.getUrl().getToFetch());
+			content.getUrl().getSource().toExternalForm());
+		if (isFetched(content.getUrl().getSource())) {
+			logger.debug("PreParse: {} already fetched, halting.", content.getUrl().getSource());
 			return HandlerResponse.HALT;
 		}
 		return HandlerResponse.GO_AHEAD;
@@ -76,11 +77,11 @@ public abstract class BaseCrawlChecker implements HttpCrawlerHandler {
 	}
 
 	@Override
-	public HandlerResponse handlePreFetch(URL url) {
-		logger.debug("PreFetch: Checking if {} is fetched", url.toExternalForm());
-		boolean isFetched = isFetched(url);
+	public HandlerResponse handlePreFetch(PrioritizedURL url) {
+		logger.debug("PreFetch: Checking if {} is fetched", url.getSource().toExternalForm());
+		boolean isFetched = isFetched(url.getSource());
 		if (isFetched) {
-			logger.debug("PreFetch: {} already fetched, halting", url.toExternalForm());
+			logger.debug("PreFetch: {} already fetched, halting", url.getSource().toExternalForm());
 			return HandlerResponse.HALT;
 		}
 		return HandlerResponse.GO_AHEAD;

@@ -1,6 +1,6 @@
 package net.viperfish.crawler.html;
 
-import java.net.URL;
+import net.viperfish.crawler.html.engine.PrioritizedURL;
 
 /**
  * A handler that can be attached to the {@link HttpWebCrawler} to perform operations at various
@@ -34,7 +34,7 @@ public interface HttpCrawlerHandler {
 	 * @param url the URL about to be fetched.
 	 * @return the control signal.
 	 */
-	HandlerResponse handlePreFetch(URL url);
+	HandlerResponse handlePreFetch(PrioritizedURL url);
 
 	/**
 	 * performs operation or control flow after all the {@link TagProcessor}s are ran. This is ran

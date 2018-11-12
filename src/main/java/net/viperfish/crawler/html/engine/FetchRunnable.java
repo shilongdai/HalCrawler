@@ -53,20 +53,20 @@ class FetchRunnable implements Runnable {
 	public void run() {
 		try {
 			for (RestrictionManager rm : managers) {
-				logger.debug("Checking {} against {}", url.getToFetch(), rm);
-				Restriction restriction = rm.getRestriction(url.getToFetch());
+				logger.debug("Checking {} against {}", url.getSource(), rm);
+				Restriction restriction = rm.getRestriction(url.getSource());
 				if (!restriction.canFetch()) {
-					logger.debug("Restriction check failed for {}", url.getToFetch());
+					logger.debug("Restriction check failed for {}", url.getSource());
 					return;
 				}
 			}
-			logger.info("Fetching: {}", url.getToFetch());
+			logger.info("Fetching: {}", url.getSource());
 			FetchedContent fetched = fetchSite(url);
 			if (fetched != null) {
 				queue.put(new Pair<>(fetched, null));
 			}
 		} catch (Throwable e) {
-			queue.offer(new Pair<>(null, new FetchFailedException(e, url.getToFetch())));
+			queue.offer(new Pair<>(null, new FetchFailedException(e, url.getSource())));
 		} finally {
 			runningTasks.decrementAndGet();
 		}
@@ -81,9 +81,9 @@ class FetchRunnable implements Runnable {
 	 * @throws IOException if failed to fetch the site.
 	 */
 	private FetchedContent fetchSite(PrioritizedURL url) throws IOException {
-		URLConnection conn = url.getToFetch().openConnection();
+		URLConnection conn = url.getSource().openConnection();
 		HttpURLConnection urlc;
-		if (url.getToFetch().openConnection() instanceof HttpURLConnection) {
+		if (url.getSource().openConnection() instanceof HttpURLConnection) {
 			// establish connection
 			urlc = (HttpURLConnection) conn;
 		} else {

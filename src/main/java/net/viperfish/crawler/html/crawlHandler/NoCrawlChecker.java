@@ -1,10 +1,10 @@
 package net.viperfish.crawler.html.crawlHandler;
 
-import java.net.URL;
 import net.viperfish.crawler.html.CrawledData;
 import net.viperfish.crawler.html.FetchedContent;
 import net.viperfish.crawler.html.HandlerResponse;
 import net.viperfish.crawler.html.HttpCrawlerHandler;
+import net.viperfish.crawler.html.engine.PrioritizedURL;
 
 /**
  * A {@link HttpCrawlerHandler} that ensures no further sites are crawled after the initial
@@ -18,7 +18,7 @@ public class NoCrawlChecker implements HttpCrawlerHandler {
 	}
 
 	@Override
-	public HandlerResponse handlePreFetch(URL url) {
+	public HandlerResponse handlePreFetch(PrioritizedURL url) {
 		return HandlerResponse.HALT;
 	}
 

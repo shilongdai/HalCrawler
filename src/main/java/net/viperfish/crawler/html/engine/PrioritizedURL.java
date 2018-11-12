@@ -11,20 +11,20 @@ import java.util.function.IntBinaryOperator;
 public final class PrioritizedURL {
 
 	private AtomicInteger priority;
-	private URL toFetch;
+	private URL source;
 
 	/**
 	 * creates a priority url with the url and the priority.
 	 *
-	 * @param toFetch the url to fetch.
+	 * @param source the url to fetch.
 	 * @param priority the priority of the url.
 	 */
-	public PrioritizedURL(URL toFetch, int priority) {
-		if (toFetch == null) {
+	public PrioritizedURL(URL source, int priority) {
+		if (source == null) {
 			throw new IllegalArgumentException("URL cannot be null");
 		}
 
-		this.toFetch = toFetch;
+		this.source = source;
 		this.priority = new AtomicInteger(priority);
 	}
 
@@ -33,8 +33,8 @@ public final class PrioritizedURL {
 	 *
 	 * @return the url to fetch.
 	 */
-	public URL getToFetch() {
-		return toFetch;
+	public URL getSource() {
+		return source;
 	}
 
 	/**
@@ -54,15 +54,15 @@ public final class PrioritizedURL {
 	}
 
 	/**
-	 * boosts the priority of this url by a factor.
+	 * increment the priority number by the specified amount.
 	 *
-	 * @param multiplier the boost factor.
+	 * @param amount the amount to increment;
 	 */
-	public void boostPriority(int multiplier) {
-		priority.accumulateAndGet(multiplier, new IntBinaryOperator() {
+	public void increasePriority(int amount) {
+		priority.accumulateAndGet(amount, new IntBinaryOperator() {
 			@Override
 			public int applyAsInt(int left, int right) {
-				return left * right;
+				return left + right;
 			}
 		});
 	}
@@ -76,11 +76,11 @@ public final class PrioritizedURL {
 			return false;
 		}
 		PrioritizedURL that = (PrioritizedURL) o;
-		return Objects.equals(toFetch, that.toFetch);
+		return Objects.equals(source, that.source);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(toFetch);
+		return Objects.hash(source);
 	}
 }

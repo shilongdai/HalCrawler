@@ -22,7 +22,7 @@ public class ConcurrentFetcherTest {
 		FetchedContent content = fetcher.next();
 
 		Assert.assertEquals(pageHTML, content.getHtml());
-		Assert.assertEquals(testSite, content.getUrl().getToFetch());
+		Assert.assertEquals(testSite, content.getUrl().getSource());
 		Assert.assertEquals(200, content.getStatus());
 
 		fetcher.close();

@@ -21,10 +21,9 @@ public interface PrioritizedURLBlockingQueue {
 	/**
 	 * offers a URL to the queue with a specified priority.
 	 *
-	 * @param url the url to add.
-	 * @param priority the priority of the url.
+	 * @param prioritizedURL a url with priority.
 	 */
-	void offer(URL url, int priority);
+	void offer(PrioritizedURL prioritizedURL);
 
 	/**
 	 * takes a URL from the resultQueue, blocking if no data available. This removes the URL. The

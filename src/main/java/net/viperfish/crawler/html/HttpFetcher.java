@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import net.viperfish.crawler.core.ResourcesStream;
+import net.viperfish.crawler.html.engine.PrioritizedURL;
 import net.viperfish.crawler.html.exception.FetchFailedException;
 
 /**
@@ -29,10 +30,9 @@ public interface HttpFetcher extends ResourcesStream<FetchedContent> {
 	 * submits a new URL to be fetched with a certain priority. The URL with the highest priority
 	 * will be fetched first.
 	 *
-	 * @param url the url to fetch
-	 * @param priority the priority of the url
+	 * @param prioritizedURL the url with priority.
 	 */
-	void submit(URL url, int priority);
+	void submit(PrioritizedURL prioritizedURL);
 
 	/**
 	 * sets the {@link RestrictionManager} that dictates whether the fetcher should fetch from a

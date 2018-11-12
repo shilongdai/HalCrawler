@@ -28,11 +28,15 @@ public class DefaultPrioritizedURLBlockingQueue implements PrioritizedURLBlockin
 
 	@Override
 	public void offer(URL url) {
-		PrioritizedURL existing = urlTracker.get(url);
+		this.offer(new PrioritizedURL(url, 1));
+	}
+
+	@Override
+	public void offer(PrioritizedURL prioritizedURL) {
+		PrioritizedURL existing = urlTracker.get(prioritizedURL.getSource());
 		if (existing == null) {
-			PrioritizedURL newURL = new PrioritizedURL(url, 1);
-			if (urlTracker.putIfAbsent(url, newURL) == null) {
-				queue.offer(newURL);
+			if (urlTracker.putIfAbsent(prioritizedURL.getSource(), prioritizedURL) == null) {
+				queue.offer(prioritizedURL);
 			}
 		} else {
 			existing.increasePriority();
@@ -43,21 +47,18 @@ public class DefaultPrioritizedURLBlockingQueue implements PrioritizedURLBlockin
 	}
 
 	@Override
-	public void offer(URL url, int priority) {
-		queue.offer(new PrioritizedURL(url, priority));
-	}
-
-	@Override
 	public PrioritizedURL take() throws InterruptedException {
 		PrioritizedURL result = queue.take();
-		urlTracker.remove(result.getToFetch());
+		urlTracker.remove(result.getSource());
 		return result;
 	}
 
 	@Override
 	public PrioritizedURL take(int time, TimeUnit unit) throws InterruptedException {
 		PrioritizedURL result = queue.poll(time, unit);
-		urlTracker.remove(result.getToFetch());
+		if (result != null) {
+			urlTracker.remove(result.getSource());
+		}
 		return result;
 	}
 
@@ -84,11 +85,11 @@ public class DefaultPrioritizedURLBlockingQueue implements PrioritizedURLBlockin
 			} else if (o1.getPriority() < o2.getPriority()) {
 				return 1;
 			} else {
-				if (o1.getToFetch().equals(o2.getToFetch())) {
+				if (o1.getSource().equals(o2.getSource())) {
 					return 0;
 				}
-				return Integer.compare(o1.getToFetch().toExternalForm().length(),
-					o2.getToFetch().toExternalForm().length());
+				return Integer.compare(o1.getSource().toExternalForm().length(),
+					o2.getSource().toExternalForm().length());
 			}
 		}
 	}

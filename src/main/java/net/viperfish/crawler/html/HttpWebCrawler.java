@@ -15,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import net.viperfish.crawler.core.ConcurrentDataProcessor;
 import net.viperfish.crawler.core.Datasink;
 import net.viperfish.crawler.core.ProcessedResult;
+import net.viperfish.crawler.html.engine.PrioritizedURL;
 import net.viperfish.crawler.html.exception.ParsingException;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;
@@ -87,11 +88,12 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 
 	/**
 	 * submits URL to be fetched and processed. This will skip over all the {@link
-	 * HttpCrawlerHandler#handlePreFetch(URL)}.
+	 * HttpCrawlerHandler#handlePreFetch(PrioritizedURL)}.
 	 *
 	 * @param url the URl to be fetched and processed.
 	 */
 	public void submit(URL url) {
+		logger.debug("Crawler user submitted: {}", url);
 		fetcher.submit(url);
 	}
 
@@ -158,7 +160,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 				preParseResp = resp;
 			}
 			if (preParseResp == HandlerResponse.DEFERRED) {
-				fetcher.submit(content.getUrl().getToFetch());
+				fetcher.submit(content.getUrl().getSource());
 				return null;
 			}
 		}
@@ -227,8 +229,9 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 		// add pages to crawl
 		for (Anchor anchor : site.getAnchors()) {
 			HandlerResponse anchorResponse = HandlerResponse.GO_AHEAD;
+			PrioritizedURL prioritizedURL = new PrioritizedURL(anchor.getTargetURL(), 1);
 			for (HttpCrawlerHandler handler : httpCrawlerHandler) {
-				HandlerResponse resp = handler.handlePreFetch(anchor.getTargetURL());
+				HandlerResponse resp = handler.handlePreFetch(prioritizedURL);
 				logger.debug("{} is handling pre-fetch operation, resulting in {}", handler, resp);
 				if (resp.overrides(anchorResponse)) {
 					anchorResponse = resp;
@@ -236,7 +239,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 			}
 			// make sure not repeating
 			if (anchorResponse != HandlerResponse.HALT) {
-				fetcher.submit(anchor.getTargetURL());
+				fetcher.submit(prioritizedURL);
 			}
 		}
 	}
@@ -249,13 +252,13 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 	 */
 	private CrawledData parseFetchedContent(FetchedContent content) {
 		String cleanHTML = Jsoup
-			.clean(content.getHtml(), content.getUrl().getToFetch().toExternalForm(),
+			.clean(content.getHtml(), content.getUrl().getSource().toExternalForm(),
 				Whitelist.relaxed().addTags("title").addTags("head"));
 		CrawledData site = toSite(content);
 		// parse document
 		Document doc = Jsoup.parse(cleanHTML);
 		site.setAnchors(extractAnchors(doc, site.getUrl()));
-		site.setTitle(extractTitle(content.getUrl().getToFetch(), doc));
+		site.setTitle(extractTitle(content.getUrl().getSource(), doc));
 		site.setProperty(DOC_ATTR, doc);
 		return site;
 	}
@@ -271,7 +274,7 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 		CrawledData result = new CrawledData();
 		result.setChecksum(checksum);
 		result.setContent(content.getHtml());
-		result.setUrl(content.getUrl().getToFetch());
+		result.setUrl(content.getUrl().getSource());
 		return result;
 	}
 

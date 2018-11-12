@@ -60,8 +60,8 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 	}
 
 	@Override
-	public void submit(URL url, int priority) {
-		prioritizedURLBlockingQueue.offer(url, priority);
+	public void submit(PrioritizedURL prioritizedURL) {
+		prioritizedURLBlockingQueue.offer(prioritizedURL);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 		try {
 			Pair<FetchedContent, Throwable> result = resultQueue.take();
 			if (result.getSecond() != null) {
-				throw new FetchFailedException(null, result.getFirst().getUrl().getToFetch());
+				throw new FetchFailedException(null, result.getFirst().getUrl().getSource());
 			}
 			return result.getFirst();
 		} catch (InterruptedException e) {
@@ -185,7 +185,7 @@ public abstract class PrioritizedConcurrentHttpFetcher implements HttpFetcher {
 						.take(200, TimeUnit.MILLISECONDS);
 					if (pURL != null) {
 						runningTasks.incrementAndGet();
-						logger.info("Going to fetch: {}", pURL.getToFetch());
+						logger.info("Going to fetch: {}", pURL.getSource());
 						runFetcher(getRunnable(pURL));
 					}
 				}
