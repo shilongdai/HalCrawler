@@ -303,7 +303,11 @@ public abstract class HttpWebCrawler extends ConcurrentDataProcessor<FetchedCont
 	private String extractTitle(URL url, Document document) {
 		Elements elements = document.select("title");
 		if (!elements.isEmpty()) {
-			return elements.get(0).text();
+			String title = elements.get(0).text().trim();
+			if (title.isEmpty()) {
+				return url.toString();
+			}
+			return title;
 		}
 		return url.toString();
 	}

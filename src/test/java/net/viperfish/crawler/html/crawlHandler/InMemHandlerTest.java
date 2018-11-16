@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import net.viperfish.crawler.html.CrawledData;
 import net.viperfish.crawler.html.HandlerResponse;
+import net.viperfish.crawler.html.engine.PrioritizedURL;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,9 +22,9 @@ public class InMemHandlerTest {
 		checker.lock(existingSite);
 
 		Assert.assertEquals(HandlerResponse.HALT,
-			checker.handlePreFetch(new URL("https://www.example.com")));
+			checker.handlePreFetch(new PrioritizedURL(new URL("https://www.example.com"), 1)));
 		Assert.assertEquals(HandlerResponse.GO_AHEAD,
-			checker.handlePreFetch(new URL("https://google.com")));
+			checker.handlePreFetch(new PrioritizedURL(new URL("https://google.com"), 1)));
 
 		CrawledData exampleSite = new CrawledData();
 		exampleSite.setUrl(new URL("https://exe.com"));
@@ -36,6 +37,7 @@ public class InMemHandlerTest {
 		Assert.assertEquals(HandlerResponse.GO_AHEAD, checker.handlePostParse(exampleSite));
 		Assert.assertEquals(HandlerResponse.HALT, checker.handlePostParse(identicalSite));
 		Assert
-			.assertEquals(HandlerResponse.HALT, checker.handlePreFetch(identicalSite.getUrl()));
+			.assertEquals(HandlerResponse.HALT,
+				checker.handlePreFetch(new PrioritizedURL(identicalSite.getUrl(), 1)));
 	}
 }
