@@ -12,7 +12,7 @@ import net.viperfish.crawler.html.restrictions.RobotsTxtRestrictionManager;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class CrawlLanding {
+public class CrawlWhiteHouse {
 
     public static void main(String[] argv) throws MalformedURLException {
         URL url2Test = new URL("https://www.whitehouse.gov/");
